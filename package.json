@@ -19,6 +19,11 @@
   },
   "homepage": "https://github.com/FraMichi/ProgettoTrentinoEventi#readme",
   "dependencies": {
-    "express": "^4.18.1"
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "js-cookie": "^3.0.1",
+    "js-cookies": "^1.0.4",
+    "mongoose": "^6.3.3"
   }
 }
