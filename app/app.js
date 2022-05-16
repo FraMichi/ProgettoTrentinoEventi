@@ -1,4 +1,5 @@
 const express = require('express');
+const visualizzazione = require('./visualizzazione.js');
 const app = express();
 
 /**
@@ -6,6 +7,8 @@ const app = express();
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('../api/v1/visualizzazione', visualizzazione);
 
 
 /**
