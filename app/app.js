@@ -12,6 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/v1/authentication', authentication);
+app.use('/api/v1/authentication/login', authentication);
+app.use('/api/v1/authentication/subscribe', authentication);
 
 
 app.use('/', express.static('static'));
