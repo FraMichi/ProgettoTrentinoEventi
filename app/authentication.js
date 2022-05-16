@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('./models/user');
 
 // Route per autenticazione
-router.post('', async (req, res) => {
+router.post('/login', async (req, res) => {
 
 	//Cerca utente nel DB
 	let user = await User.findOne({"email" : req.body.email.toString()}).exec();
@@ -17,6 +17,43 @@ router.post('', async (req, res) => {
 	if (user.password != req.body.password) {
 		res.json({ success: false, message: 'Password sbagliata' });
 	}
+
+    //Se non ci sono errori crea il cookie ed invia risposta di successo
+    res.cookie('user', { name: user.nome, userType: user.tipoDiUtente, userId: user._id});
+    res.json({
+		success: true
+	});
+
+});
+
+// Route per registrazione
+router.post('/subscribe', async (req, res) => {
+
+	//Controlla se l'utente è già esistente nel DB
+	let userDB = await User.findOne({"email" : req.body.email.toString()}).exec();
+
+	//Se l'utente è stato trovato invia risposta con messaggio d'errore
+	if (userDB) {
+		res.json({ success: false, message: 'Utente già esistente' });
+	}
+
+	//Se l'utente non è stato trovato, lo crea
+	let user = new User({
+		nome: req.body.name,
+	    cognome: req.body.surname,
+	    dataDiNascita: req.body.birthdate,
+		email: req.body.email,
+		password: req.body.password,
+	    tipoDiUtente: req.body.userType
+    });
+
+	//Aggiunge l'utente creato nel DB
+	user = await user.save();
+
+
+	user = await User.findOne({"email" : req.body.email.toString()}).exec();
+	console.log(user);
+
 
     //Se non ci sono errori crea il cookie ed invia risposta di successo
     res.cookie('user', { name: user.nome, userType: user.tipoDiUtente, userId: user._id});

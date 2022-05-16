@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Iscriviti</title>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <h1>Iscriviti</h1>
+        <form action="api/v1/users" method="post" id="loginform">
+            <label for="subName">Nome</label>
+            <input type="text" name="nome" value="" id="subName"/>
+            <br>
+            <label for="subSurname">Cognome</label>
+            <input type="text" name="cognome" value="" id="subSurname"/>
+            <br>
+            <label for="subBirthdate">Data di nascita</label>
+            <input type="date" name="birthdate" value="" id="subBirthdate"/>
+            <br>
+            <label for="subUsertype">Data di nascita</label>
+            <select name='usertype' id="subUsertype">
+                <option value='turista'>Turista</option>
+                <option value='gestore'>Gestore</option>
+            </select>
+            <br>
+            <label for="subEmail">Email</label>
+            <input type="text" name="email" value="mario.rossi@gmail.com" id="subEmail"/>
+            <br>
+            <label for="subPassword">Password</label>
+            <input type="password" name="password" value="" id="subPassword"/>
+            <br>
+            <button type="button" onclick="subscribe()">Iscriviti</button>
+        </form>
+    </body>
+</html>
