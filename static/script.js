@@ -29,10 +29,12 @@ function getSpecificEvent() {
         fetch('../api/v1/visualizzazione/event?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
+            let dataIni = new Date(data.initDate);
+            let dataFin = new Date(data.finlDate);
             document.getElementById("title").innerHTML=data.title;
             document.getElementById("description").innerHTML=data.description;
-            document.getElementById("initDate").innerHTML=data.initDate;
-            document.getElementById("finlDate").innerHTML=data.finlDate;
+            document.getElementById("initDate").innerHTML= dataIni.getFullYear()+'-'+(dataIni.getMonth()+1)+'-'+dataIni.getDay()+' '+(dataIni.getUTCHours()<10?'0':'')+dataIni.getUTCHours()+':'+(dataIni.getMinutes()<10?'0':'')+dataIni.getMinutes();
+            document.getElementById("finlDate").innerHTML= dataFin.getFullYear()+'-'+(dataFin.getMonth()+1)+'-'+dataFin.getDay()+' '+(dataFin.getUTCHours()<10?'0':'')+dataFin.getUTCHours()+':'+(dataFin.getMinutes()<10?'0':'')+dataFin.getMinutes();
             document.getElementById("address").innerHTML=data.address;
             document.getElementById("city").innerHTML=data.city;
             document.getElementById("seats").innerHTML=data.seatsAvailable + "/" + data.seatsOccupied;
