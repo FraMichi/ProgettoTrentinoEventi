@@ -5,11 +5,11 @@ const User = require('./models/user');
 
 // Route per login
 router.post('/login', async (req, res) => {
-
+	
 	// Cerca utente nel DB
 	let user = await User.findOne({"email" : req.body.email.toString()}).exec();
 
-	//S e l'utente non è stato trovato invia risposta con messaggio d'errore
+	// Se l'utente non è stato trovato invia risposta con messaggio d'errore
 	if (!user) {
 		res.json({ success: false, message: 'Utente non trovato' });
 		return;
