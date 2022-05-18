@@ -1,43 +1,61 @@
 const express = require('express');
-const visualizzazione = require('./visualizzazione.js');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const cookieParser = require("cookie-parser");
+
+const visualizzazione = require('./visualizzazione.js');
+const authentication = require('./authentication.js');
+
+var fs = require('fs');
 const app = express();
 
+// Opzioni per la documentazione
 const swaggerOptions = {
-    swaggerDefinition: {
-        info: {
-            title: "Trentino Eventi",
-            description: "L’applicazione TRENTINO EVENTI è pensata per progettare vacanze sul territorio trentino. I turisti potranno utilizzare l’applicazione per visualizzare gli eventi in corso sul territorio e gli alloggi disponibili. Se il turista è registrato alla piattaforma potrà iscriversi/disiscriversi agli eventi oppure effettuare/disdire prenotazioni per gli alloggi. Potrà inoltre visualizzare la lista di eventi a cui è iscritto, la lista di alloggi prenotati e la lista dei trasporti in trentino. Come ultima cosa, potrà lasciare delle recensioni agli eventi a cui ha partecipato e agli alloggi in cui ha soggiornato. L’applicazione offre anche ai gestori la possibilità di pubblicare annunci per i propri eventi e mettere a disposizione i loro alloggi, in modo che possano essere prenotati dai turisti. Il gestore potrà annullare gli eventi da lui creati e togliere la disponibilità dei suoi alloggi oltre a poter rispondere ad eventuali recensioni",
-            servers: ["http://localhost:8080/"]
-        }
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Trentino Eventi',
+      description: 'Applicazione che mostra eventi ed alloggi in Trentino',
+      version: '1.0.0'
     },
-    apis: ["./app/visualizzazione.js"]
-}
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
+    servers: {
+      url: {
+        http:"//localhost:8080/",
+        description: "Localhost"
+      }
+    }
+  },
+  apis: ['./app/authentication.js', './app/visualizzazione.js'] // files containing annotations as above
+};
 
-/**
- * Configure Express.js parsing middleware
- */
+
+
+
+// Si crea il documento della documentazione
+const swaggerDocument = swaggerJsDoc(swaggerOptions);
+
+// Scrive nel file 'swagger.yaml' la documentazione così che poi sia visibile su apiary
+fs.writeFile('./swagger.yaml', JSON. stringify(swaggerDocument), (err) => {
+  if (err){
+    console.log(err);
+  }
+});
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1/visualizzazione', visualizzazione);
+app.use('/api/v1/authentication', authentication);
 
-
-/**
- * Serve front-end static files
- */
 app.use('/', express.static('static'));
 
-/* Default 404 handler */
+
 app.use((req, res) => {
     res.status(404);
     res.json({ error: 'Not found' });
 });
-
 
 
 module.exports = app;

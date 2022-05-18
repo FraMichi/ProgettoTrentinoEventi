@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// set up a mongoose model
+// Crea il modello relativo all'utente
 module.exports = mongoose.model('User', new Schema({
-	nome: String,
+    nome: String,
     cognome: String,
     dataDiNascita: Date,
-    email: String,
-    password: String,
+	email: String,
+	password: String,
     tipoDiUtente: String
 }));
