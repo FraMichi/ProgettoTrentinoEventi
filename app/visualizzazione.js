@@ -280,7 +280,6 @@ router.get('/housing', async (req, res) => {
       res.status(400).json({success: false, message: "Id non presente nella query"});
       return;
     }
-    console.log(req.query.id);
 
     // Controlla che l'id rispetti il formato di MongoDB
     if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
