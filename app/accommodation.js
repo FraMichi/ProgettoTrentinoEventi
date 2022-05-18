@@ -8,7 +8,7 @@ router.post('/create', async (req, res) => {
 
 	// Prende il cookie contenente i dati dell'utente
 	var userCookie = req.cookies['user'];
-	var idUser = userCookie.idUser;
+	var idUser = userCookie._id;
 
 	// Crea il nuovo alloggio
 	let housing = new Housing({

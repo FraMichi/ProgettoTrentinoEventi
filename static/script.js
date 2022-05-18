@@ -107,13 +107,11 @@ function createHouse() {
     var dend = document.getElementById("dEnd").value;
     var address = document.getElementById("houseAddress").value;
     var city = document.getElementById("city").value;
-    var
-    var idUser = 0; //id del gestore che sta creando l'evento
 
     fetch('../api/v1/accommodation/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city , idUser: idUser} )
+        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city} )
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
@@ -147,12 +145,14 @@ function createEvent() {
     var dend = document.getElementById("dEnd").value;
     var address = document.getElementById("eventAddress").value;
     var city = document.getElementById("city").value;
-    var idUser = 0; //id del gestore che sta creando l'evento
+    var available = document.getElementById("available").value;
+    var total = document.getElementById("total").value;
+    var idCategoria = document.getElementById("idCategoria").value;
 
     fetch('../api/v1/event/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, available: available, total: total, idCategoria:idCategoria, idUser: idUser} )
+        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, available: available, total: total, idCategoria:idCategoria} )
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
