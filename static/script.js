@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //Richiede lista eventi esistenti
 function getEvents() {
     // Esegue la richiesta degli eventi all'api specifica
@@ -95,7 +94,6 @@ function getSpecificHousing() {
         console.err("Attenzione: parametro 'housingId' non presente nella query");
     }
 };
-=======
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata di login.
 * Fa l'autenticazione dell'utente.
@@ -192,4 +190,3 @@ function checkIfLogged() {
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 }
->>>>>>> main
