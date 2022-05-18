@@ -11,6 +11,8 @@ const Housing = require('./models/housing');
  * @openapi
  * /api/v1/visualizzazione/eventList:
  *   get:
+ *     tags:
+ *       -  eventVisualization
  *     description: Gets the list of all events
  *     summary: View all events
  *     responses:
@@ -66,6 +68,8 @@ router.get('/housingList', async (req, res) => {
  * @openapi
  * /api/v1/visualizzazione/event:
  *   get:
+ *     tags:
+ *       -  eventVisualization
  *     description: Gets the details of a specific event
  *     summary: Details of one event
  *     parameters:
