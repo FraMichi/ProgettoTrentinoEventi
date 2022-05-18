@@ -23,7 +23,6 @@ function getHousings() {
     fetch('../api/v1/visualizzazione/housingList')
     .then((resp) => resp.json())
     .then(function(data){
-                console.log(data);
                 var ul = document.getElementById("list");
                 return data.map(function(item){
                     var li = document.createElement("li");
@@ -72,13 +71,23 @@ function getSpecificHousing() {
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('housingId')){
         // Id evento
-        var id = urlParams.get('eventId');
+        var id = urlParams.get('housingId');
 
         // Chiamata api
         fetch('../api/v1/visualizzazione/housing?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
-
+            console.log(data);
+            let dataIni = new Date(data.initDate);
+            let dataFin = new Date(data.finlDate);
+            document.getElementById("title").innerHTML=data.title;
+            document.getElementById("description").innerHTML=data.description;
+            document.getElementById("initDate").innerHTML= dataIni.getFullYear()+'-'+(dataIni.getMonth()+1)+'-'+dataIni.getDay();
+            document.getElementById("finlDate").innerHTML= dataFin.getFullYear()+'-'+(dataFin.getMonth()+1)+'-'+dataFin.getDay();
+            document.getElementById("address").innerHTML=data.address;
+            document.getElementById("city").innerHTML=data.city;
+            document.getElementById("creatorName").innerHTML=data.creatorName + " " + data.creatorSurname;
+            document.getElementById("creatorEmail").innerHTML=data.creatorEmail;
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     } else {
