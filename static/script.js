@@ -83,13 +83,27 @@ function checkIfLogged() {
         // Se l'utente è già loggato modifica i bottoni in alto a destra delle pagine
         if(data.success == true) {
 
-            // Il bottone di "login" viene disabilitato
-            document.getElementById("topRightButton01").style.pointerEvents = "none";
+            // Il bottone di "login" viene sostituito da quello di "logout"
+            document.getElementById("topRightButton01").removeAttribute("href");
+            document.getElementById("topRightButton01").setAttribute("onClick", 'logout()');
+            document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Logout</div>"
 
             // Il bottone "iscriviti" viene cambiato con il nome dell'utente
             document.getElementById("topRightButton02").removeAttribute("href");
             document.getElementById("topRightButton02").setAttribute("href", '#');
             document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>" + data.name + "</div>"
+
+        } else { // Se l'utente fa il logout i bottoni devono essere ripristinati come lo erano prima di fare il login
+
+            // Il bottone di "logout" viene sostituito da quello di "login"
+            document.getElementById("topRightButton01").removeAttribute("onClick");
+            document.getElementById("topRightButton01").setAttribute("href", "/login.html");
+            document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Login</div>"
+
+            // Il bottone "iscriviti" viene cambiato con il nome dell'utente
+            document.getElementById("topRightButton02").removeAttribute("href");
+            document.getElementById("topRightButton02").setAttribute("href", "/subscribe.html");
+            document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
         }
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
