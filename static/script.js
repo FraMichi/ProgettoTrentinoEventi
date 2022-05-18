@@ -71,6 +71,16 @@ function subscribe() {
 };
 
 /*
+* Funzione che viene chiamata premendo il bottone di logout quando l'utente è registrato.
+* Fa il logout dell'utente.
+*/
+function logout() {
+    fetch('../api/v1/authentication/logout')
+    .then( () => alert("Sei stato sloggato correttamente") )
+    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
 * Funzione che viene chiamata al caricamento delle pagine.
 * Controlla se l'utente è già loggato.
 */
