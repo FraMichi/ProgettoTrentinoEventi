@@ -76,7 +76,13 @@ function subscribe() {
 */
 function logout() {
     fetch('../api/v1/authentication/logout')
-    .then( () => alert("Sei stato sloggato correttamente") )
+    .then( function() {
+
+        // Torna alla pagina in cui era prima di fare il logout
+        window.location.href = "/index.html";
+
+        alert("Sei stato sloggato correttamente");
+    })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 };
 
