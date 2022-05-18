@@ -22,9 +22,14 @@
             <input type="text" id="city" name="city" value=""/><br/>
             <label for="total">Posti totali:</label><br/>
             <input type="text" id="total" name="total" value=""/><br/>
-            <label for="idCategoria">Seleziona la categoria:</label><br/>
-            <input type="text" id="idCategoria" name="idCategoria" value=""/><br/>
-            <button type="button" onclick="createEvent()">Registra evento</button>
+            <label for="idCategoria">Scegli una categoria:</label>
+            <select name="idCategoria" id="idCategoria">
+              <option value="bisogna">bisogna</option>
+              <option value="collegare">collegare</option>
+              <option value="al">al</option>
+              <option value="db">db</option>
+            </select></br>
+            //<button type="button" onclick="createEvent()">Registra evento</button>
         </form>
         <p id="errorMsgEvent"></p>
 

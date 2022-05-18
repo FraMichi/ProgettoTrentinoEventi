@@ -10,7 +10,7 @@ router.post('/create', async (req, res) => {
 	var userCookie = req.cookies['user'];
 	var idUser = userCookie.idUser;
 
-	// Crea il nuovo alloggio
+	// Crea il nuovo evento
 	let evento = new Event({
 		titolo: req.body.name,
 	  descrizione: req.body.description,
@@ -18,7 +18,7 @@ router.post('/create', async (req, res) => {
 		dataFine: req.body.dend,
 		indirizzo: req.body.address,
 	  citta: req.body.city,
-    postiDisponibili: req.body.postiDisponibili,
+    postiDisponibili: req.body.postiTotali,
     postiTotali: req.body.postiTotali,
     idCategoria: req.body.idCategoria,
 		idGestore: idUser

@@ -49,6 +49,8 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/v1/authentication', authentication);
+app.use('/api/v1/accommodation/create', authentication);
+//app.use('/api/v1/event/create', authentication);
 
 
 app.use('/', express.static('static'));
