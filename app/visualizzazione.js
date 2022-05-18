@@ -37,7 +37,10 @@ router.get('/eventList', async (req, res) => {
 /**
  * @openapi
  * /api/v1/visualizzazione/housingList:
+ *   tag: dataVisualization
  *   get:
+ *     tags:
+ *       -  housingVisualization
  *     description: Gets the list of all housings
  *     summary: View all housings
  *     responses:
@@ -203,6 +206,8 @@ router.get('/event', async (req, res) => {
  * @openapi
  * /api/v1/visualizzazione/housing:
  *   get:
+ *     tags:
+ *       -  housingVisualization
  *     description: Gets the details of a specific housing
  *     summary: Details of one housing
  *     parameters:
