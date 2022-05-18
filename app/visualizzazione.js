@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const Event = require('./models/event'); // get our mongoose model
-const Category = require('./models/category'); // get our mongoose model
-const User = require('./models/user'); // get our mongoose model
 
-
-
-
+// Modelli Mongoose
+const Event = require('./models/event');
+const Category = require('./models/category');
+const User = require('./models/user');
+const Housing = require('./models/housing');
 
 /**
  * @openapi
  * /api/v1/visualizzazione/eventList:
  *   get:
- *     description: Gets the list of all eventsList
+ *     description: Gets the list of all events
  *     summary: View all events
  *     responses:
  *       200:
@@ -33,12 +32,39 @@ router.get('/eventList', async (req, res) => {
     res.status(200).json(eventsList);
 });
 
+
+
+/**
+ * @openapi
+ * /api/v1/visualizzazione/housingList:
+ *   get:
+ *     description: Gets the list of all housings
+ *     summary: View all housings
+ *     responses:
+ *       200:
+ *         description: Collection of housings in JSON format
+ *         schema:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: string that identifies the housing
+ *             title:
+ *               type: string
+ *               description: title of the housing
+ */
+router.get('/housingList', async (req, res) => {
+    let housings = await Housing.find().exec();
+    let housingsList = housings.map((eventItem) => {return{id:eventItem._id, title:eventItem.titolo};})
+    res.status(200).json(housingsList);
+});
+
 /**
  * @openapi
  * /api/v1/visualizzazione/event:
  *   get:
  *     description: Gets the details of a specific event
- *     summary: Details of one events
+ *     summary: Details of one event
  *     parameters:
  *       - in: query
  *         name: id
@@ -97,7 +123,7 @@ router.get('/eventList', async (req, res) => {
  *               type: string
  *               description: specifications regarding the specific error
  *       400:
- *         description: The Id query parameter do not respect the MongoDB format
+ *         description: The Id query parameter is not present or do not respect the MongoDB format
  *         schema:
  *           type: object
  *           properties:
@@ -108,6 +134,13 @@ router.get('/eventList', async (req, res) => {
  *               description: specifications regarding the specific error
  */
 router.get('/event', async (req, res) => {
+    // Controlla che sia effettivamente presente il parametro id
+    if (!req.query.id) {
+      // Se l'id non è presente nella query
+      res.status(400).json({success: false, message: "Id non presente nella query"});
+      return;
+    }
+
     // Controlla che l'id rispetti il formato di MongoDB
     if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
       // Se non lo rispetta dichiara l'errore
@@ -160,6 +193,124 @@ router.get('/event', async (req, res) => {
         creatorName: eventCreator.nome,
         creatorSurname: eventCreator.cognome,
         creatorEmail: eventCreator.email
+    };
+
+    // Ritorna la risposta
+    res.status(200).json(finalResponse);
+});
+
+/**
+ * @openapi
+ * /api/v1/visualizzazione/housing:
+ *   get:
+ *     description: Gets the details of a specific housing
+ *     summary: Details of one housing
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         type: string
+ *         description: The id of the specific housing you want to get the details
+ *     responses:
+ *       200:
+ *         description: Details of a housing in JSON format
+ *         schema:
+ *           type: object
+ *           properties:
+ *             title:
+ *               type: string
+ *               description: title of the housing
+ *             description:
+ *               type: string
+ *               description: description of the housing
+ *             initDate:
+ *               type: string
+ *               description: date of the beginning of the housing availability slot in ISO8601 format
+ *             finlDate:
+ *               type: string
+ *               description: date of the ending of the housing availability slot in ISO8601 format
+ *             address:
+ *               type: string
+ *               description: address of the housing
+ *             city:
+ *               type: string
+ *               description: city where the housing is located
+ *             creatorName:
+ *               type: string
+ *               description: the name of the user who created the housing
+ *             creatorSurname:
+ *               type: string
+ *               description: the surname of the user who created the housing
+ *             creatorEmail:
+ *               type: string
+ *               description: the email of the user who created the housing
+ *       404:
+ *         description: Some data are not found on the DB
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             message:
+ *               type: string
+ *               description: specifications regarding the specific error
+ *       400:
+ *         description: The Id query parameter is not present or do not respect the MongoDB format
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             message:
+ *               type: string
+ *               description: specifications regarding the specific error
+ */
+router.get('/housing', async (req, res) => {
+    // Controlla che sia effettivamente presente il parametro id
+    if (!req.query.id) {
+      // Se l'id non è presente nella query
+      res.status(400).json({success: false, message: "Id non presente nella query"});
+      return;
+    }
+
+    // Controlla che l'id rispetti il formato di MongoDB
+    if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
+      return;
+    }
+
+    // Cerca nel DB l'alloggio specifico
+    let housingItem = await Housing.findOne({_id:req.query.id});
+
+    // Se l'evento non viene trovato restituisci un errore
+    if(!housingItem)
+    {
+        res.status(404).json({success: false, message: "Alloggio non trovato"});
+        return;
+    }
+
+    // Trova categoria dell'evento
+    let housingCreator = await User.findOne({_id:housingItem.idGestore});
+
+    // Se il gestore non viene trovato restituisci un errore
+    if(!housingCreator)
+    {
+        res.status(404).json({success: false, message: "Gestore non trovato"});
+        return;
+    }
+
+
+    // Risorsa finale
+    let finalResponse = {
+        title:housingItem.titolo,
+        description:housingItem.descrizione,
+        initDate: housingItem.dataInizio,
+        finlDate: housingItem.dataFine,
+        address: housingItem.indirizzo,
+        city: housingItem.citta,
+        creatorName: housingCreator.nome,
+        creatorSurname: housingCreator.cognome,
+        creatorEmail: housingCreator.email
     };
 
     // Ritorna la risposta

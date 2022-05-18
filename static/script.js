@@ -4,12 +4,31 @@ function getEvents() {
     fetch('../api/v1/visualizzazione/eventList')
     .then((resp) => resp.json())
     .then(function(data){
-                console.log(data);
                 var ul = document.getElementById("list");
                 return data.map(function(item){
                     var li = document.createElement("li");
                     var a = document.createElement("a");
                     a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+                    a.innerHTML = item.title
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                })
+            })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+//Richiede lista alloggi esistenti
+function getHousings() {
+    // Esegue la richiesta degli alloggi all'api specifica
+    fetch('../api/v1/visualizzazione/housingList')
+    .then((resp) => resp.json())
+    .then(function(data){
+                console.log(data);
+                var ul = document.getElementById("list");
+                return data.map(function(item){
+                    var li = document.createElement("li");
+                    var a = document.createElement("a");
+                    a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
                     a.innerHTML = item.title
                     li.appendChild(a);
                     ul.appendChild(li);
@@ -45,5 +64,24 @@ function getSpecificEvent() {
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     } else {
         console.err("Attenzione: parametro 'eventId' non presente nella query");
+    }
+};
+
+// Ottiene id alloggi da query URL ed esegue chiamata API per ottenere i dettagli dell'alloggio specifico
+function getSpecificHousing() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+        // Id evento
+        var id = urlParams.get('eventId');
+
+        // Chiamata api
+        fetch('../api/v1/visualizzazione/housing?id='+id)
+        .then((resp) => resp.json())
+        .then(function(data){
+
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.err("Attenzione: parametro 'housingId' non presente nella query");
     }
 };
