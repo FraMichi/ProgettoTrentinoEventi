@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Creazione alloggio</title>
+        <script src="script.js"></script>
+    </head>
+    <body>
+
+        <h1>Creazione alloggio</h1>
+        <form action="<!--INSERIRE WEBAPI-->" method="post">
+            <label for="houseName">Nome alloggio:</label>
+            <input type="text" id="houseName" name="houseName" value=""><br/>
+            <label for="houseDescription">Descrizione alloggio:</label><br>
+            <textarea id ="houseDescription" name="houseDescription" rows="10" cols="30"></textarea><br/>
+            <label for="dStart">Data di inizio:</label><br/>
+            <input type="date" id="dStart" name="dStart" value=""/><br/>
+            <label for="dEnd">Data di fine:</label><br/>
+            <input type="date" id="dEnd" name="dEnd" value=""/><br/>
+            <label for="houseAddress">Indirizzo:</label><br/>
+            <input type="String" id="houseAddress" name="houseAddress" value=""/><br/>
+            <label for="city">Città:</label><br/>
+            <input type="text" id="city" name="city" value=""/><br/>
+            <button type="button" onclick="createHouse()">Registra alloggio</button>
+        </form>
+        <p id="errorMsgHouse"></p>
+
+    </body>
+</html>
