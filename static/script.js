@@ -76,7 +76,7 @@ function subscribe() {
 */
 function checkIfLogged() {
 
-    fetch('../api/v1/authentication')
+    fetch('../api/v1/authentication/checkIfLogged')
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
 
