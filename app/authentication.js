@@ -23,7 +23,7 @@ const User = require('./models/user');
  *         description: Password dell utente
  *   responses:
  *    200:
- *     description: Utente esiste e campi inseriti corretti
+ *     description: Utente esiste e campi inseriti corretti, aggiunge il cookie contentente il token, il nome dell utente e l id alla response
  *     content:
  *      application/json:
  *       schema:
@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
 
 
 	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
-	res.cookie('user', { token: token, name: user.nome});
+	res.cookie('user', { token: token, name: user.nome, id: user._id});
     res.status(200).json({
 		success: true
 	});
@@ -95,7 +95,7 @@ router.post('/login', async (req, res) => {
  * @openapi
  * /api/v1/authentication/subscribe:
  *  post:
- *   description: Controlla se l utente esiste e in caso non affermativo lo iscrive
+ *   description: Controlla se l utente esiste e in caso non affermativo lo iscrive, aggiunge il cookie contentente il token, il nome dell utente e l id alla response
  *   summary: Fa la registazione se l utente non esiste
  *   requestBody:
  *    content:
@@ -189,7 +189,7 @@ router.post('/subscribe', async (req, res) => {
 
 
 	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
-	res.cookie('user', { token: token, name: user.nome});
+	res.cookie('user', { token: token, name: user.nome, id: user._id});
 
     res.status(200).json({
 		success: true
