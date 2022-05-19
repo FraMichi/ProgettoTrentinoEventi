@@ -106,12 +106,16 @@ function checkEventSubscription(){
         fetch('../api/v1/eventSubscription/eventSubcribable?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
+            console.log(data.message)
             if(data.message=="UserSubscribed")
             {
-                console.log("OK");
+                document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
             }
-            else {
-                console.log("notOK");
+            else if(data.message=="UserNotSubscribed") {
+                document.getElementById("prenotationText").innerHTML="Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
+            }
+            else{
+                document.getElementById("prenotationText").innerHTML="Vuoi poterti iscrivere agli eventi? Esegui prima il login.";
             }
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
@@ -120,6 +124,9 @@ function checkEventSubscription(){
     }
 }
 
+// Effettua iscrizione ad evento
+function subscribeToEvent()
+{}
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata di login.
