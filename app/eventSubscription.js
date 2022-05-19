@@ -41,8 +41,6 @@ router.get('/eventSubcribable', async (req, res, next) => {
     }
 
     // se user loggato controlla se già registrato ad evento specifico
-    console.log(req.loggedUser.id);
-    console.log(req.query.id);
     let iscrizione = await EventSubscription.findOne({idTurista:req.loggedUser.id, idEvento:req.query.id});
 
     //se non iscritto

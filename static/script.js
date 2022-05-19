@@ -106,7 +106,13 @@ function checkEventSubscription(){
         fetch('../api/v1/eventSubscription/eventSubcribable?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
-            
+            if(data.message=="UserSubscribed")
+            {
+                console.log("OK");
+            }
+            else {
+                console.log("notOK");
+            }
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     } else {
