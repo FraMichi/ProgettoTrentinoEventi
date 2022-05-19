@@ -3,8 +3,10 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cookieParser = require("cookie-parser");
 
+
 const visualizzazione = require('./visualizzazione.js');
 const authentication = require('./authentication.js');
+const eventSubscription = require("./eventSubscription.js");
 
 var fs = require('fs');
 const app = express();
@@ -48,6 +50,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1/visualizzazione', visualizzazione);
 app.use('/api/v1/authentication', authentication);
+
+app.use('/api/v1/eventSubscription', eventSubscription);
 
 app.use('/', express.static('static'));
 

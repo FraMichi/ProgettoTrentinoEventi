@@ -94,6 +94,27 @@ function getSpecificHousing() {
         console.err("Attenzione: parametro 'housingId' non presente nella query");
     }
 };
+
+//controlla se è possibile iscriversi/si è già iscritti ad un evento specifico
+function checkEventSubscription(){
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+        // Id evento
+        var id = urlParams.get('eventId');
+
+        // Chiamata api
+        fetch('../api/v1/eventSubscription/eventSubcribable?id='+id)
+        .then((resp) => resp.json())
+        .then(function(data){
+            
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.err("Attenzione: parametro 'eventId' non presente nella query");
+    }
+}
+
+
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata di login.
 * Fa l'autenticazione dell'utente.
