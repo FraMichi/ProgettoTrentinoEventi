@@ -23,16 +23,28 @@ const User = require('./models/user');
  *         description: Password dell utente
  *   responses:
  *    200:
- *     description: Utente esiste e campi inseriti corretti, aggiunge il cookie contentente il token, il nome dell utente e l id alla response
+ *     description: Utente esiste, aggiunge il cookie contentente il token, il nome dell utente e l id alla response o password errata restituisce messaggio
  *     content:
  *      application/json:
  *       schema:
  *        properties:
  *         success:
  *          type: boolean
- *          description: Vale true ed indica che non ci sono stati errori
+ *          description: Vale true se non ci sono stati errori, false se la password è sbagliata
+ *    400:
+ *     description: Restituisce errore se non sono stati inseriti tutti i campi!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
  *    404:
- *     description: Restituisce errori utente non trovato o password sbagliata!
+ *     description: Restituisce errore utente non trovato!
  *     content:
  *      application/json:
  *       schema:
@@ -46,8 +58,14 @@ const User = require('./models/user');
  */
 router.post('/login', async (req, res) => {
 
+	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+	if (!req.body.email || !req.body.password) {
+		res.status(400).json({ success: false, message: 'Inserire tutti i campi' });
+		return;
+	}
+
 	// Cerca utente nel DB
-	let user = await User.findOne({"email" : req.body.email.toString()}).exec();
+	let user = await User.findOne({"email" : req.body.email.toString().toLowerCase()}).exec();
 
 	// Se l'utente non è stato trovato invia risposta con messaggio d'errore
 	if (!user) {
@@ -57,7 +75,7 @@ router.post('/login', async (req, res) => {
 
 	// Se la password non è corretta invia risposta con messaggio d'errore
 	if (user.password != req.body.password) {
-		res.status(404).json({ success: false, message: 'Password sbagliata' });
+		res.status(200).json({ success: false, message: 'Password sbagliata' });
 		return;
 	}
 
@@ -130,6 +148,18 @@ router.post('/login', async (req, res) => {
  *         success:
  *          type: boolean
  *          description: Vale true ed indica che non ci sono stati errori
+ *    400:
+ *     description: Restituisce errori in caso di campi non inseriti, formato data o email non corretto, o tipo di utente non corretto
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
  *    404:
  *     description: Restituisce errore utente gia esistente!
  *     content:
@@ -145,8 +175,34 @@ router.post('/login', async (req, res) => {
  */
 router.post('/subscribe', async (req, res) => {
 
+    // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+	if (!req.body.name || !req.body.surname || !req.body.birthdate || !req.body.email || !req.body.password || !req.body.userType) {
+		res.status(400).json({ success: false, message: 'Inserire tutti i campi' });
+		return;
+	}
+
+    // Controlla se la data è nel formato corretto, se no invia risposta con messaggio d'errore
+    var date_regex = /^([1-9][0-9][0-9][0-9])\-(0[1-9]|1[0-2])\-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$/;
+	if (!date_regex.test(req.body.birthdate)) {
+		res.status(400).json({ success: false, message: 'Formato data non corretto' });
+		return;
+	}
+
+    // Controlla se la email è nel formato corretto, se no invia risposta con messaggio d'errore
+    var email_regex = /^(([a-z0-9])([a-z0-9]*)\.{0,1}([a-z0-9])([a-z0-9]*)@([a-z][a-z]*)\.[a-z]{2,3})$/;
+	if (!email_regex.test(req.body.email.toString().toLowerCase())) {
+		res.status(400).json({ success: false, message: 'Formato email non corretto' });
+		return;
+	}
+
+    // Controlla se il tipo di utente è valido (gestore o turista), se no invia risposta con messaggio d'errore
+	if (req.body.userType != 'turista' && req.body.userType != 'gestore') {
+		res.status(400).json({ success: false, message: 'Il tipo di utente non è disponibile' });
+		return;
+	}
+
 	// Controlla se l'utente è già esistente nel DB
-	let userDB = await User.findOne({"email" : req.body.email.toString()}).exec();
+	let userDB = await User.findOne({"email" : req.body.email.toString().toLowerCase()}).exec();
 
 	// Se l'utente è stato trovato invia risposta con messaggio d'errore
 	if (userDB) {
@@ -159,7 +215,7 @@ router.post('/subscribe', async (req, res) => {
 		nome: req.body.name,
 	    cognome: req.body.surname,
 	    dataDiNascita: req.body.birthdate,
-		email: req.body.email,
+		email: req.body.email.toString().toLowerCase(),
 		password: req.body.password,
 	    tipoDiUtente: req.body.userType
     });
@@ -203,7 +259,7 @@ router.post('/subscribe', async (req, res) => {
  * /api/v1/authentication/checkIfLogged:
  *  get:
  *   description: Controlla se l utente e gia loggato
- *   summary: Fa la registazione se l utente non esiste
+ *   summary: Controlla se utente loggato
  *   responses:
  *    200:
  *     description: Utente gia loggato
