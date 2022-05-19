@@ -41,14 +41,20 @@ router.get('/eventSubcribable', async (req, res, next) => {
     }
 
     // se user loggato controlla se già registrato ad evento specifico
-    let iscrizione = await EventSubscription.findOne({idEvento:req.loggedUser.id});
+    console.log(req.loggedUser.id);
+    console.log(req.query.id);
+    let iscrizione = await EventSubscription.findOne({idTurista:req.loggedUser.id, idEvento:req.query.id});
 
-    console.log(iscrizione);
+    //se non iscritto
+    if(!iscrizione)
+    {
+        // segnala che l'utente è iscritto
+        res.status(200).json({success:true, message:'UserNotSubscribed'});
+        return;
+    }
 
-    // return code 200
-    res.status(200).json({success:true,message:'User can subscribe'});
-    return;
-
+    // altrimenti segnala che l'utente non è iscritto
+    res.status(200).json({success:true, message:'UserSubscribed'});
  });
 
 module.exports = router;

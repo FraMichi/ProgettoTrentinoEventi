@@ -171,7 +171,7 @@ router.get('/event', async (req, res) => {
         return;
     }
 
-    // Trova gestore dell'evento
+    // Trova categoria dell'evento
     let eventCategory = await Category.findOne({_id:eventItem.idCategoria});
 
     // Se la categoria non viene trovata restituisci un errore
@@ -181,7 +181,7 @@ router.get('/event', async (req, res) => {
         return;
     }
 
-    // Trova categoria dell'evento
+    // Trova gestore dell'evento
     let eventCreator = await User.findOne({_id:eventItem.idGestore});
 
     // Se il gestore non viene trovato restituisci un errore
@@ -308,7 +308,7 @@ router.get('/housing', async (req, res) => {
         return;
     }
 
-    // Trova categoria dell'evento
+    // Trova creatore dell'evento
     let housingCreator = await User.findOne({_id:housingItem.idGestore});
 
     // Se il gestore non viene trovato restituisci un errore
