@@ -275,5 +275,52 @@ router.get('/checkIfLogged', async (req, res) => {
 	});
 });
 
+// Route per fare il logout dell'utente
+/**
+ * @openapi
+ * /api/v1/authentication/logout:
+ *  get:
+ *   description: Cancella il cookie dell utente se esiste
+ *   summary: Fa il logout dell utente
+ *   responses:
+ *    200:
+ *     description: Restituisce un messaggio che dice che il cookie non e stato trovato o che e stato cancellato correttamente a seconda che lo trovi o meno
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale true se il cookie e stato cancellato e false se non esisteva
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene informazioni sull azione fatta
+ */
+router.get('/logout', async (req, res) => {
+
+    // Prende il cookie contenente i dati dell'utente
+    var userCookie = req.cookies['user'];
+
+    // Controlla se il cookie è settato
+    if(!userCookie) {
+
+        // In caso non sia settato, manda un messaggio che lo segnala
+        res.status(200).json({
+			success: false,
+			message: 'Cookie non trovato'
+		});
+		return;
+	}
+
+    // Rimuove il cookie
+    res.clearCookie('user');
+
+    // Invia messaggio di corretta rimozione del cookie
+    res.status(200).json({
+        success: true,
+        message: 'Cookie rimosso'
+    });
+});
+
 
 module.exports = router;
