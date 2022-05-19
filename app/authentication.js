@@ -88,8 +88,7 @@ router.post('/login', async (req, res) => {
 		name: user.nome,
 	    surname: user.cognome,
 	    birthdate: user.dataDiNascita,
-		email: user.email,
-		password: user.password,
+		email: req.body.email.toString().toLowerCase(),
 	    userType: user.tipoDiUtente,
 		email: user.email,
 		id: user.id
@@ -234,8 +233,7 @@ router.post('/subscribe', async (req, res) => {
 		name: user.nome,
 		surname: user.cognome,
 		birthdate: user.dataDiNascita,
-		email: user.email,
-		password: user.password,
+		email: req.body.email.toString().toLowerCase(),
 		userType: user.tipoDiUtente,
 		email: user.email,
 		id: user.id
