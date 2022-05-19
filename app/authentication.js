@@ -10,6 +10,8 @@ const User = require('./models/user');
  *  post:
  *   description: Controlla se l utente esiste e in caso affermativo fa il login
  *   summary: Fa il login se l utente esiste
+ *   tags:
+ *    - authentication
  *   requestBody:
  *    content:
  *     application/json:
@@ -115,6 +117,8 @@ router.post('/login', async (req, res) => {
  *  post:
  *   description: Controlla se l utente esiste e in caso non affermativo lo iscrive, aggiunge il cookie contentente il token, il nome dell utente e l id alla response
  *   summary: Fa la registazione se l utente non esiste
+ *   tags:
+ *    - authentication
  *   requestBody:
  *    content:
  *     application/json:
@@ -260,6 +264,8 @@ router.post('/subscribe', async (req, res) => {
  *  get:
  *   description: Controlla se l utente e gia loggato
  *   summary: Controlla se utente loggato
+ *   tags:
+ *    - authentication
  *   responses:
  *    200:
  *     description: Utente gia loggato
@@ -338,6 +344,8 @@ router.get('/checkIfLogged', async (req, res) => {
  *  get:
  *   description: Cancella il cookie dell utente se esiste
  *   summary: Fa il logout dell utente
+ *   tags:
+ *    - authentication
  *   responses:
  *    200:
  *     description: Restituisce un messaggio che dice che il cookie non e stato trovato o che e stato cancellato correttamente a seconda che lo trovi o meno
