@@ -5,4 +5,4 @@ var Schema = mongoose.Schema;
 module.exports = mongoose.model('EventSubscription', new Schema({
 	idEvento: String,
     idTurista: String
-});
+}));

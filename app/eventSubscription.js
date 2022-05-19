@@ -2,6 +2,8 @@ const express = require('express');
 const cookieParser = require("cookie-parser");
 const tokenChecker = require("./tokenChecker.js");
 
+const EventSubscription = require('./models/eventsubscription');
+
 const router = express.Router();
 
 /**
@@ -38,7 +40,12 @@ router.get('/eventSubcribable', async (req, res, next) => {
         return;
     }
 
-    // se user loggato return code 200 
+    // se user loggato controlla se già registrato ad evento specifico
+    let iscrizione = await EventSubscription.findOne({idEvento:req.loggedUser.id});
+
+    console.log(iscrizione);
+
+    // return code 200
     res.status(200).json({success:true,message:'User can subscribe'});
     return;
 
