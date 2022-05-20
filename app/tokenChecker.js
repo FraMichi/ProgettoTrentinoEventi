@@ -1,18 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-const tokenChecker = function(req, res){
-    // ottieni il cookie contenente il token dello user loggato
-    var userCookie = req.cookies['user'];
-
-    // se il cookie non esiste
-    if(userCookie == undefined){
-        // ritorna errore
-        //res.status(401).json({success:false,message:'User not logged'});
-        return false;
-    }
-
-    // ottieni il token dal cookie
-    var token = userCookie.token;
+const tokenChecker = function(req, res, specToken){
+    // ottieni il token dello user loggato
+    let token = specToken;
 
     // se non c'è il token
     if (!token){
@@ -30,7 +20,6 @@ const tokenChecker = function(req, res){
             // if everything is good, save in req object for use in other routes
             //res.status(401).json({success:false,message:'Token valid'});  //DEBUG
             req.loggedUser = decoded;
-            return true;
         }
     });
 };

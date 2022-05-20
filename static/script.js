@@ -111,12 +111,24 @@ function checkEventSubscription(){
     if(urlParams.has('eventId')){
         // Id evento
         var id = urlParams.get('eventId');
+        // Token utente
+        // Leggi il cookie e convertilo in JSON per poter estrarre il token
+        let biscuit = getCookie('user');
+        let token;
+        if(biscuit != undefined){
+            biscuit = JSON.parse(biscuit.slice(2));
+            //token dell'utente
+            token = biscuit.token;
+        }
 
         // Chiamata api
-        fetch('../api/v1/eventSubscription/eventSubcribable?id='+id)
+        fetch('../api/v1/eventSubscription/eventSubcribable', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { event: id, token: token} )
+        })
         .then((resp) => resp.json())
         .then(function(data){
-            console.log(data.message)
             if(data.message=="UserSubscribed")
             {
                 document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
@@ -138,31 +150,35 @@ function checkEventSubscription(){
     Effettua iscrizione ad evento specifico
 */
 function subscribeToEvent(event){
-    let x = getCookie('user').slice(2);
-    x = JSON.parse(x)
-    console.log(x.token);
-    /*fetch('../api/v1/eventSubscription/createSubscription', {
+    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit.slice(2));
+        //token dell'utente
+        token = biscuit.token;
+    }
+    //id evento
+    let evntId = event;
+
+    fetch('../api/v1/eventSubscription/createSubscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { email: email, password: password } )
+        body: JSON.stringify( { event: evntId, token: token} )
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
-
-        // Controlla se sono stati resituiti messaggi di errore, come se i dati inseriti nella form sono sbagliati
-        if(data.success == false) {
-
-            // In caso affermativo mostra il messaggio
-            document.getElementById("errorMsgLogin").innerHTML = data.message;
-
-        } else {
-
-            // In caso negativo torna alla pagina in cui era prima di fare il login
-            window.location.href = "/index.html";
-
+        if(data.message == 'UserAlreadySubscribed'){
+            document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
+        } else if (data.message == 'UserSubscribed'){
+            document.getElementById("prenotationText").innerHTML="Sei stato iscritto a questo evento!";
+        } else if (data.message == 'UserNotLogged'){
+            document.getElementById("prenotationText").innerHTML="Ooops! Non sei loggato, oppure il tuo login è scaduto. Riesegui il login!";
+        } else if (data.message == 'NoFreeSeats'){
+            document.getElementById("prenotationText").innerHTML="Ooops! Sei arrivato tardi, posti finiti!";
         }
     })
-    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.*/
+    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 }
 
 /*

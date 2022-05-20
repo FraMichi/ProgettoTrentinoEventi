@@ -35,8 +35,6 @@ router.get('/eventList', async (req, res) => {
     res.status(200).json(eventsList);
 });
 
-
-
 /**
  * @openapi
  * /api/v1/visualizzazione/housingList:
@@ -65,8 +63,6 @@ router.get('/housingList', async (req, res) => {
     res.status(200).json(housingsList);
 });
 
-
-
  /**
   * @openapi
   * /api/v1/visualizzazione/event:
@@ -80,6 +76,7 @@ router.get('/housingList', async (req, res) => {
   *         name: id
   *         type: string
   *         description: The id of the specific event you want to get the details
+  *         required: true
   *     responses:
   *       200:
   *         description: Details of an event in JSON format
@@ -226,6 +223,7 @@ router.get('/event', async (req, res) => {
   *         name: id
   *         type: string
   *         description: The id of the specific housing you want to get the details
+  *         required: true
   *     responses:
   *       200:
   *         description: Details of a housing in JSON format
