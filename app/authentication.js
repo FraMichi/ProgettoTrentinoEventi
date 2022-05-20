@@ -25,7 +25,7 @@ const User = require('./models/user');
  *         description: Password dell utente
  *   responses:
  *    200:
- *     description: Utente esiste, aggiunge il cookie contentente il token, il nome dell utente e l id alla response o password errata restituisce messaggio
+ *     description: Utente esiste, aggiunge il token, la sua data di scadenza, il nome dell utente e l id alla response o password errata restituisce messaggio
  *     content:
  *      application/json:
  *       schema:
@@ -100,11 +100,13 @@ router.post('/login', async (req, res) => {
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
-
-	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
-	res.cookie('user', { token: token, name: user.nome, id: user._id});
+    // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
     res.status(200).json({
-		success: true
+		success: true,
+        token: token,
+        name: user.nome,
+        id: user._id,
+        expireTime: options.expiresIn
 	});
 
 });
@@ -245,12 +247,13 @@ router.post('/subscribe', async (req, res) => {
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
-
-	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
-	res.cookie('user', { token: token, name: user.nome, id: user._id});
-
+    // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
     res.status(200).json({
-		success: true
+		success: true,
+        token: token,
+        name: user.nome,
+        id: user._id,
+        expireTime: options.expiresIn
 	});
 
 });
@@ -295,23 +298,8 @@ router.post('/subscribe', async (req, res) => {
  */
 router.get('/checkIfLogged', async (req, res) => {
 
-    // Prende il cookie contenente i dati dell'utente
-    var userCookie = req.cookies['user'];
-
-    // Controlla se il cookie è settato
-    if(!userCookie) {
-
-        // In caso non sia settato, manda un messaggio di errore
-        res.status(404).json({
-			success: false,
-			message: 'Cookie non trovato'
-		});
-		return;
-	}
-
-	// Prende il token ed il nome dell'utente dal cookie
-	var userName = userCookie.name;
-	token = userCookie.token;
+    // Prende il token dal body della request
+	token = req.body.token;
 
 	// Verifica il token ed invia una risposta in base al risultato
 	jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded) {
@@ -328,60 +316,10 @@ router.get('/checkIfLogged', async (req, res) => {
 			// Se il token è valido manda un messaggio di validità e il nome dell'utente
 			res.status(200).json({
 				success: true,
-				name: userName,
 				message: 'Token valido'
 			});
 		}
 	});
-});
-
-// Route per fare il logout dell'utente
-/**
- * @openapi
- * /api/v1/authentication/logout:
- *  get:
- *   description: Cancella il cookie dell utente se esiste
- *   summary: Fa il logout dell utente
- *   tags:
- *    - authentication
- *   responses:
- *    200:
- *     description: Restituisce un messaggio che dice che il cookie non e stato trovato o che e stato cancellato correttamente a seconda che lo trovi o meno
- *     content:
- *      application/json:
- *       schema:
- *        properties:
- *         success:
- *          type: boolean
- *          description: Vale true se il cookie e stato cancellato e false se non esisteva
- *         message:
- *          type: string
- *          description: Messaggio che contiene informazioni sull azione fatta
- */
-router.get('/logout', async (req, res) => {
-
-    // Prende il cookie contenente i dati dell'utente
-    var userCookie = req.cookies['user'];
-
-    // Controlla se il cookie è settato
-    if(!userCookie) {
-
-        // In caso non sia settato, manda un messaggio che lo segnala
-        res.status(200).json({
-			success: false,
-			message: 'Cookie non trovato'
-		});
-		return;
-	}
-
-    // Rimuove il cookie
-    res.clearCookie('user');
-
-    // Invia messaggio di corretta rimozione del cookie
-    res.status(200).json({
-        success: true,
-        message: 'Cookie rimosso'
-    });
 });
 
 
