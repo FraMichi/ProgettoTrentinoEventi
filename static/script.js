@@ -184,8 +184,6 @@ function createHouse() {
              }
          })
        }
-
-
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 };
@@ -194,10 +192,11 @@ function createHouse() {
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
 * Crea il nuovo alloggio e lo salva nel database
 */
-function createEvent() {
+function creaEvento() {
 
-  var userCookie = req.cookies['user'];
-  var idUser = userCookie.id;
+  var userCookie = decodeURIComponent(document.cookie);
+  const myArray = userCookie.split("\"");
+  var idUser = myArray[11];
 
     // Prende i dati dal form della creazione
     var name = document.getElementById("eventName").value;
@@ -206,30 +205,42 @@ function createEvent() {
     var dend = document.getElementById("dEnd").value;
     var address = document.getElementById("eventAddress").value;
     var city = document.getElementById("city").value;
-    var available = document.getElementById("available").value;
     var total = document.getElementById("total").value;
     var idCategoria = document.getElementById("idCategoria").value;
 
-    fetch('../api/v1/event/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, available: available, total: total, idCategoria:idCategoria, idUser: idUser} )
-    })
+    fetch('../api/v1/authentication/checkIfLogged')
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
 
-        // Controlla se sono stati resituiti messaggi di errore
-        if(data.success == false) {
+      // Se l'utente non è loggato manda alla pagina di login
+      if(data.success == false) {
+        window.location.href = "/login.html";
+      }
+      //altrimenti creo l'evento
+       else {
+         fetch('../api/v1/event/create', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, total: total, idCategoria: idCategoria, idUser: idUser} )
+         })
+         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+         .then( function(data) {
 
-            // In caso affermativo mostra il messaggio
-            document.getElementById("errorMsgCreate").innerHTML = data.message;
+             // Controlla se sono stati resituiti messaggi di errore
+             if(data.success == false) {
 
-        } else {
+                 // In caso affermativo mostra il messaggio
+                 document.getElementById("errorMsgCreate").innerHTML = data.message;
 
-            // In caso negativo torna alla pagina in cui era prima di fare la registrazione
-            window.location.href = "/index.html";
+             } else {
 
-        }
+                 //In caso negativo torna alla pagina in cui era prima
+                 //window.history.back();
+
+             }
+         })
+       }
     })
-    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+
+    //.catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 };

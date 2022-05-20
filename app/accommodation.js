@@ -7,7 +7,6 @@ const Event = require ('./models/event');
 
 // Route per creazione alloggio
 router.post('/create', async (req, res) => {
-    console.log("Ricevuto una richiesta POST");
 	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
 	if (!req.body.name || !req.body.description || !req.body.dstart || !req.body.dend || !req.body.address || !req.body.city) {
 		res.status(400).json({ success: false, message: 'Inserire tutti i campi' });
