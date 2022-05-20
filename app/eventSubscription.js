@@ -16,29 +16,17 @@ const router = express.Router();
  *     tags:
  *       - eventSubscription
  *     parameters:
- *       - in: query
- *         name: userToken
+ *       - in: body
+ *         name: token
  *         type: string
  *         description: The token that rapresent the logged user
  *         required: true
- *       - in: query
- *         name: eventId
+ *       - in: body
+ *         name: event
  *         type: string
- *         description: The id of the event to check the registration for
+ *         description: The id of the event
  *         required: true
  *     responses:
- *       401:
- *         description: The token provided is not valid
- *         content:
- *           application/json:
- *             schema:
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                   description: |
- *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  *       200:
  *         description: Request successful
  *         content:
@@ -52,7 +40,19 @@ const router = express.Router();
  *                   description: |
  *                     UserNotSubscribed => the user is not subscribed to the specific event
  *
- *                     UserSubscribed => the user is already subscribed to the specific event)
+ *                     UserSubscribed => the user is already subscribed to the specific event
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
 router.post('/eventSubcribable', async (req, res) => {
     // verifica se utente loggato
@@ -84,42 +84,69 @@ router.post('/eventSubcribable', async (req, res) => {
 /**
  * @openapi
  * /api/v1/eventSubscription/createSubscription:
- *  post:
- *   description: Update the DB in order to create the subscription to the specific event
- *   summary: Create the subscription
- *   requestBody:
- *    content:
- *     application/json:
- *      schema:
- *       properties:
- *        email:
+ *   post:
+ *     description: Require to subscrive the user to the specific event
+ *     summary: Subscribe the user to the event
+ *     tags:
+ *       - eventSubscription
+ *     parameters:
+ *       - in: body
+ *         name: token
  *         type: string
- *         description: Indirizzo email dell utente
- *        password:
+ *         description: The token that rapresent the logged user
+ *         required: true
+ *       - in: body
+ *         name: event
  *         type: string
- *         description: Password dell utente
- *   responses:
- *    200:
- *     description: Utente esiste e campi inseriti corretti, aggiunge il cookie contentente il token, il nome dell utente e l id alla response
- *     content:
- *      application/json:
- *       schema:
- *        properties:
- *         success:
- *          type: boolean
- *          description: Vale true ed indica che non ci sono stati errori
- *    404:
- *     description: Restituisce errori utente non trovato o password sbagliata!
- *     content:
- *      application/json:
- *       schema:
- *        properties:
- *         success:
- *          type: boolean
- *          description: Vale false ed indica che ci sono stati errori
- *         message:
- *          type: string
- *          description: Messaggio che contiene l'errore
+ *         description: The id of the event to subscribe to
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: The request was successful but it is not guaranteed that the new entry has been created, check the message field
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: |
+ *                     NoFreeSeats => false
+ *
+ *                     UserAlreadySubscribed => true
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     NoFreeSeats => the event has no free seats, the subscription has not been created
+ *
+ *                     UserAlreadySubscribed => the user is already subscribed to the specific event
+ *       201:
+ *         description: The request was successful and the new entry has been created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: |
+ *                     UserSubscribed => true
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserSubscribed => the user has been subscribed to the event correctly and the new entry has been created
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: |
+ *                     UserNotLogged => false
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
 router.post('/createSubscription', async (req, res) =>{
     // verifica se l'utente è loggato
