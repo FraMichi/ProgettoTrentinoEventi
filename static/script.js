@@ -1,4 +1,6 @@
-//Richiede lista eventi esistenti
+/*
+    Richiede lista eventi esistenti
+*/
 function getEvents() {
     // Esegue la richiesta degli eventi all'api specifica
     fetch('../api/v1/visualizzazione/eventList')
@@ -17,7 +19,9 @@ function getEvents() {
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
 
-//Richiede lista alloggi esistenti
+/*
+    Richiede lista alloggi esistenti
+*/
 function getHousings() {
     // Esegue la richiesta degli alloggi all'api specifica
     fetch('../api/v1/visualizzazione/housingList')
@@ -36,7 +40,9 @@ function getHousings() {
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
 
-// Ottiene id evento da query URL ed esegue chiamata API per ottenere i dettagli dell'evento specifico
+/*
+    Ottiene id evento da query URL ed esegue chiamata API per ottenere i dettagli dell'evento specifico
+*/
 function getSpecificEvent() {
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('eventId')){
@@ -66,7 +72,9 @@ function getSpecificEvent() {
     }
 };
 
-// Ottiene id alloggi da query URL ed esegue chiamata API per ottenere i dettagli dell'alloggio specifico
+/*
+    Ottiene id alloggi da query URL ed esegue chiamata API per ottenere i dettagli dell'alloggio specifico
+*/
 function getSpecificHousing() {
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('housingId')){
@@ -95,7 +103,9 @@ function getSpecificHousing() {
     }
 };
 
-//controlla se è possibile iscriversi/si è già iscritti ad un evento specifico
+/*
+    Controlla se è possibile iscriversi/si è già iscritti ad un evento specifico
+*/
 function checkEventSubscription(){
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('eventId')){
@@ -124,9 +134,50 @@ function checkEventSubscription(){
     }
 }
 
-// Effettua iscrizione ad evento
-function subscribeToEvent()
-{}
+/*
+    Effettua iscrizione ad evento specifico
+*/
+function subscribeToEvent(event){
+    let x = getCookie('user').slice(2);
+    x = JSON.parse(x)
+    console.log(x.token);
+    /*fetch('../api/v1/eventSubscription/createSubscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { email: email, password: password } )
+    })
+    .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+    .then( function(data) {
+
+        // Controlla se sono stati resituiti messaggi di errore, come se i dati inseriti nella form sono sbagliati
+        if(data.success == false) {
+
+            // In caso affermativo mostra il messaggio
+            document.getElementById("errorMsgLogin").innerHTML = data.message;
+
+        } else {
+
+            // In caso negativo torna alla pagina in cui era prima di fare il login
+            window.location.href = "/index.html";
+
+        }
+    })
+    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.*/
+}
+
+/*
+    Funzione generica per ottenere il valore di uno specifico cookie
+*/
+function getCookie(cName) {
+    const name = cName + "=";
+    const cDecoded = decodeURIComponent(document.cookie); //to be careful
+    const cArr = cDecoded.split('; ');
+    let res;
+    cArr.forEach(val => {
+        if (val.indexOf(name) === 0) res = val.substring(name.length);
+    })
+    return res
+}
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata di login.
