@@ -8,7 +8,7 @@ const tokenChecker = function(req, res){
     if(userCookie == undefined){
         // ritorna errore
         //res.status(401).json({success:false,message:'User not logged'});
-        return;
+        return false;
     }
 
     // ottieni il token dal cookie
@@ -18,16 +18,19 @@ const tokenChecker = function(req, res){
     if (!token){
         // ritorna errore
         //res.status(401).json({success:false,message:'No token provided'})
-        return;
+        return false;
     }
 
     // decodifica il token e controllane la validità
     jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded) {
-        if (err) res.status(401).json({success:false,message:'Token not valid'})
-        else {
+        if (err){
+            //res.status(401).json({success:false,message:'Token not valid'});
+            return false;
+        } else {
             // if everything is good, save in req object for use in other routes
             //res.status(401).json({success:false,message:'Token valid'});  //DEBUG
             req.loggedUser = decoded;
+            return true;
         }
     });
 };
