@@ -25,7 +25,7 @@ function login() {
         } else {
 
             // In caso negativo torna alla pagina in cui era prima di fare il login
-            window.location.href = "/index.html";
+            window.history.back();
 
         }
     })
@@ -152,26 +152,40 @@ function createHouse() {
     var address = document.getElementById("houseAddress").value;
     var city = document.getElementById("city").value;
 
-    fetch('../api/v1/accommodation/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, idUser: idUser } )
-    })
+    fetch('../api/v1/authentication/checkIfLogged')
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
 
-        // Controlla se sono stati resituiti messaggi di errore
-        if(data.success == false) {
+      // Se l'utente non è loggato manda alla pagina di login
+      if(data.success == false) {
+        window.location.href = "/login.html";
+      }
+      //altrimenti creo l'evento
+       else {
+         fetch('../api/v1/accommodation/create', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, idUser: idUser } )
+         })
+         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+         .then( function(data) {
 
-            // In caso affermativo mostra il messaggio
-            document.getElementById("errorMsgCreate").innerHTML = data.message;
+             // Controlla se sono stati resituiti messaggi di errore
+             if(data.success == false) {
 
-        } else {
+                 // In caso affermativo mostra il messaggio
+                 document.getElementById("errorMsgCreate").innerHTML = data.message;
 
-            // In caso negativo torna alla pagina in cui era prima
-            //window.history.back();
+             } else {
 
-        }
+                 //In caso negativo torna alla pagina in cui era prima
+                 window.history.back();
+
+             }
+         })
+       }
+
+
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 };
