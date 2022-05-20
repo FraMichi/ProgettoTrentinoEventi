@@ -94,6 +94,21 @@ function getSpecificHousing() {
         console.err("Attenzione: parametro 'housingId' non presente nella query");
     }
 };
+
+/*
+    Funzione generica per ottenere il valore di uno specifico cookie
+*/
+function getCookie(cName) {
+    const name = cName + "=";
+    const cDecoded = decodeURIComponent(document.cookie); //to be careful
+    const cArr = cDecoded.split('; ');
+    let res;
+    cArr.forEach(val => {
+        if (val.indexOf(name) === 0) res = val.substring(name.length);
+    })
+    return res
+}
+
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata di login.
 * Fa l'autenticazione dell'utente.
@@ -120,7 +135,13 @@ function login() {
 
         } else {
 
-            // In caso negativo torna alla pagina in cui era prima di fare il login
+            // In caso negativo creo il cookie
+            let expireDate = new Date();
+            expireDate.setTime(expireDate.getTime() + data.expireTime * 1000);
+
+            document.cookie = 'user=' + JSON.stringify({name: data.name, token: data.token, id: data.id}) + '; expires=' + expireDate.toUTCString();
+
+            // Torna alla pagina in cui era prima di fare il login
             window.location.href = "/index.html";
 
         }
@@ -158,7 +179,13 @@ function subscribe() {
 
         } else {
 
-            // In caso negativo torna alla pagina in cui era prima di fare la registrazione
+            // In caso negativo creo il cookie
+            let expireDate = new Date();
+            expireDate.setTime(expireDate.getTime() + data.expireTime * 1000);
+
+            document.cookie = 'user=' + JSON.stringify({name: data.name, token: data.token, id: data.id}) + '; expires=' + expireDate.toUTCString();
+
+            // Torna alla pagina in cui era prima di fare la registrazione
             window.location.href = "/index.html";
 
         }
@@ -171,15 +198,15 @@ function subscribe() {
 * Fa il logout dell'utente.
 */
 function logout() {
-    fetch('../api/v1/authentication/logout')
-    .then( function() {
 
-        // Torna alla pagina in cui era prima di fare il logout
-        window.location.href = "/index.html";
+    let date = new Date();
+    date.setTime(date.getTime() - 999999999);
+    document.cookie = 'user=; expires=' + date.toUTCString();
 
-        alert("Sei stato sloggato correttamente");
-    })
-    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    // Torna alla pagina in cui era prima di fare il logout
+    window.location.href = "/index.html";
+
+    alert("Sei stato sloggato correttamente");
 };
 
 /*
@@ -188,35 +215,58 @@ function logout() {
 */
 function checkIfLogged() {
 
-    fetch('../api/v1/authentication/checkIfLogged')
-    .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-    .then( function(data) {
+    // Controllo che il cookie non sia 'undefined'
+    if(getCookie("user")) {
 
-        // Se l'utente è già loggato modifica i bottoni in alto a destra delle pagine
-        if(data.success == true) {
+        // Prendo il token dal cookie
+        token = JSON.parse(getCookie("user")).token;
 
-            // Il bottone di "login" viene sostituito da quello di "logout"
-            document.getElementById("topRightButton01").removeAttribute("href");
-            document.getElementById("topRightButton01").setAttribute("onClick", 'logout()');
-            document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Logout</div>"
+        fetch('../api/v1/authentication/checkIfLogged', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token } )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
 
-            // Il bottone "iscriviti" viene cambiato con il nome dell'utente
-            document.getElementById("topRightButton02").removeAttribute("href");
-            document.getElementById("topRightButton02").setAttribute("href", '#');
-            document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>" + data.name + "</div>"
+            // Se l'utente è già loggato modifica i bottoni in alto a destra delle pagine
+            if(data.success == true) {
 
-        } else { // Se l'utente fa il logout i bottoni devono essere ripristinati come lo erano prima di fare il login
+                // Il bottone di "login" viene sostituito da quello di "logout"
+                document.getElementById("topRightButton01").removeAttribute("href");
+                document.getElementById("topRightButton01").setAttribute("onClick", 'logout()');
+                document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Logout</div>"
 
-            // Il bottone di "logout" viene sostituito da quello di "login"
-            document.getElementById("topRightButton01").removeAttribute("onClick");
-            document.getElementById("topRightButton01").setAttribute("href", "/login.html");
-            document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Login</div>"
+                // Il bottone "iscriviti" viene cambiato con il nome dell'utente
+                document.getElementById("topRightButton02").removeAttribute("href");
+                document.getElementById("topRightButton02").setAttribute("href", '#');
+                document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>" + JSON.parse(getCookie("user")).name + "</div>"
 
-            // Il bottone "iscriviti" viene cambiato con il nome dell'utente
-            document.getElementById("topRightButton02").removeAttribute("href");
-            document.getElementById("topRightButton02").setAttribute("href", "/subscribe.html");
-            document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
-        }
-    })
-    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+            } else { // Se l'utente fa il logout i bottoni devono essere ripristinati come lo erano prima di fare il login
+
+                // Il bottone di "logout" viene sostituito da quello di "login"
+                document.getElementById("topRightButton01").removeAttribute("onClick");
+                document.getElementById("topRightButton01").setAttribute("href", "/login.html");
+                document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Login</div>"
+
+                // Il bottone "iscriviti" viene cambiato con il nome dell'utente
+                document.getElementById("topRightButton02").removeAttribute("href");
+                document.getElementById("topRightButton02").setAttribute("href", "/subscribe.html");
+                document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
+            }
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else { // Se l'utente fa il logout i bottoni devono essere ripristinati come lo erano prima di fare il login
+
+        // Il bottone di "logout" viene sostituito da quello di "login"
+        document.getElementById("topRightButton01").removeAttribute("onClick");
+        document.getElementById("topRightButton01").setAttribute("href", "/login.html");
+        document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Login</div>"
+
+        // Il bottone "iscriviti" viene cambiato con il nome dell'utente
+        document.getElementById("topRightButton02").removeAttribute("href");
+        document.getElementById("topRightButton02").setAttribute("href", "/subscribe.html");
+        document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
+    }
+
 }

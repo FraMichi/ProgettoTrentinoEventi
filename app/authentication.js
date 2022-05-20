@@ -91,11 +91,13 @@ router.post('/login', async (req, res) => {
 		email: req.body.email.toString().toLowerCase(),
 	    userType: user.tipoDiUtente,
 		email: user.email,
-		id: user.id
+		id: user._id
 	}
 
+    // Scadenza dopo 2 minuti
+    expire = 120;
 	var options = {
-		expiresIn: 120 // Scadenza dopo 2 minuti
+		expiresIn: expire
 	}
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
@@ -106,7 +108,7 @@ router.post('/login', async (req, res) => {
         token: token,
         name: user.nome,
         id: user._id,
-        expireTime: options.expiresIn
+        expireTime: expire
 	});
 
 });
@@ -238,11 +240,13 @@ router.post('/subscribe', async (req, res) => {
 		email: req.body.email.toString().toLowerCase(),
 		userType: user.tipoDiUtente,
 		email: user.email,
-		id: user.id
+		id: user._id
 	}
 
+    expire = 120; // Scadenza dopo 2 minuti
+
 	var options = {
-		expiresIn: 120 // Scadenza dopo 2 minuti
+		expiresIn: expire
 	}
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
@@ -253,7 +257,7 @@ router.post('/subscribe', async (req, res) => {
         token: token,
         name: user.nome,
         id: user._id,
-        expireTime: options.expiresIn
+        expireTime: expire
 	});
 
 });
@@ -262,11 +266,19 @@ router.post('/subscribe', async (req, res) => {
 /**
  * @openapi
  * /api/v1/authentication/checkIfLogged:
- *  get:
+ *  post:
  *   description: Controlla se l utente e gia loggato
  *   summary: Controlla se utente loggato
  *   tags:
  *    - authentication
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        token:
+ *         type: string
+ *         description: Contiene il token
  *   responses:
  *    200:
  *     description: Utente gia loggato
@@ -296,7 +308,7 @@ router.post('/subscribe', async (req, res) => {
  *          type: string
  *          description: Messaggio che contiene l'errore
  */
-router.get('/checkIfLogged', async (req, res) => {
+router.post('/checkIfLogged', async (req, res) => {
 
     // Prende il token dal body della request
 	token = req.body.token;
