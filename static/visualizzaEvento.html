@@ -4,7 +4,7 @@
         <title id="windowTitle"></title>
         <script src="script.js"></script>
     </head>
-    <body onload="getSpecificEvent()">
+    <body onload="getSpecificEvent(); checkEventSubscription()">
         <h1 id="title"></h1>
         <table>
             <tr>
@@ -44,5 +44,12 @@
                 <td id="creatorEmail"></td>
             </tr>
         </table>
+
+        <div style="visibility: visible">
+            <h2>Effettua prenotazione</h2>
+            <p id="prenotationText">
+            </p>
+        </div>
+
     </body>
 </html>

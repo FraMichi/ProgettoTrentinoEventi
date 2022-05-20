@@ -35,8 +35,6 @@ router.get('/eventList', async (req, res) => {
     res.status(200).json(eventsList);
 });
 
-
-
 /**
  * @openapi
  * /api/v1/visualizzazione/housingList:
@@ -65,8 +63,6 @@ router.get('/housingList', async (req, res) => {
     res.status(200).json(housingsList);
 });
 
-
-
  /**
   * @openapi
   * /api/v1/visualizzazione/event:
@@ -80,6 +76,7 @@ router.get('/housingList', async (req, res) => {
   *         name: id
   *         type: string
   *         description: The id of the specific event you want to get the details
+  *         required: true
   *     responses:
   *       200:
   *         description: Details of an event in JSON format
@@ -171,7 +168,7 @@ router.get('/event', async (req, res) => {
         return;
     }
 
-    // Trova gestore dell'evento
+    // Trova categoria dell'evento
     let eventCategory = await Category.findOne({_id:eventItem.idCategoria});
 
     // Se la categoria non viene trovata restituisci un errore
@@ -181,7 +178,7 @@ router.get('/event', async (req, res) => {
         return;
     }
 
-    // Trova categoria dell'evento
+    // Trova gestore dell'evento
     let eventCreator = await User.findOne({_id:eventItem.idGestore});
 
     // Se il gestore non viene trovato restituisci un errore
@@ -226,6 +223,7 @@ router.get('/event', async (req, res) => {
   *         name: id
   *         type: string
   *         description: The id of the specific housing you want to get the details
+  *         required: true
   *     responses:
   *       200:
   *         description: Details of a housing in JSON format
@@ -308,7 +306,7 @@ router.get('/housing', async (req, res) => {
         return;
     }
 
-    // Trova categoria dell'evento
+    // Trova creatore dell'evento
     let housingCreator = await User.findOne({_id:housingItem.idGestore});
 
     // Se il gestore non viene trovato restituisci un errore

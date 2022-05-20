@@ -1,4 +1,6 @@
-//Richiede lista eventi esistenti
+/*
+    Richiede lista eventi esistenti
+*/
 function getEvents() {
     // Esegue la richiesta degli eventi all'api specifica
     fetch('../api/v1/visualizzazione/eventList')
@@ -17,7 +19,9 @@ function getEvents() {
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
 
-//Richiede lista alloggi esistenti
+/*
+    Richiede lista alloggi esistenti
+*/
 function getHousings() {
     // Esegue la richiesta degli alloggi all'api specifica
     fetch('../api/v1/visualizzazione/housingList')
@@ -36,7 +40,9 @@ function getHousings() {
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
 
-// Ottiene id evento da query URL ed esegue chiamata API per ottenere i dettagli dell'evento specifico
+/*
+    Ottiene id evento da query URL ed esegue chiamata API per ottenere i dettagli dell'evento specifico
+*/
 function getSpecificEvent() {
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('eventId')){
@@ -66,7 +72,9 @@ function getSpecificEvent() {
     }
 };
 
-// Ottiene id alloggi da query URL ed esegue chiamata API per ottenere i dettagli dell'alloggio specifico
+/*
+    Ottiene id alloggi da query URL ed esegue chiamata API per ottenere i dettagli dell'alloggio specifico
+*/
 function getSpecificHousing() {
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('housingId')){
@@ -94,6 +102,99 @@ function getSpecificHousing() {
         console.err("Attenzione: parametro 'housingId' non presente nella query");
     }
 };
+
+/*
+    Controlla se è possibile iscriversi/si è già iscritti ad un evento specifico
+*/
+function checkEventSubscription(){
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+        // Id evento
+        var id = urlParams.get('eventId');
+        // Token utente
+        // Leggi il cookie e convertilo in JSON per poter estrarre il token
+        let biscuit = getCookie('user');
+        let token;
+        if(biscuit != undefined){
+            biscuit = JSON.parse(biscuit.slice(2));
+            //token dell'utente
+            token = biscuit.token;
+        }
+
+        // Chiamata api
+        fetch('../api/v1/eventSubscription/eventSubcribable', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { event: id, token: token} )
+        })
+        .then((resp) => resp.json())
+        .then(function(data){
+            if(data.message=="UserSubscribed")
+            {
+                document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
+            }
+            else if(data.message=="UserNotSubscribed") {
+                document.getElementById("prenotationText").innerHTML="Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
+            }
+            else{
+                document.getElementById("prenotationText").innerHTML="Vuoi poterti iscrivere agli eventi? Esegui prima il login.";
+            }
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.err("Attenzione: parametro 'eventId' non presente nella query");
+    }
+}
+
+/*
+    Effettua iscrizione ad evento specifico
+*/
+function subscribeToEvent(event){
+    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit.slice(2));
+        //token dell'utente
+        token = biscuit.token;
+    }
+    //id evento
+    let evntId = event;
+
+    fetch('../api/v1/eventSubscription/createSubscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { event: evntId, token: token} )
+    })
+    .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+    .then( function(data) {
+        if(data.message == 'UserAlreadySubscribed'){
+            document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
+        } else if (data.message == 'UserSubscribed'){
+            document.getElementById("prenotationText").innerHTML="Sei stato iscritto a questo evento!";
+        } else if (data.message == 'UserNotLogged'){
+            document.getElementById("prenotationText").innerHTML="Ooops! Non sei loggato, oppure il tuo login è scaduto. Riesegui il login!";
+        } else if (data.message == 'NoFreeSeats'){
+            document.getElementById("prenotationText").innerHTML="Ooops! Sei arrivato tardi, posti finiti!";
+        }
+    })
+    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+}
+
+/*
+    Funzione generica per ottenere il valore di uno specifico cookie
+*/
+function getCookie(cName) {
+    const name = cName + "=";
+    const cDecoded = decodeURIComponent(document.cookie); //to be careful
+    const cArr = cDecoded.split('; ');
+    let res;
+    cArr.forEach(val => {
+        if (val.indexOf(name) === 0) res = val.substring(name.length);
+    })
+    return res
+}
+
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata di login.
 * Fa l'autenticazione dell'utente.
