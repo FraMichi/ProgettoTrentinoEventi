@@ -72,7 +72,7 @@ function subscribe() {
 
 /*
 * Funzione che viene chiamata al caricamento delle pagine.
-* Controlla se l'utente è già loggato.
+* Controlla se l'utente è già loggato
 */
 function checkIfLogged() {
 
@@ -95,10 +95,54 @@ function checkIfLogged() {
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 }
 /*
+* Funzione che viene chiamata al caricamento delle pagine.
+* Controlla se l'utente è già loggato.
+*/
+function checkIfGestoreHousing() {
+
+    fetch('../api/v1/authentication/checkIfLogged')
+    .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+    .then( function(data) {
+
+        // Se l'utente non è loggato manda alla pagina di login
+        if(data.success == false) {
+          window.location.href = "/login.html";
+        }
+         else {
+           window.location.href = "/createHousing.html";
+         }
+    })
+    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+}
+/*
+* Funzione che viene chiamata al caricamento delle pagine.
+* Controlla se l'utente è già loggato.
+*/
+function checkIfGestoreEvent() {
+
+    fetch('../api/v1/authentication/checkIfLogged')
+    .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+    .then( function(data) {
+
+        // Se l'utente non è loggato manda alla pagina di login
+        if(data.success == false) {
+          window.location.href = "/login.html";
+        }
+         else {
+           window.location.href = "/createEvent.html";
+         }
+    })
+    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+}
+/*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
 * Crea il nuovo alloggio e lo salva nel database
 */
 function createHouse() {
+
+    var userCookie = decodeURIComponent(document.cookie);
+    const myArray = userCookie.split("\"");
+    var idUser = myArray[11];
 
     // Prende i dati dal form della creazione
     var name = document.getElementById("houseName").value;
@@ -111,7 +155,7 @@ function createHouse() {
     fetch('../api/v1/accommodation/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city} )
+        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, idUser: idUser } )
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
@@ -124,8 +168,8 @@ function createHouse() {
 
         } else {
 
-            // In caso negativo torna alla pagina in cui era prima di fare la registrazione
-            window.location.href = "/index.html";
+            // In caso negativo torna alla pagina in cui era prima
+            //window.history.back();
 
         }
     })
@@ -137,6 +181,9 @@ function createHouse() {
 * Crea il nuovo alloggio e lo salva nel database
 */
 function createEvent() {
+
+  var userCookie = req.cookies['user'];
+  var idUser = userCookie.id;
 
     // Prende i dati dal form della creazione
     var name = document.getElementById("eventName").value;
@@ -152,7 +199,7 @@ function createEvent() {
     fetch('../api/v1/event/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, available: available, total: total, idCategoria:idCategoria} )
+        body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, available: available, total: total, idCategoria:idCategoria, idUser: idUser} )
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {

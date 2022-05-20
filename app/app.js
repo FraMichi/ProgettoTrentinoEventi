@@ -7,6 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 
 const authentication = require('./authentication.js');
+const accommodation = require('./accommodation.js');
 
 
 // Opzioni per la documentazione
@@ -49,7 +50,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/v1/authentication', authentication);
-app.use('/api/v1/accommodation/create', authentication);
+app.use('/api/v1/accommodation', accommodation);
 //app.use('/api/v1/event/create', authentication);
 
 
