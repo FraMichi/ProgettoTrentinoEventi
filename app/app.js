@@ -7,6 +7,8 @@ const cookieParser = require("cookie-parser");
 const visualizzazione = require('./visualizzazione.js');
 const authentication = require('./authentication.js');
 const eventSubscription = require("./eventSubscription.js");
+const accommodation = require('./accommodation.js');
+const evento = require('./event.js');
 
 var fs = require('fs');
 const app = express();
@@ -51,7 +53,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1/visualizzazione', visualizzazione);
 app.use('/api/v1/authentication', authentication);
 app.use('/api/v1/accommodation', accommodation);
-//app.use('/api/v1/event', event);
+app.use('/api/v1/event', evento);
 
 app.use('/api/v1/eventSubscription', eventSubscription);
 
