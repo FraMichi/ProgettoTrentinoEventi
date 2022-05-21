@@ -1,14 +1,19 @@
 const express = require('express');
-const app = express();
-const cookieParser = require("cookie-parser");
-var fs = require('fs');
-
-const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const cookieParser = require("cookie-parser");
 
+
+const visualizzazione = require('./visualizzazione.js');
 const authentication = require('./authentication.js');
+<<<<<<< HEAD
 const accommodation = require('./accommodation.js');
+=======
+const eventSubscription = require("./eventSubscription.js");
+>>>>>>> main
 
+var fs = require('fs');
+const app = express();
 
 // Opzioni per la documentazione
 const swaggerOptions = {
@@ -26,8 +31,11 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/authentication.js'] // files containing annotations as above
+  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js'] // files containing annotations as above
 };
+
+
+
 
 // Si crea il documento della documentazione
 const swaggerDocument = swaggerJsDoc(swaggerOptions);
@@ -39,20 +47,17 @@ fs.writeFile('./swagger.yaml', JSON. stringify(swaggerDocument), (err) => {
   }
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-
 app.use(cookieParser());
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/v1/visualizzazione', visualizzazione);
 app.use('/api/v1/authentication', authentication);
 app.use('/api/v1/accommodation', accommodation);
 //app.use('/api/v1/event', event);
 
+app.use('/api/v1/eventSubscription', eventSubscription);
 
 app.use('/', express.static('static'));
 

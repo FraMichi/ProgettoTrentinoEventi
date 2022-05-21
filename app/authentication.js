@@ -10,6 +10,8 @@ const User = require('./models/user');
  *  post:
  *   description: Controlla se l utente esiste e in caso affermativo fa il login
  *   summary: Fa il login se l utente esiste
+ *   tags:
+ *    - authentication
  *   requestBody:
  *    content:
  *     application/json:
@@ -23,16 +25,28 @@ const User = require('./models/user');
  *         description: Password dell utente
  *   responses:
  *    200:
- *     description: Utente esiste e campi inseriti corretti
+ *     description: Utente esiste, aggiunge il token, la sua data di scadenza, il nome dell utente e l id alla response o password errata restituisce messaggio
  *     content:
  *      application/json:
  *       schema:
  *        properties:
  *         success:
  *          type: boolean
- *          description: Vale true ed indica che non ci sono stati errori
+ *          description: Vale true se non ci sono stati errori, false se la password è sbagliata
+ *    400:
+ *     description: Restituisce errore se non sono stati inseriti tutti i campi!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
  *    404:
- *     description: Restituisce errori utente non trovato o password sbagliata!
+ *     description: Restituisce errore utente non trovato!
  *     content:
  *      application/json:
  *       schema:
@@ -46,8 +60,14 @@ const User = require('./models/user');
  */
 router.post('/login', async (req, res) => {
 
+	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+	if (!req.body.email || !req.body.password) {
+		res.status(400).json({ success: false, message: 'Inserire tutti i campi' });
+		return;
+	}
+
 	// Cerca utente nel DB
-	let user = await User.findOne({"email" : req.body.email.toString()}).exec();
+	let user = await User.findOne({"email" : req.body.email.toString().toLowerCase()}).exec();
 
 	// Se l'utente non è stato trovato invia risposta con messaggio d'errore
 	if (!user) {
@@ -57,7 +77,7 @@ router.post('/login', async (req, res) => {
 
 	// Se la password non è corretta invia risposta con messaggio d'errore
 	if (user.password != req.body.password) {
-		res.status(404).json({ success: false, message: 'Password sbagliata' });
+		res.status(200).json({ success: false, message: 'Password sbagliata' });
 		return;
 	}
 
@@ -68,24 +88,33 @@ router.post('/login', async (req, res) => {
 		name: user.nome,
 	    surname: user.cognome,
 	    birthdate: user.dataDiNascita,
-		email: user.email,
-		password: user.password,
+		email: req.body.email.toString().toLowerCase(),
 	    userType: user.tipoDiUtente,
 		email: user.email,
-		id: user.id
+		id: user._id
 	}
 
+    // Scadenza dopo 2 minuti
+    expire = 120;
 	var options = {
-		expiresIn: 120 // Scadenza dopo 2 minuti
+		expiresIn: expire
 	}
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
+<<<<<<< HEAD
 
 	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
   res.cookie('user', { token: token, name: user.nome, id: user._id});
+=======
+    // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
+>>>>>>> main
     res.status(200).json({
-		success: true
+		success: true,
+        token: token,
+        name: user.nome,
+        id: user._id,
+        expireTime: expire
 	});
 
 });
@@ -95,8 +124,10 @@ router.post('/login', async (req, res) => {
  * @openapi
  * /api/v1/authentication/subscribe:
  *  post:
- *   description: Controlla se l utente esiste e in caso non affermativo lo iscrive
+ *   description: Controlla se l utente esiste e in caso non affermativo lo iscrive, aggiunge il cookie contentente il token, il nome dell utente e l id alla response
  *   summary: Fa la registazione se l utente non esiste
+ *   tags:
+ *    - authentication
  *   requestBody:
  *    content:
  *     application/json:
@@ -130,6 +161,18 @@ router.post('/login', async (req, res) => {
  *         success:
  *          type: boolean
  *          description: Vale true ed indica che non ci sono stati errori
+ *    400:
+ *     description: Restituisce errori in caso di campi non inseriti, formato data o email non corretto, o tipo di utente non corretto
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
  *    404:
  *     description: Restituisce errore utente gia esistente!
  *     content:
@@ -145,8 +188,34 @@ router.post('/login', async (req, res) => {
  */
 router.post('/subscribe', async (req, res) => {
 
+    // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+	if (!req.body.name || !req.body.surname || !req.body.birthdate || !req.body.email || !req.body.password || !req.body.userType) {
+		res.status(400).json({ success: false, message: 'Inserire tutti i campi' });
+		return;
+	}
+
+    // Controlla se la data è nel formato corretto, se no invia risposta con messaggio d'errore
+    var date_regex = /^([1-9][0-9][0-9][0-9])\-(0[1-9]|1[0-2])\-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$/;
+	if (!date_regex.test(req.body.birthdate)) {
+		res.status(400).json({ success: false, message: 'Formato data non corretto' });
+		return;
+	}
+
+    // Controlla se la email è nel formato corretto, se no invia risposta con messaggio d'errore
+    var email_regex = /^(([a-z0-9])([a-z0-9]*)\.{0,1}([a-z0-9])([a-z0-9]*)@([a-z][a-z]*)\.[a-z]{2,3})$/;
+	if (!email_regex.test(req.body.email.toString().toLowerCase())) {
+		res.status(400).json({ success: false, message: 'Formato email non corretto' });
+		return;
+	}
+
+    // Controlla se il tipo di utente è valido (gestore o turista), se no invia risposta con messaggio d'errore
+	if (req.body.userType != 'turista' && req.body.userType != 'gestore') {
+		res.status(400).json({ success: false, message: 'Il tipo di utente non è disponibile' });
+		return;
+	}
+
 	// Controlla se l'utente è già esistente nel DB
-	let userDB = await User.findOne({"email" : req.body.email.toString()}).exec();
+	let userDB = await User.findOne({"email" : req.body.email.toString().toLowerCase()}).exec();
 
 	// Se l'utente è stato trovato invia risposta con messaggio d'errore
 	if (userDB) {
@@ -159,7 +228,7 @@ router.post('/subscribe', async (req, res) => {
 		nome: req.body.name,
 	    cognome: req.body.surname,
 	    dataDiNascita: req.body.birthdate,
-		email: req.body.email,
+		email: req.body.email.toString().toLowerCase(),
 		password: req.body.password,
 	    tipoDiUtente: req.body.userType
     });
@@ -174,24 +243,33 @@ router.post('/subscribe', async (req, res) => {
 		name: user.nome,
 		surname: user.cognome,
 		birthdate: user.dataDiNascita,
-		email: user.email,
-		password: user.password,
+		email: req.body.email.toString().toLowerCase(),
 		userType: user.tipoDiUtente,
 		email: user.email,
-		id: user.id
+		id: user._id
 	}
 
+    expire = 120; // Scadenza dopo 2 minuti
+
 	var options = {
-		expiresIn: 120 // Scadenza dopo 2 minuti
+		expiresIn: expire
 	}
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
+<<<<<<< HEAD
 
 	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
   res.cookie('user', { token: token, name: user.nome, id: user._id});
+=======
+    // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
+>>>>>>> main
     res.status(200).json({
-		success: true
+		success: true,
+        token: token,
+        name: user.nome,
+        id: user._id,
+        expireTime: expire
 	});
 
 });
@@ -200,9 +278,19 @@ router.post('/subscribe', async (req, res) => {
 /**
  * @openapi
  * /api/v1/authentication/checkIfLogged:
- *  get:
+ *  post:
  *   description: Controlla se l utente e gia loggato
- *   summary: Fa la registazione se l utente non esiste
+ *   summary: Controlla se utente loggato
+ *   tags:
+ *    - authentication
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        token:
+ *         type: string
+ *         description: Contiene il token
  *   responses:
  *    200:
  *     description: Utente gia loggato
@@ -232,25 +320,10 @@ router.post('/subscribe', async (req, res) => {
  *          type: string
  *          description: Messaggio che contiene l'errore
  */
-router.get('/checkIfLogged', async (req, res) => {
+router.post('/checkIfLogged', async (req, res) => {
 
-    // Prende il cookie contenente i dati dell'utente
-    var userCookie = req.cookies['user'];
-
-    // Controlla se il cookie è settato
-    if(!userCookie) {
-
-        // In caso non sia settato, manda un messaggio di errore
-        res.status(404).json({
-			success: false,
-			message: 'Cookie non trovato'
-		});
-		return;
-	}
-
-	// Prende il token ed il nome dell'utente dal cookie
-	var userName = userCookie.name;
-	token = userCookie.token;
+    // Prende il token dal body della request
+	token = req.body.token;
 
 	// Verifica il token ed invia una risposta in base al risultato
 	jwt.verify(token, process.env.TOKEN_SECRET, function(err, decoded) {
@@ -267,7 +340,6 @@ router.get('/checkIfLogged', async (req, res) => {
 			// Se il token è valido manda un messaggio di validità e il nome dell'utente
 			res.status(200).json({
 				success: true,
-				name: userName,
 				message: 'Token valido'
 			});
 		}
