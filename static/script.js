@@ -85,7 +85,6 @@ function getSpecificHousing() {
         fetch('../api/v1/visualizzazione/housing?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
-            console.log(data);
             let dataIni = new Date(data.initDate);
             let dataFin = new Date(data.finlDate);
             document.getElementById("title").innerHTML=data.title;
@@ -320,4 +319,59 @@ function checkIfLogged() {
         }
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+}
+
+/*
+    Contreolla le prenotazioni dell'alloggio specifico
+*/
+function checkHousingPrenotation() {
+    let urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+        let biscuit = getCookie('user');
+        let token;
+        if(biscuit != undefined){
+            biscuit = JSON.parse(biscuit.slice(2));
+            //token dell'utente
+            token = biscuit.token;
+        }
+        // Chiamata api
+        fetch('../api/v1/housingSubscription/getHousingSlots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { id: urlParams.get('housingId'), token: token} )
+        })
+        .then((resp) => resp.json())
+        .then(function(data){
+            let table = document.getElementById("prenotationTable");
+            JSON.parse(data).forEach((item, i) => {
+                let row = table.insertRow(-1);
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let dataInit = new Date(item.init);
+                let dataFinl = new Date(item.finl);
+                cell1.innerHTML = dataInit.getFullYear() + "/" + dataInit.getMonth() + "/" + dataInit.getDate();
+                cell2.innerHTML = dataFinl.getFullYear() + "/" + dataFinl.getMonth() + "/" + dataFinl.getDate();
+
+                console.log(item);
+
+
+
+
+                if(item.free) {
+                    cell3.innerHTML = "Lo slot e prenotabile";
+                } else {
+                    if(item.ofUser) {
+                        cell3.innerHTML = "Hai gia prenotato questo slot";
+                    } else {
+                        cell3.innerHTML = "Questo slot è già prenotato";
+                    }
+                }
+
+            });
+
+
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    }
 }

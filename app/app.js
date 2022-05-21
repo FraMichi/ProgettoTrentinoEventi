@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const visualizzazione = require('./visualizzazione.js');
 const authentication = require('./authentication.js');
 const eventSubscription = require("./eventSubscription.js");
+const housingSubscription = require("./housingSubscription.js");
 
 var fs = require('fs');
 const app = express();
@@ -52,6 +53,7 @@ app.use('/api/v1/visualizzazione', visualizzazione);
 app.use('/api/v1/authentication', authentication);
 
 app.use('/api/v1/eventSubscription', eventSubscription);
+app.use('/api/v1/housingSubscription', housingSubscription);
 
 app.use('/', express.static('static'));
 
