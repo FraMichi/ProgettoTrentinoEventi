@@ -380,7 +380,13 @@ function createHouse() {
     var address = document.getElementById("houseAddress").value;
     var city = document.getElementById("city").value;
 
-    fetch('../api/v1/authentication/checkIfLogged')
+    token = JSON.parse(getCookie("user")).token;
+
+    fetch('../api/v1/authentication/checkIfLogged', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { token: token } )
+    })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
 
@@ -453,21 +459,29 @@ function creaEvento() {
     var city = document.getElementById("city").value;
     var total = document.getElementById("total").value;
     var select = document.getElementById("list");
-    console.log(list);
     var idCategoria = select.options[select.selectedIndex].value;
-    console.log(idCategoria);
 
-    fetch('../api/v1/authentication/checkIfLogged')
+    token = JSON.parse(getCookie("user")).token;
+    userId = JSON.parse(getCookie("user")).id;
+
+    fetch('../api/v1/authentication/checkIfLogged', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { token: token } )
+    })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
-console.log("entro in checkiflogged")
       // Se l'utente non è loggato manda alla pagina di login
       if(data.success == false) {
         window.location.href = "/login.html";
       }
       else {
           // Se l'utente loggato è un gestore allora procede con la creazione dell'Evento
-          fetch('../api/v1/authentication/checkIfGestore')
+          fetch('../api/v1/authentication/checkIfGestore', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify( { userId: userId } )
+          })
           .then((resp) => resp.json())
           .then(function(data){
               if(data.success == false) {
