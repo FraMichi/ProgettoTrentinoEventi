@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const Housing = require('./models/housing');
 const User = require('./models/user');
 const Event = require ('./models/event');
+const Category = require ('./models/category');
 
 // Route per creazione alloggio
 router.post('/create', async (req, res) => {
@@ -13,13 +14,13 @@ router.post('/create', async (req, res) => {
 		return;
 	}
 
-	// Controlla se la data di inizio e fine sono nel formato corretto, se no invia risposta con messaggio d'errore
+	//Controlla se la data di inizio e fine sono nel formato corretto, se no invia risposta con messaggio d'errore
   var date_regex = /^([1-9][0-9][0-9][0-9])\-(0[1-9]|1[0-2])\-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$/;
 	if (!date_regex.test(req.body.dstart)) {
 		res.status(400).json({ success: false, message: 'Formato data non corretto' });
 		return;
 	}
-	if (!date_regex.test(req.body.dEnd)) {
+	if (!date_regex.test(req.body.dend)) {
 		res.status(400).json({ success: false, message: 'Formato data non corretto' });
 		return;
 	}
@@ -50,6 +51,12 @@ router.post('/create', async (req, res) => {
 	res.status(200).json({
 		success: true
 	});
+});
+
+router.get('/category', async (req, res) => {
+    let categories = await Category.find().exec();
+    let categoriesList = categories.map((category) => {return{id:category._id, title:category.tipoCategoria};})
+    res.status(200).json(categoriesList);
 });
 
 module.exports = router;

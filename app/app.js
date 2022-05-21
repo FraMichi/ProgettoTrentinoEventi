@@ -8,6 +8,7 @@ const swaggerJsDoc = require('swagger-jsdoc');
 
 const authentication = require('./authentication.js');
 const accommodation = require('./accommodation.js');
+const evento = require('./event.js');
 
 
 // Opzioni per la documentazione
@@ -51,7 +52,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/authentication', authentication);
 app.use('/api/v1/accommodation', accommodation);
-//app.use('/api/v1/event', event);
+app.use('/api/v1/event', evento);
 
 
 app.use('/', express.static('static'));

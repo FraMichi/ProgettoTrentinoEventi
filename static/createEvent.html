@@ -7,6 +7,7 @@
     <body onload="checkIfLogged()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
+        <a style="position: fixed; top: 5px; left: 5px; width: 120px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a>
         <h1>Creazione evento</h1>
         <form action="api/v1/event" method="post">
             <label for="eventName">Nome evento:</label>
@@ -24,12 +25,13 @@
             <label for="total">Posti totali:</label><br/>
             <input type="text" id="total" name="total" value=""/><br/>
             <label for="idCategoria">Scegli una categoria:</label>
-            <select name="idCategoria" id="idCategoria">
-              <option value="bisogna">bisogna</option>
-              <option value="collegare">collegare</option>
-              <option value="al">al</option>
-              <option value="db">db</option>
-            </select></br>
+
+            <select id="list" name="list">
+              <option>
+            </select>
+            <script>
+                getCategory();
+            </script></br>
             <button type="button" onclick="creaEvento()">Registra evento</button>
         </form>
         <p id="errorMsgEvent"></p>

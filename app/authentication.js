@@ -275,4 +275,101 @@ router.get('/checkIfLogged', async (req, res) => {
 });
 
 
+router.get('/checkIfGestore', async (req, res) => {
+  // Prende il cookie contenente i dati dell'utente
+  var userCookie = req.cookies['user'];
+
+  // Controlla se il cookie è settato
+  if(!userCookie) {
+      // In caso non sia settato, manda un messaggio di errore
+      res.status(404).json({
+        success: false,
+        message: 'Cookie non trovato'
+      });
+      return;
+  }
+
+  // Prende il token ed l'id dell'utente dal cookie
+	var userId = userCookie.id;
+	token = userCookie.token;
+
+  // Verifica il token ed invia una risposta in base al risultato
+	jwt.verify(token, process.env.TOKEN_SECRET, async function(err, decoded) {
+
+		if (err) {
+
+			// Se il token non è valido manda un messaggio di errore
+			res.status(404).json({
+				success: false,
+				message: 'Token non valido'
+			});
+		} else {
+
+			// Se il token è valido cerca la tipologia di utente
+      // Cerca nel DB l'utente specifico
+      let utente = await User.findOne({_id:userId});
+
+      // Trova categoria dell'utente
+      let userType = utente.tipoDiUtente;
+
+      // // Se la categoria non viene trovata restituisci un errore
+      // if(!userType) {
+      //     res.status(404).json({success: false, message: "Tipo di utente non trovato"});
+      //     return;
+      // }
+
+      // Verifico che l'utente sia un gestore
+      if(userType == 'gestore'){
+        res.status(200).json({
+          success: true,
+          message: "L'utente è un gestore",
+          category: "gestore"
+        });
+      }
+      else {
+        res.status(400).json({success: false, message: "L'utente è un turista",
+        category: "turista"});
+      }
+
+		}
+	});
+});
+
+// router.get('/user', async (req, res) => {
+//     // Controlla che sia effettivamente presente il parametro id
+//     if (!req.query.id) {
+//       // Se l'id non è presente nella query
+//       res.status(400).json({success: false, message: "Id non presente nella query"});
+//       return;
+//     }
+//
+//     // Controlla che l'id rispetti il formato di MongoDB
+//     if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
+//       // Se non lo rispetta dichiara l'errore
+//       res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
+//       return;
+//     }
+//
+//     // Cerca nel DB l'utente specifico
+//     let user = await User.findOne({_id:req.query.id});
+//
+//     // Trova categoria dell'utente
+//     let userType = await User.findOne({_id:user.tipoDiUtente});
+//
+//     // Se la categoria non viene trovata restituisci un errore
+//     if(!userType)
+//     {
+//         res.status(404).json({success: false, message: "Tipo di utente non trovato"});
+//         return;
+//     }
+//
+//     if(userType.tipoDiUtente == 'gestore')
+//       res.status(200).json({success: true});
+//     else {
+//       res.status(400).json({success: false, message: "L'utente è un turista"});
+//     }
+//
+// })
+
+
 module.exports = router;
