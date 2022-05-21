@@ -334,7 +334,55 @@ router.post('/checkIfLogged', async (req, res) => {
 	});
 });
 
-
+// Route per checkIfGestore
+/**
+ * @openapi
+ * /api/v1/authentication/checkIfGestore:
+ *  post:
+ *   description: Controlla se l utente e un gestore per permettere la creazione di eventi e alloggi
+ *   summary: Controlla se utente gestore
+ *   tags:
+ *    - authentication
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        token:
+ *         type: string
+ *         description: Contiene il token
+ *   responses:
+ *    200:
+ *     description: è stato controllato che l'utente è un gestore e quindi si può proseguire con la creazione dell'evento/alloggio
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale true dato che l'utente è un gestore
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene un messaggio di successo
+ *         category:
+ *          type: string
+ *          description: Contiene la categoria dell'utente
+ *    404:
+ *     description: Restituisce errore utente turista!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *         category:
+ *          type: boolean
+ *          description: Contiene la categoria dell'utente
+ */
 router.post('/checkIfGestore', async (req, res) => {
 
   // Prende l'idUser dal body della request
@@ -346,12 +394,6 @@ router.post('/checkIfGestore', async (req, res) => {
   // Trova categoria dell'utente
   let userType = utente.tipoDiUtente;
 
-  // // Se la categoria non viene trovata restituisci un errore
-  // if(!userType) {
-  //     res.status(404).json({success: false, message: "Tipo di utente non trovato"});
-  //     return;
-  // }
-
   // Verifico che l'utente sia un gestore
   if(userType == 'gestore'){
     res.status(200).json({
@@ -361,8 +403,11 @@ router.post('/checkIfGestore', async (req, res) => {
     });
   }
   else {
-    res.status(400).json({success: false, message: "L'utente è un turista",
-    category: "turista"});
+    res.status(404).json({
+      success: false,
+      message: "L'utente è un turista",
+      category: "turista"
+    });
   }
 });
 
