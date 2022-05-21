@@ -6,11 +6,7 @@ const cookieParser = require("cookie-parser");
 
 const visualizzazione = require('./visualizzazione.js');
 const authentication = require('./authentication.js');
-<<<<<<< HEAD
-const accommodation = require('./accommodation.js');
-=======
 const eventSubscription = require("./eventSubscription.js");
->>>>>>> main
 
 var fs = require('fs');
 const app = express();

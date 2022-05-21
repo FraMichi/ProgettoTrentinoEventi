@@ -221,10 +221,6 @@ function login() {
 
         } else {
 
-<<<<<<< HEAD
-            // In caso negativo torna alla pagina in cui era prima di fare il login
-            window.history.back();
-=======
             // In caso negativo creo il cookie
             let expireDate = new Date();
             expireDate.setTime(expireDate.getTime() + data.expireTime * 1000);
@@ -233,7 +229,6 @@ function login() {
 
             // Torna alla pagina in cui era prima di fare il login
             window.location.href = "/index.html";
->>>>>>> main
 
         }
     })

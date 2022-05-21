@@ -102,13 +102,7 @@ router.post('/login', async (req, res) => {
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
-<<<<<<< HEAD
-
-	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
-  res.cookie('user', { token: token, name: user.nome, id: user._id});
-=======
     // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
->>>>>>> main
     res.status(200).json({
 		success: true,
         token: token,
@@ -257,13 +251,7 @@ router.post('/subscribe', async (req, res) => {
 
 	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
-<<<<<<< HEAD
-
-	// Creazione cookie contenente dati dell'utente tra cui il token ed il nome
-  res.cookie('user', { token: token, name: user.nome, id: user._id});
-=======
     // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
->>>>>>> main
     res.status(200).json({
 		success: true,
         token: token,
