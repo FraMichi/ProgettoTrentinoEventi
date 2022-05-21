@@ -116,7 +116,7 @@ function checkEventSubscription(){
         let biscuit = getCookie('user');
         let token;
         if(biscuit != undefined){
-            biscuit = JSON.parse(biscuit.slice(2));
+            biscuit = JSON.parse(biscuit);
             //token dell'utente
             token = biscuit.token;
         }
@@ -154,7 +154,7 @@ function subscribeToEvent(event){
     let biscuit = getCookie('user');
     let token;
     if(biscuit != undefined){
-        biscuit = JSON.parse(biscuit.slice(2));
+        biscuit = JSON.parse(biscuit);
         //token dell'utente
         token = biscuit.token;
     }
