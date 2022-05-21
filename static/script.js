@@ -360,7 +360,6 @@ function checkIfLogged() {
         document.getElementById("topRightButton02").setAttribute("href", "/subscribe.html");
         document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
     }
-    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 }
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
@@ -453,12 +452,15 @@ function creaEvento() {
     var address = document.getElementById("eventAddress").value;
     var city = document.getElementById("city").value;
     var total = document.getElementById("total").value;
-    var idCategoria = document.getElementById("idCategoria").value;
+    var select = document.getElementById("list");
+    console.log(list);
+    var idCategoria = select.options[select.selectedIndex].value;
+    console.log(idCategoria);
 
     fetch('../api/v1/authentication/checkIfLogged')
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
-
+console.log("entro in checkiflogged")
       // Se l'utente non è loggato manda alla pagina di login
       if(data.success == false) {
         window.location.href = "/login.html";
@@ -521,6 +523,7 @@ function getCategory() {
                 return data.map(function(item){
                     var option = document.createElement("option");
                     option.innerHTML = item.title;
+                    option.setAttribute("value", item.id);
                     select.appendChild(option);
                 })
             })

@@ -309,6 +309,7 @@ router.post('/subscribe', async (req, res) => {
  *          description: Messaggio che contiene l'errore
  */
 router.post('/checkIfLogged', async (req, res) => {
+  console.log("entro il apicheckiflogged");
 
     // Prende il token dal body della request
 	token = req.body.token;
@@ -394,42 +395,5 @@ router.get('/checkIfGestore', async (req, res) => {
 		}
 	});
 });
-
-// router.get('/user', async (req, res) => {
-//     // Controlla che sia effettivamente presente il parametro id
-//     if (!req.query.id) {
-//       // Se l'id non è presente nella query
-//       res.status(400).json({success: false, message: "Id non presente nella query"});
-//       return;
-//     }
-//
-//     // Controlla che l'id rispetti il formato di MongoDB
-//     if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
-//       // Se non lo rispetta dichiara l'errore
-//       res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
-//       return;
-//     }
-//
-//     // Cerca nel DB l'utente specifico
-//     let user = await User.findOne({_id:req.query.id});
-//
-//     // Trova categoria dell'utente
-//     let userType = await User.findOne({_id:user.tipoDiUtente});
-//
-//     // Se la categoria non viene trovata restituisci un errore
-//     if(!userType)
-//     {
-//         res.status(404).json({success: false, message: "Tipo di utente non trovato"});
-//         return;
-//     }
-//
-//     if(userType.tipoDiUtente == 'gestore')
-//       res.status(200).json({success: true});
-//     else {
-//       res.status(400).json({success: false, message: "L'utente è un turista"});
-//     }
-//
-// })
-
 
 module.exports = router;
