@@ -55,6 +55,8 @@ const router = express.Router();
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
 router.post('/eventSubcribable', async (req, res) => {
+
+    console.log(req.body.token)
     // verifica se utente loggato
     tokenChecker(req, res, req.body.token);
 

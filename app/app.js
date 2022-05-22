@@ -28,7 +28,7 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js'] // files containing annotations as above
+  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js', './app/housingSubscription.js'] // files containing annotations as above
 };
 
 

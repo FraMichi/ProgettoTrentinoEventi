@@ -342,6 +342,8 @@ function checkHousingPrenotation() {
         })
         .then((resp) => resp.json())
         .then(function(data){
+
+            // Altrimenti inserisci i dati ricevuti in una tabella
             let table = document.getElementById("prenotationTable");
             JSON.parse(data).forEach((item, i) => {
                 let row = table.insertRow(-1);

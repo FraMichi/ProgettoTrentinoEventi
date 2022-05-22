@@ -7,6 +7,63 @@ const Housing = require('./models/housing');
 
 const router = express.Router();
 
+/**
+ * @openapi
+ * /api/v1/housingSubscription/getHousingSlots:
+ *   post:
+ *     description: List all the subscription slots of a given housing
+ *     summary: List housing subscription slots
+ *     tags:
+ *       - housingSubscription
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token that rapresent the logged user
+ *               id:
+ *                 type: string
+ *                 description: The id of the specific housing
+ *     responses:
+ *       200:
+ *         description: Request successful, the response contains a collection of subscription slot in the following JSON format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 init:
+ *                   type: string
+ *                   description: Initial date of the specific prenotation slot
+ *                 finl:
+ *                   type: string
+ *                   description: Final date of the spacific prenotation slot
+ *                 free:
+ *                   type: boolean
+ *                   description: |
+ *                     true => the specific slot is free
+ *
+ *                     false => the specific slot is already occupied, therefore is not subscribable
+ *                 ofUser:
+ *                   type: boolean
+ *                   description: |
+ *                     true => the specific slot is already taken by the user identified by the token provided
+ *
+ *                     false => the specific slot is already occupied, but not by the user identified by the token provided
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ */
 router.post('/getHousingSlots', async (req, res) =>{
     /*
         Data inizio INCLUSA
@@ -15,14 +72,13 @@ router.post('/getHousingSlots', async (req, res) =>{
 
     // Id alloggio
     let housId = req.body.id;
-
     // Token
     let token = req.body.token;
 
     // Controlla validita Id fornito
     if (!housId.match(/^[0-9a-fA-F]{24}$/)) {
       // Se non lo rispetta dichiara l'errore
-      res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
+      res.status(400).json({success: false, message: "MongoDBFormatException"});
       return;
     }
 
@@ -178,8 +234,6 @@ router.post('/subscribeHousing', async (req, res) =>{
     });
 
     newSubscription = await newSubscription.save();
-    console.log(newSubscription);
-    console.log("creata");
     res.status(201).json({success:true, message:'UserSubscribed'});
 });
 
