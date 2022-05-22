@@ -102,7 +102,7 @@ router.post('/create', async (req, res) => {
 	}
 
 	// Controlla se la data di inizio è prima della data di fine, se no invia risposta con messaggio d'errore
-	if (req.body.dend <= req.body.dstart) {
+	if (req.body.dend < req.body.dstart) {
 		res.status(400).json({
 			success: false,
 			message: 'La data di fine disponibilità e precedente alla data di inizio'
@@ -156,7 +156,7 @@ router.post('/create', async (req, res) => {
  *          description: nome della categoria
  */
 router.get('/category', async (req, res) => {
-  
+
     let categories = await Category.find().exec();
     let categoriesList = categories.map((category) => {return{id:category._id, title:category.tipoCategoria};})
     res.status(200).json(categoriesList);
