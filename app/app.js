@@ -3,7 +3,6 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cookieParser = require("cookie-parser");
 
-
 const visualizzazione = require('./visualizzazione.js');
 const authentication = require('./authentication.js');
 const eventSubscription = require("./eventSubscription.js");
@@ -32,17 +31,14 @@ const swaggerOptions = {
   apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js'] // files containing annotations as above
 };
 
-
-
-
 // Si crea il documento della documentazione
 const swaggerDocument = swaggerJsDoc(swaggerOptions);
 
 // Scrive nel file 'swagger.yaml' la documentazione così che poi sia visibile su apiary
 fs.writeFile('./swagger.yaml', JSON. stringify(swaggerDocument), (err) => {
-  if (err){
-    console.log(err);
-  }
+    if (err){
+        console.log(err);
+    }
 });
 
 app.use(cookieParser());
@@ -54,11 +50,9 @@ app.use('/api/v1/visualizzazione', visualizzazione);
 app.use('/api/v1/authentication', authentication);
 app.use('/api/v1/accommodation', accommodation);
 app.use('/api/v1/event', evento);
-
 app.use('/api/v1/eventSubscription', eventSubscription);
 
 app.use('/', express.static('static'));
-
 
 app.use((req, res) => {
     res.status(404);

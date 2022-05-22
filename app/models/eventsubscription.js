@@ -1,8 +1,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// set up a mongoose model
+// Crea il modello relativo alle iscrizioni agli eventi
 module.exports = mongoose.model('EventSubscription', new Schema({
-	idEvento: String,
+		idEvento: String,
     idTurista: String
 }));

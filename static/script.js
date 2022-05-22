@@ -2,20 +2,22 @@
     Richiede lista eventi esistenti
 */
 function getEvents() {
+
     // Esegue la richiesta degli eventi all'api specifica
     fetch('../api/v1/visualizzazione/eventList')
     .then((resp) => resp.json())
     .then(function(data){
-                var ul = document.getElementById("list");
-                return data.map(function(item){
-                    var li = document.createElement("li");
-                    var a = document.createElement("a");
-                    a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
-                    a.innerHTML = item.title
-                    li.appendChild(a);
-                    ul.appendChild(li);
-                })
-            })
+
+        var ul = document.getElementById("list");
+        return data.map(function(item){
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+            a.innerHTML = item.title
+            li.appendChild(a);
+            ul.appendChild(li);
+        })
+    })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
 
@@ -23,20 +25,22 @@ function getEvents() {
     Richiede lista alloggi esistenti
 */
 function getHousings() {
+
     // Esegue la richiesta degli alloggi all'api specifica
     fetch('../api/v1/visualizzazione/housingList')
     .then((resp) => resp.json())
     .then(function(data){
-                var ul = document.getElementById("list");
-                return data.map(function(item){
-                    var li = document.createElement("li");
-                    var a = document.createElement("a");
-                    a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
-                    a.innerHTML = item.title
-                    li.appendChild(a);
-                    ul.appendChild(li);
-                })
-            })
+
+        var ul = document.getElementById("list");
+        return data.map(function(item){
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
+            a.innerHTML = item.title
+            li.appendChild(a);
+            ul.appendChild(li);
+        })
+    })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
 
@@ -44,6 +48,7 @@ function getHousings() {
     Ottiene id evento da query URL ed esegue chiamata API per ottenere i dettagli dell'evento specifico
 */
 function getSpecificEvent() {
+
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('eventId')){
         // Id evento
@@ -53,18 +58,19 @@ function getSpecificEvent() {
         fetch('../api/v1/visualizzazione/event?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
+
             let dataIni = new Date(data.initDate);
             let dataFin = new Date(data.finlDate);
-            document.getElementById("title").innerHTML=data.title;
-            document.getElementById("description").innerHTML=data.description;
-            document.getElementById("initDate").innerHTML= dataIni.getFullYear()+'-'+(dataIni.getMonth()+1)+'-'+dataIni.getDay()+' '+(dataIni.getUTCHours()<10?'0':'')+dataIni.getUTCHours()+':'+(dataIni.getMinutes()<10?'0':'')+dataIni.getMinutes();
-            document.getElementById("finlDate").innerHTML= dataFin.getFullYear()+'-'+(dataFin.getMonth()+1)+'-'+dataFin.getDay()+' '+(dataFin.getUTCHours()<10?'0':'')+dataFin.getUTCHours()+':'+(dataFin.getMinutes()<10?'0':'')+dataFin.getMinutes();
-            document.getElementById("address").innerHTML=data.address;
-            document.getElementById("city").innerHTML=data.city;
-            document.getElementById("seats").innerHTML=data.seatsAvailable + "/" + data.seatsOccupied;
-            document.getElementById("category").innerHTML=data.category;
-            document.getElementById("creatorName").innerHTML=data.creatorName + " " + data.creatorSurname;
-            document.getElementById("creatorEmail").innerHTML=data.creatorEmail;
+            document.getElementById("title").innerHTML =d ata.title;
+            document.getElementById("description").innerHTML = data.description;
+            document.getElementById("initDate").innerHTML = dataIni.getFullYear() + '-' + (dataIni.getMonth() + 1) + '-' + dataIni.getDay() + ' ' + (dataIni.getUTCHours()<10?'0' : '') + dataIni.getUTCHours() + ':' + (dataIni.getMinutes()<10?'0' : '') + dataIni.getMinutes();
+            document.getElementById("finlDate").innerHTML = dataFin.getFullYear() + '-' + (dataFin.getMonth() + 1) + '-' + dataFin.getDay() + ' ' + (dataFin.getUTCHours()<10?'0' : '') + dataFin.getUTCHours() + ':' + (dataFin.getMinutes()<10?'0' : '') + dataFin.getMinutes();
+            document.getElementById("address").innerHTML = data.address;
+            document.getElementById("city").innerHTML = data.city;
+            document.getElementById("seats").innerHTML = data.seatsAvailable + "/" + data.seatsOccupied;
+            document.getElementById("category").innerHTML = data.category;
+            document.getElementById("creatorName").innerHTML = data.creatorName + " " + data.creatorSurname;
+            document.getElementById("creatorEmail").innerHTML = data.creatorEmail;
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     } else {
@@ -76,6 +82,7 @@ function getSpecificEvent() {
     Ottiene id alloggi da query URL ed esegue chiamata API per ottenere i dettagli dell'alloggio specifico
 */
 function getSpecificHousing() {
+
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('housingId')){
         // Id evento
@@ -85,17 +92,18 @@ function getSpecificHousing() {
         fetch('../api/v1/visualizzazione/housing?id='+id)
         .then((resp) => resp.json())
         .then(function(data){
+
             console.log(data);
             let dataIni = new Date(data.initDate);
             let dataFin = new Date(data.finlDate);
-            document.getElementById("title").innerHTML=data.title;
-            document.getElementById("description").innerHTML=data.description;
-            document.getElementById("initDate").innerHTML= dataIni.getFullYear()+'-'+(dataIni.getMonth()+1)+'-'+dataIni.getDay();
-            document.getElementById("finlDate").innerHTML= dataFin.getFullYear()+'-'+(dataFin.getMonth()+1)+'-'+dataFin.getDay();
-            document.getElementById("address").innerHTML=data.address;
-            document.getElementById("city").innerHTML=data.city;
-            document.getElementById("creatorName").innerHTML=data.creatorName + " " + data.creatorSurname;
-            document.getElementById("creatorEmail").innerHTML=data.creatorEmail;
+            document.getElementById("title").innerHTML = data.title;
+            document.getElementById("description").innerHTML = data.description;
+            document.getElementById("initDate").innerHTML = dataIni.getFullYear() + '-' + (dataIni.getMonth() + 1) + '-' + dataIni.getDay();
+            document.getElementById("finlDate").innerHTML = dataFin.getFullYear() + '-' + (dataFin.getMonth() + 1) + '-' + dataFin.getDay();
+            document.getElementById("address").innerHTML = data.address;
+            document.getElementById("city").innerHTML = data.city;
+            document.getElementById("creatorName").innerHTML = data.creatorName + " " + data.creatorSurname;
+            document.getElementById("creatorEmail").innerHTML = data.creatorEmail;
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     } else {
@@ -107,6 +115,7 @@ function getSpecificHousing() {
     Controlla se è possibile iscriversi/si è già iscritti ad un evento specifico
 */
 function checkEventSubscription(){
+
     var urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('eventId')){
         // Id evento
@@ -129,15 +138,15 @@ function checkEventSubscription(){
         })
         .then((resp) => resp.json())
         .then(function(data){
-            if(data.message=="UserSubscribed")
-            {
-                document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
+
+            if(data.message == "UserSubscribed") {
+                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
             }
-            else if(data.message=="UserNotSubscribed") {
-                document.getElementById("prenotationText").innerHTML="Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
+            else if(data.message == "UserNotSubscribed") {
+                document.getElementById("prenotationText").innerHTML = "Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
             }
-            else{
-                document.getElementById("prenotationText").innerHTML="Vuoi poterti iscrivere agli eventi? Esegui prima il login.";
+            else {
+                document.getElementById("prenotationText").innerHTML = "Vuoi poterti iscrivere agli eventi? Esegui prima il login.";
             }
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
@@ -150,6 +159,7 @@ function checkEventSubscription(){
     Effettua iscrizione ad evento specifico
 */
 function subscribeToEvent(event){
+
     // Leggi il cookie e convertilo in JSON per poter estrarre il token
     let biscuit = getCookie('user');
     let token;
@@ -168,14 +178,15 @@ function subscribeToEvent(event){
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
+
         if(data.message == 'UserAlreadySubscribed'){
-            document.getElementById("prenotationText").innerHTML="Sei gia iscritto a questo evento!";
+            document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
         } else if (data.message == 'UserSubscribed'){
-            document.getElementById("prenotationText").innerHTML="Sei stato iscritto a questo evento!";
+            document.getElementById("prenotationText").innerHTML = "Sei stato iscritto a questo evento!";
         } else if (data.message == 'UserNotLogged'){
-            document.getElementById("prenotationText").innerHTML="Ooops! Non sei loggato, oppure il tuo login è scaduto. Riesegui il login!";
+            document.getElementById("prenotationText").innerHTML = "Ooops! Non sei loggato, oppure il tuo login è scaduto. Riesegui il login!";
         } else if (data.message == 'NoFreeSeats'){
-            document.getElementById("prenotationText").innerHTML="Ooops! Sei arrivato tardi, posti finiti!";
+            document.getElementById("prenotationText").innerHTML = "Ooops! Sei arrivato tardi, posti finiti!";
         }
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
@@ -185,6 +196,7 @@ function subscribeToEvent(event){
     Funzione generica per ottenere il valore di uno specifico cookie
 */
 function getCookie(cName) {
+
     const name = cName + "=";
     const cDecoded = decodeURIComponent(document.cookie); //to be careful
     const cArr = cDecoded.split('; ');
@@ -215,12 +227,9 @@ function login() {
 
         // Controlla se sono stati resituiti messaggi di errore, come se i dati inseriti nella form sono sbagliati
         if(data.success == false) {
-
             // In caso affermativo mostra il messaggio
             document.getElementById("errorMsgLogin").innerHTML = data.message;
-
         } else {
-
             // In caso negativo creo il cookie
             let expireDate = new Date();
             expireDate.setTime(expireDate.getTime() + data.expireTime * 1000);
@@ -229,7 +238,6 @@ function login() {
 
             // Torna alla pagina in cui era prima di fare il login
             window.location.href = "/index.html";
-
         }
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
@@ -259,12 +267,9 @@ function subscribe() {
 
         // Controlla se sono stati resituiti messaggi di errore, come se l'utente è già esistente
         if(data.success == false) {
-
             // In caso affermativo mostra il messaggio
             document.getElementById("errorMsgSub").innerHTML = data.message;
-
         } else {
-
             // In caso negativo creo il cookie
             let expireDate = new Date();
             expireDate.setTime(expireDate.getTime() + data.expireTime * 1000);
@@ -273,7 +278,6 @@ function subscribe() {
 
             // Torna alla pagina in cui era prima di fare la registrazione
             window.location.href = "/index.html";
-
         }
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
@@ -303,7 +307,6 @@ function checkIfLogged() {
 
     // Controllo che il cookie non sia 'undefined'
     if(getCookie("user")) {
-
         // Prendo il token dal cookie
         token = JSON.parse(getCookie("user")).token;
 
@@ -317,7 +320,6 @@ function checkIfLogged() {
 
             // Se l'utente è già loggato modifica i bottoni in alto a destra delle pagine
             if(data.success == true) {
-
                 // Il bottone di "login" viene sostituito da quello di "logout"
                 document.getElementById("topRightButton01").removeAttribute("href");
                 document.getElementById("topRightButton01").setAttribute("onClick", 'logout()');
@@ -327,9 +329,6 @@ function checkIfLogged() {
                 document.getElementById("topRightButton02").removeAttribute("href");
                 document.getElementById("topRightButton02").setAttribute("href", '#');
                 document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>" + JSON.parse(getCookie("user")).name + "</div>"
-
-                // I bottoni di creazione eventi ed alloggi vengono
-
             } else { // Se l'utente fa il logout i bottoni devono essere ripristinati come lo erano prima di fare il login
 
                 // Il bottone di "logout" viene sostituito da quello di "login"
@@ -361,6 +360,7 @@ function checkIfLogged() {
         document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
     }
 }
+
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
 * Crea il nuovo alloggio e lo salva nel database
@@ -386,58 +386,54 @@ function createHouse() {
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
 
-      // Se l'utente non è loggato manda alla pagina di login
-      if(data.success == false) {
-        window.location.href = "/login.html";
-      }
-      else {
-        // Se l'utente loggato è un gestore allora procede con la creazione dell'Evento
-        fetch('../api/v1/authentication/checkIfGestore', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { userId: userId } )
-        })
-        .then((resp) => resp.json())
-        .then(function(data){
-            if(data.success == false) {
-                document.getElementById("errorMsgCreate").innerHTML = data.message;
-                window.location.href = "/index.html";
-            }
-            else {
-            var tipoDiUser = data.category;
-            }
+        // Se l'utente non è loggato manda alla pagina di login
+        if(data.success == false) {
+            window.location.href = "/login.html";
+        }
+        else {
+            // Se l'utente loggato è un gestore allora procede con la creazione dell'Evento
+            fetch('../api/v1/authentication/checkIfGestore', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( { userId: userId } )
+            })
+            .then((resp) => resp.json())
+            .then(function(data){
 
-            if(tipoDiUser == 'gestore') {
-               fetch('../api/v1/accommodation/create', {
-                   method: 'POST',
-                   headers: { 'Content-Type': 'application/json' },
-                   body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, idUser: idUser } )
-               })
-               .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-               .then( function(data) {
+                if(data.success == false) {
+                    document.getElementById("errorMsgCreate").innerHTML = data.message;
+                    window.location.href = "/index.html";
+                }
+                else {
+                var tipoDiUser = data.category;
+                }
 
-                   // Controlla se sono stati resituiti messaggi di errore
-                   if(data.success == false) {
+                if(tipoDiUser == 'gestore') {
+                    fetch('../api/v1/accommodation/create', {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, idUser: idUser } )
+                    })
+                    .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                    .then( function(data) {
 
-                       // In caso affermativo mostra il messaggio
-                       document.getElementById("errorMsgCreate").innerHTML = data.message;
-
-                   } else {
-
-                       //In caso negativo torna alla pagina in cui era prima
-                       window.location.href = "/index.html";
-
-                   }
-               })
-             }
-             else {
-                window.location.href = "/index.html";
-            }
-        })
-        .catch( error => console.error(error) );
-      }
-    })
-    .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+                        // Controlla se sono stati resituiti messaggi di errore
+                        if(data.success == false) {
+                            // In caso affermativo mostra il messaggio
+                            document.getElementById("errorMsgCreate").innerHTML = data.message;
+                        } else {
+                            //In caso negativo torna alla pagina in cui era prima
+                            window.location.href = "/index.html";
+                        }
+                    })
+                } else {
+                    window.location.href = "/index.html";
+                }
+            })
+            .catch( error => console.error(error) );
+          }
+      })
+      .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 };
 
 /*
@@ -467,11 +463,11 @@ function creaEvento() {
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
+
       // Se l'utente non è loggato manda alla pagina di login
       if(data.success == false) {
         window.location.href = "/login.html";
-      }
-      else {
+      } else {
           // Se l'utente loggato è un gestore allora procede con la creazione dell'Evento
           fetch('../api/v1/authentication/checkIfGestore', {
               method: 'POST',
@@ -480,47 +476,42 @@ function creaEvento() {
           })
           .then((resp) => resp.json())
           .then(function(data){
+
               if(data.success == false) {
                   document.getElementById("errorMsgCreate").innerHTML = data.message;
                   window.location.href = "/index.html";
-              }
-              else {
-              var tipoDiUser = data.category;
+              } else {
+                  var tipoDiUser = data.category;
               }
 
               if(tipoDiUser == 'gestore') {
-                fetch('../api/v1/event/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, total: total, idCategoria: idCategoria, idUser: idUser} )
-                })
-                .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-                .then( function(data) {
+                  fetch('../api/v1/event/create', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, total: total, idCategoria: idCategoria, idUser: idUser} )
+                  })
+                  .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                  .then( function(data) {
 
-                    // Controlla se sono stati resituiti messaggi di errore
-                    if(data.success == false) {
-
-                        // In caso affermativo mostra il messaggio
-                        document.getElementById("errorMsgCreate").innerHTML = data.message;
-
-                    } else {
-
-                        //In caso negativo torna alla pagina in cui era prima
-                        window.location.href = "/index.html";
-
-                    }
-                })
-               }
-               else {
+                      // Controlla se sono stati resituiti messaggi di errore
+                      if(data.success == false) {
+                          // In caso affermativo mostra il messaggio
+                          document.getElementById("errorMsgCreate").innerHTML = data.message;
+                      } else {
+                          //In caso negativo torna alla pagina in cui era prima
+                          window.location.href = "/index.html";
+                      }
+                  })
+              } else {
                   window.location.href = "/index.html";
               }
           })
           .catch( error => console.error(error) );
       }
     })
-
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
 };
+
 /*
     Richiede lista delle categorie esistenti
 */
@@ -531,6 +522,7 @@ function getCategory() {
     .then(function(data){
                 var select = document.getElementById("list");
                 return data.map(function(item){
+
                     var option = document.createElement("option");
                     option.innerHTML = item.title;
                     option.setAttribute("value", item.id);

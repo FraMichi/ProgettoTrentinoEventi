@@ -55,30 +55,38 @@ const router = express.Router();
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
 router.post('/eventSubcribable', async (req, res) => {
-    // verifica se utente loggato
+
+    // Verifica se utente loggato
     tokenChecker(req, res, req.body.token);
 
-    // se utente non loggato (token decoded nella req = undefined)
-    if(req.loggedUser == undefined)
-    {
-        // ritorna codice 401
-        res.status(401).json({success:false,message:'UserNotLogged'});
+    // Se utente non loggato (token decoded nella req = undefined)
+    if(req.loggedUser == undefined) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'UserNotLogged'
+        });
         return;
     }
 
-    // se user loggato controlla se già registrato ad evento specifico
-    let iscrizione = await EventSubscription.findOne({idTurista:req.loggedUser.id, idEvento:req.body.event});
+    // Se user loggato controlla se già registrato ad evento specifico
+    let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
 
-    //se non iscritto
-    if(!iscrizione)
-    {
-        // segnala che l'utente non è iscritto
-        res.status(200).json({success:true, message:'UserNotSubscribed'});
+    // Se non iscritto
+    if(!iscrizione) {
+        // Segnala che l'utente non è iscritto
+        res.status(200).json({
+            success: true,
+            message: 'UserNotSubscribed'
+        });
         return;
     }
 
-    // altrimenti segnala che l'utente è iscritto
-    res.status(200).json({success:true, message:'UserSubscribed'});
+    // Altrimenti segnala che l'utente è iscritto
+    res.status(200).json({
+        success: true,
+        message: 'UserSubscribed'
+    });
 });
 
 /**
@@ -149,47 +157,60 @@ router.post('/eventSubcribable', async (req, res) => {
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
 router.post('/createSubscription', async (req, res) =>{
-    // verifica se l'utente è loggato
+
+    // Verifica se l'utente è loggato
     tokenChecker(req, res, req.body.token);
     if(req.loggedUser) {
-        //se loggato controlla se già iscritto
-        let iscrizione = await EventSubscription.findOne({idTurista:req.loggedUser.id, idEvento:req.body.event});
+        // Se loggato controlla se già iscritto
+        let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
         if(iscrizione != null) {
-            // segnala che l'utente è già iscritto
-            res.status(200).json({success:true, message:'UserAlreadySubscribed'});
+            // Segnala che l'utente è già iscritto
+            res.status(200).json({
+                success: true,
+                message: 'UserAlreadySubscribed'
+            });
             return;
-        }
-        else {
-            // se non iscritto, controlla se l'evento specifico ha posti disponibili
-            let eventItem = await Event.findOne({_id:req.body.event});
-            if(eventItem.postiDisponibili > 0)
-            {
-                // se ha posti disponibili, togline uno
+        } else {
+            // Se non iscritto, controlla se l'evento specifico ha posti disponibili
+            let eventItem = await Event.findOne({_id: req.body.event});
+            if(eventItem.postiDisponibili > 0) {
+                // Se ha posti disponibili, togline uno
                 let tmp = eventItem.postiDisponibili - 1;
 
-                // aggiorna il DB
-                let doc = await Event.findOneAndUpdate({_id:req.body.event}, {postiDisponibili:tmp});
+                // Aggiorna il DB
+                let doc = await Event.findOneAndUpdate({_id: req.body.event}, {postiDisponibili: tmp});
 
-                // crea l'entry per l'iscrizione
+                // Crea l'entry per l'iscrizione
                 let newSubscription = new EventSubscription({
                     idEvento: req.body.event,
                     idTurista: req.loggedUser.id
                 });
 
-                // salva l'iscrizione
+                // Salva l'iscrizione
                 newSubscription = await newSubscription.save();
-                res.status(201).json({success:true, message:'UserSubscribed'});
+                res.status(201).json({
+                    success: true,
+                    message: 'UserSubscribed'
+                });
                 return;
             } else {
-                // non ci sono posti disponibili
-                res.status(200).json({success:false, message:'NoFreeSeats'});
+                // Non ci sono posti disponibili
+                res.status(200).json({
+                    success: false,
+                    message: 'NoFreeSeats'
+                });
             }
         }
     }
     else {
-        //se non loggato ritorna 401
-        res.status(401).json({success:false,message:'UserNotLogged'});
+        // Se non loggato ritorna 401
+        res.status(401).json({
+            success: false,
+            message: 'UserNotLogged'
+        });
         return;
     }
 });
+
+
 module.exports = router;

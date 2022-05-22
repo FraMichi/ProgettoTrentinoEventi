@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// set up a mongoose model
+// Crea il modello relativo alle categorie
 module.exports = mongoose.model('Category', new Schema({
-	tipoCategoria: String
+		tipoCategoria: String
 }));

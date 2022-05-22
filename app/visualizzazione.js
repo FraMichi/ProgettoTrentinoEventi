@@ -30,8 +30,9 @@ const Housing = require('./models/housing');
   *                   description: title of the event
   */
 router.get('/eventList', async (req, res) => {
+
     let events = await Event.find().exec();
-    let eventsList = events.map((eventItem) => {return{id:eventItem._id, title:eventItem.titolo};})
+    let eventsList = events.map((eventItem) => {return{id: eventItem._id, title: eventItem.titolo};})
     res.status(200).json(eventsList);
 });
 
@@ -58,8 +59,9 @@ router.get('/eventList', async (req, res) => {
  *                   description: title of the housing
  */
 router.get('/housingList', async (req, res) => {
+
     let housings = await Housing.find().exec();
-    let housingsList = housings.map((eventItem) => {return{id:eventItem._id, title:eventItem.titolo};})
+    let housingsList = housings.map((eventItem) => {return{id: eventItem._id, title: eventItem.titolo};})
     res.status(200).json(housingsList);
 });
 
@@ -144,55 +146,67 @@ router.get('/housingList', async (req, res) => {
   *                   description: specifications regarding the specific error
   */
 router.get('/event', async (req, res) => {
+
     // Controlla che sia effettivamente presente il parametro id
     if (!req.query.id) {
-      // Se l'id non è presente nella query
-      res.status(400).json({success: false, message: "Id non presente nella query"});
-      return;
+        // Se l'id non è presente nella query
+        res.status(400).json({
+            success: false,
+            message: "Id non presente nella query"
+        });
+        return;
     }
 
     // Controlla che l'id rispetti il formato di MongoDB
     if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
-      // Se non lo rispetta dichiara l'errore
-      res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
-      return;
+        // Se non lo rispetta dichiara l'errore
+        res.status(400).json({
+            success: false,
+            message: "Id non conforme al formato MongoDB"
+        });
+        return;
     }
 
     // Cerca nel DB l'evento specifico
-    let eventItem = await Event.findOne({_id:req.query.id});
+    let eventItem = await Event.findOne({_id: req.query.id});
 
     // Se l'evento non viene trovato restituisci un errore
-    if(!eventItem)
-    {
-        res.status(404).json({success: false, message: "Evento non trovato"});
+    if(!eventItem) {
+        res.status(404).json({
+            success: false,
+            message: "Evento non trovato"
+        });
         return;
     }
 
     // Trova categoria dell'evento
-    let eventCategory = await Category.findOne({_id:eventItem.idCategoria});
+    let eventCategory = await Category.findOne({_id: eventItem.idCategoria});
 
     // Se la categoria non viene trovata restituisci un errore
-    if(!eventCategory)
-    {
-        res.status(404).json({success: false, message: "Categoria non trovata"});
+    if(!eventCategory) {
+        res.status(404).json({
+            success: false,
+            message: "Categoria non trovata"
+        });
         return;
     }
 
     // Trova gestore dell'evento
-    let eventCreator = await User.findOne({_id:eventItem.idGestore});
+    let eventCreator = await User.findOne({_id: eventItem.idGestore});
 
     // Se il gestore non viene trovato restituisci un errore
-    if(!eventCreator)
-    {
-        res.status(404).json({success: false, message: "Gestore non trovato"});
+    if(!eventCreator) {
+        res.status(404).json({
+            success: false,
+            message: "Gestore non trovato"
+        });
         return;
     }
 
-
     // Risorsa finale
     let finalResponse = {
-        title:eventItem.titolo,
-        description:eventItem.descrizione,
+        title: eventItem.titolo,
+        description: eventItem.descrizione,
         initDate: eventItem.dataInizio,
         finlDate: eventItem.dataFine,
         address: eventItem.indirizzo,
@@ -282,45 +296,55 @@ router.get('/event', async (req, res) => {
   *                   description: specifications regarding the specific error
   */
 router.get('/housing', async (req, res) => {
+
     // Controlla che sia effettivamente presente il parametro id
     if (!req.query.id) {
-      // Se l'id non è presente nella query
-      res.status(400).json({success: false, message: "Id non presente nella query"});
-      return;
+        // Se l'id non è presente nella query
+        res.status(400).json({
+            success: false,
+            message: "Id non presente nella query"
+        });
+        return;
     }
 
     // Controlla che l'id rispetti il formato di MongoDB
     if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
-      // Se non lo rispetta dichiara l'errore
-      res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
-      return;
+        // Se non lo rispetta dichiara l'errore
+        res.status(400).json({
+            success: false,
+            message: "Id non conforme al formato MongoDB"
+        });
+        return;
     }
 
     // Cerca nel DB l'alloggio specifico
-    let housingItem = await Housing.findOne({_id:req.query.id});
+    let housingItem = await Housing.findOne({_id: req.query.id});
 
     // Se l'evento non viene trovato restituisci un errore
-    if(!housingItem)
-    {
-        res.status(404).json({success: false, message: "Alloggio non trovato"});
+    if(!housingItem) {
+        res.status(404).json({
+            success: false,
+            message: "Alloggio non trovato"
+        });
         return;
     }
 
     // Trova creatore dell'evento
-    let housingCreator = await User.findOne({_id:housingItem.idGestore});
+    let housingCreator = await User.findOne({_id: housingItem.idGestore});
 
     // Se il gestore non viene trovato restituisci un errore
-    if(!housingCreator)
-    {
-        res.status(404).json({success: false, message: "Gestore non trovato"});
+    if(!housingCreator) {
+        res.status(404).json({
+            success: false,
+            message: "Gestore non trovato"
+        });
         return;
     }
 
-
     // Risorsa finale
     let finalResponse = {
-        title:housingItem.titolo,
-        description:housingItem.descrizione,
+        title: housingItem.titolo,
+        description: housingItem.descrizione,
         initDate: housingItem.dataInizio,
         finlDate: housingItem.dataFine,
         address: housingItem.indirizzo,
@@ -333,5 +357,6 @@ router.get('/housing', async (req, res) => {
     // Ritorna la risposta
     res.status(200).json(finalResponse);
 });
+
 
 module.exports = router;
