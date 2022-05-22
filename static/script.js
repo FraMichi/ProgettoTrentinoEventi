@@ -61,7 +61,7 @@ function getSpecificEvent() {
 
             let dataIni = new Date(data.initDate);
             let dataFin = new Date(data.finlDate);
-            document.getElementById("title").innerHTML =d ata.title;
+            document.getElementById("title").innerHTML = data.title;
             document.getElementById("description").innerHTML = data.description;
             document.getElementById("initDate").innerHTML = dataIni.getFullYear() + '-' + (dataIni.getMonth() + 1) + '-' + dataIni.getDay() + ' ' + (dataIni.getUTCHours()<10?'0' : '') + dataIni.getUTCHours() + ':' + (dataIni.getMinutes()<10?'0' : '') + dataIni.getMinutes();
             document.getElementById("finlDate").innerHTML = dataFin.getFullYear() + '-' + (dataFin.getMonth() + 1) + '-' + dataFin.getDay() + ' ' + (dataFin.getUTCHours()<10?'0' : '') + dataFin.getUTCHours() + ':' + (dataFin.getMinutes()<10?'0' : '') + dataFin.getMinutes();
