@@ -367,11 +367,6 @@ function checkIfLogged() {
 */
 function createHouse() {
 
-    //estraggo l'id dell'utente autenticato da cookie
-    var userCookie = decodeURIComponent(document.cookie);
-    const myArray = userCookie.split("\"");
-    var idUser = myArray[11];
-
     // Prende i dati dal form della creazione
     var name = document.getElementById("houseName").value;
     var description = document.getElementById("houseDescription").value;
@@ -381,6 +376,7 @@ function createHouse() {
     var city = document.getElementById("city").value;
 
     token = JSON.parse(getCookie("user")).token;
+    userId = JSON.parse(getCookie("user")).id;
 
     fetch('../api/v1/authentication/checkIfLogged', {
         method: 'POST',
@@ -396,7 +392,11 @@ function createHouse() {
       }
       else {
         // Se l'utente loggato è un gestore allora procede con la creazione dell'Evento
-        fetch('../api/v1/authentication/checkIfGestore')
+        fetch('../api/v1/authentication/checkIfGestore', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { userId: userId } )
+        })
         .then((resp) => resp.json())
         .then(function(data){
             if(data.success == false) {
@@ -445,10 +445,6 @@ function createHouse() {
 * Crea il nuovo alloggio e lo salva nel database
 */
 function creaEvento() {
-
-  var userCookie = decodeURIComponent(document.cookie);
-  const myArray = userCookie.split("\"");
-  var idUser = myArray[11];
 
     // Prende i dati dal form della creazione
     var name = document.getElementById("eventName").value;
