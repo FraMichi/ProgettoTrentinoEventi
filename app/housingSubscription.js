@@ -19,16 +19,30 @@ router.post('/getHousingSlots', async (req, res) =>{
     // Token
     let token = req.body.token;
 
+    // Controlla validita Id fornito
+    if (!housId.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "Id non conforme al formato MongoDB"});
+      return;
+    }
+
     // Controlla validita token
     tokenChecker(req, res, token);
 
     // Cerca le date di disponibilità dell'alloggio specifico
     let house = await Housing.findOne({idAlloggio:housId});
-    let tmpInitDate = new Date(Date.parse(house.dataInizio));   // Data iniziale
-    let tmpFinlDate = new Date(Date.parse(house.dataFine));     // Data finale
+    if(!house){
+        res.status(404).json(JSON.stringify({success: false, message: "HousingNotFound"}));
+        return;
+    }
+
+
+    let tmpInitDate = house.dataInizio;   // Data iniziale
+
+    let tmpFinlDate = house.dataFine;     // Data finale
 
     // Inizializza lista degli slot
-    let slotList = [{init: null, finl: new Date(tmpInitDate.getFullYear(), tmpInitDate.getMonth(), tmpInitDate.getDate()), free: false}];
+    let slotList = [{init: null, finl: tmpInitDate, free: false}];
 
     // Inserisci slot da controllare
     slotList.push("###-MARK-###");
@@ -54,14 +68,14 @@ router.post('/getHousingSlots', async (req, res) =>{
         }
 
         // Inserisci lo slot prenotato nella lista degli slot
-        slotList.push({init: new Date(tmpDateInit.getFullYear(), tmpDateInit.getMonth(), tmpDateInit.getDate()), finl: new Date(tmpDateFinl.getFullYear(), tmpDateFinl.getMonth(), tmpDateFinl.getDate()), free: false, ofUser: user});
+        slotList.push({init: tmpDateInit, finl: tmpDateFinl, free: false, ofUser: user});
 
         // Inserisci elemento di controllo
         slotList.push("###-MARK-###");
     });
 
     // Inserisci l'ultimo elemento nella lista di slot
-    slotList.push({init: new Date(tmpFinlDate.getFullYear(), tmpFinlDate.getMonth(), tmpFinlDate.getDate()), finl: null, free: false});
+    slotList.push({init: tmpFinlDate, finl: null, free: false});
 
     // Per ogni "elemento da controllare" nella lista degli slot
     slotList.forEach((item, i) => {
@@ -87,6 +101,86 @@ router.post('/getHousingSlots', async (req, res) =>{
 
     // Restituisci l'output JSON
     res.status(200).json(JSON.stringify(slotList));
+});
+
+router.post('/subscribeHousing', async (req, res) =>{
+    /*
+        Data inizio INCLUSA
+        Data fine ESCLUSA
+     */
+
+    let initDate = new Date(req.body.initDate);
+    let finlDate = new Date(req.body.finlDate);
+    let housingId = req.body.housingId;
+    let token = req.body.token;
+
+    // Controlla che la data iniziale sia effettivamente precedente alla data finale
+    if(!(initDate < finlDate))
+    {
+        res.status(200).json({success: false, message: "BadDateOrder"});
+        return;
+    }
+
+    // Controlla validita Id fornito
+    if (!housingId.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "MongoDBFormatException"});
+      return;
+    }
+
+    // Controlla validità token
+    tokenChecker(req, res, token);
+    if(req.loggedUser == undefined){
+        res.status(401).json(JSON.stringify({success: false, message: "TokenNotValid"}));
+        return;
+    }
+
+    // Controlla se l'alloggio esiste
+    let house = await Housing.findOne({idAlloggio:housingId});
+    if(!house){
+        res.status(404).json(JSON.stringify({success: false, message: "HousingNotFound"}));
+        return;
+    }
+
+    // Controlla che le date fornite siano coerenti con quelle dell'alloggio
+    let housingInitDate = new Date(house.dataInizio);
+    let housingFinlDate = new Date(house.dataFine);
+
+    if(!((housingInitDate.getTime() <= initDate.getTime() && initDate.getTime() < housingFinlDate.getTime()) && (housingInitDate.getTime() <= finlDate.getTime() && finlDate.getTime() <= housingFinlDate.getTime()))){
+        res.status(200).json({success: false, message: "BadDateOffset"});
+        return;
+    }
+
+    // Controlla se esistono già delle prenotazioni che iniziano o finiscono nel periodo specificato nella richiesta
+    let prenotations = await HousingSubscription.find({idAlloggio: housingId});
+
+    for(i in prenotations)
+    {
+        // Ottieni le date dello slot già prenotato
+        let dataIniziale = new Date(prenotations[i].dataInizio).getTime();
+        let dataFinale = new Date(prenotations[i].dataFine).getTime();
+
+        // Metti a confronto le date
+        if((initDate.getTime() <= dataIniziale && dataIniziale < finlDate.getTime())||(initDate.getTime() < dataFinale && dataFinale < finlDate.getTime()))
+        {
+            // Se c'è una sovrapposizione, invalida la richiesta
+            res.status(200).json({success: false, message: "DateSlotOverlap"});
+            return;
+        }
+    }
+
+    // Se tutt i controlli sono soddisfatti, crea la prenotazione
+    let newSubscription = new HousingSubscription({
+        idAlloggio: housingId,
+        idTurista: req.loggedUser.id,
+    	dataInizio: initDate.toISOString(),
+    	dataFine: finlDate.toISOString()
+    });
+
+    newSubscription = await newSubscription.save();
+    console.log(newSubscription);
+    console.log("creata");
+    res.status(201).json({success:true, message:'UserSubscribed'});
 });
 
 module.exports = router;

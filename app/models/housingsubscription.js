@@ -5,6 +5,6 @@ var Schema = mongoose.Schema;
 module.exports = mongoose.model('HousingSubscription', new Schema({
 	idAlloggio: String,
     idTurista: String,
-	dataInizio: String,
-	dataFine: String
+	dataInizio: Date,
+	dataFine: Date
 }));

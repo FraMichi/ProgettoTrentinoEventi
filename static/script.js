@@ -57,8 +57,8 @@ function getSpecificEvent() {
             let dataFin = new Date(data.finlDate);
             document.getElementById("title").innerHTML=data.title;
             document.getElementById("description").innerHTML=data.description;
-            document.getElementById("initDate").innerHTML= dataIni.getFullYear()+'-'+(dataIni.getMonth()+1)+'-'+dataIni.getDay()+' '+(dataIni.getUTCHours()<10?'0':'')+dataIni.getUTCHours()+':'+(dataIni.getMinutes()<10?'0':'')+dataIni.getMinutes();
-            document.getElementById("finlDate").innerHTML= dataFin.getFullYear()+'-'+(dataFin.getMonth()+1)+'-'+dataFin.getDay()+' '+(dataFin.getUTCHours()<10?'0':'')+dataFin.getUTCHours()+':'+(dataFin.getMinutes()<10?'0':'')+dataFin.getMinutes();
+            document.getElementById("initDate").innerHTML=dataIni.toISOString().split('T')[0];
+            document.getElementById("finlDate").innerHTML=dataFin.toISOString().split('T')[0];
             document.getElementById("address").innerHTML=data.address;
             document.getElementById("city").innerHTML=data.city;
             document.getElementById("seats").innerHTML=data.seatsAvailable + "/" + data.seatsOccupied;
@@ -89,8 +89,8 @@ function getSpecificHousing() {
             let dataFin = new Date(data.finlDate);
             document.getElementById("title").innerHTML=data.title;
             document.getElementById("description").innerHTML=data.description;
-            document.getElementById("initDate").innerHTML= dataIni.getFullYear()+'-'+(dataIni.getMonth()+1)+'-'+dataIni.getDay();
-            document.getElementById("finlDate").innerHTML= dataFin.getFullYear()+'-'+(dataFin.getMonth()+1)+'-'+dataFin.getDay();
+            document.getElementById("initDate").innerHTML=dataIni.toISOString().split('T')[0];
+            document.getElementById("finlDate").innerHTML=dataFin.toISOString().split('T')[0];
             document.getElementById("address").innerHTML=data.address;
             document.getElementById("city").innerHTML=data.city;
             document.getElementById("creatorName").innerHTML=data.creatorName + " " + data.creatorSurname;
@@ -350,16 +350,18 @@ function checkHousingPrenotation() {
                 let cell3 = row.insertCell(2);
                 let dataInit = new Date(item.init);
                 let dataFinl = new Date(item.finl);
-                cell1.innerHTML = dataInit.getFullYear() + "/" + dataInit.getMonth() + "/" + dataInit.getDate();
-                cell2.innerHTML = dataFinl.getFullYear() + "/" + dataFinl.getMonth() + "/" + dataFinl.getDate();
-
-                console.log(item);
-
-
-
+                console.log(dataInit.toISOString())
+                console.log(dataFinl.toISOString())
+                cell1.innerHTML = dataInit.toISOString().split('T')[0];
+                cell2.innerHTML = dataFinl.toISOString().split('T')[0];
 
                 if(item.free) {
-                    cell3.innerHTML = "Lo slot e prenotabile";
+                    if(biscuit != undefined) {
+                        cell3.innerHTML = "Lo slot e prenotabile, premi <a href='\prenotaAlloggio.html?slot="+JSON.stringify(item)+"&housingId="+ urlParams.get('housingId') +"'>qui</a> per effettuare una prenotazione";
+                    } else {
+                        cell3.innerHTML = "Lo slot e prenotabile, esegui il login per poter prenotare lo slot";
+                    }
+
                 } else {
                     if(item.ofUser) {
                         cell3.innerHTML = "Hai gia prenotato questo slot";
@@ -374,4 +376,91 @@ function checkHousingPrenotation() {
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     }
+}
+
+/*
+    Inizializza la pagina di inserimento delle date per lo slot di prenotazione dell'alloggio
+ */
+function initHousingPrenotation(){
+    const params = new URLSearchParams(window.location.search);
+
+    // Ottieni le info riguardanti lo slot
+    let slot = params.get("slot");
+    slot = JSON.parse(slot);
+    let initDate = new Date(slot.init);     // Data iniziale
+    let finalDate = new Date(slot.finl);    // Data finale
+
+    // Imposta il formato delle date in modo che corrisponda a quello dei campi "type=date" di HTML
+    initDate = initDate.toISOString().split('T')[0];
+    finalDate = finalDate.toISOString().split('T')[0];
+
+    // Imposta i valori dei campi del form
+    document.getElementById("dateI").setAttribute("value", initDate);
+    document.getElementById("dateF").setAttribute("value", initDate);
+
+    // Imposta le date minime nei campi della form
+    document.getElementById("dateI").setAttribute("min", initDate);
+    document.getElementById("dateF").setAttribute("min", initDate);
+
+    // Imposta le date massime nei campi della form
+    document.getElementById("dateI").setAttribute("max", finalDate);
+    document.getElementById("dateF").setAttribute("max", finalDate);
+
+    // Imposta l'Id dell'alloggio
+    document.getElementById("housingId").setAttribute("value", params.get('housingId'));
+}
+
+/*
+    Esegui la chiamata per creare la prenotazione dell'alloggio e mostra la risposta del server
+ */
+function createHousingSubscription(){
+    // Ottieni tutti i parametri necessari
+    let housingId = document.getElementById("housingId").value; // Id alloggio
+    let initDate = document.getElementById("dateI").value;      // Data iniziale dello slot da prenotare
+    let finlDate = document.getElementById("dateF").value;      // Data finale dello slot da prenotare
+
+    // Ottieni token utente
+    let biscuit = getCookie('user');
+    let token;                          // Token dell'utente qualora presente
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit.slice(2));
+        //token dell'utente
+        token = biscuit.token;
+    }
+
+    // Chiamata api
+    fetch('../api/v1/housingSubscription/subscribeHousing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( {initDate: initDate, finlDate: finlDate, housingId: housingId, token: token} )
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+        if(data.message == "BadDateOrder"){
+            //200 BadDateOrder
+            alert("BadDateOrder");
+        } else if (data.message == "MongoDBFormatException") {
+            //400 MongoDBFormatException
+            alert("MongoDBFormatException");
+        } else if (data.message == "TokenNotValid") {
+            //400 MongoDBFormatException
+            alert("TokenNotValid");
+        }else if (data.message == "HousingNotFound") {
+            //400 MongoDBFormatException
+            alert("HousingNotFound");
+        }else if (data.message == "BadDateOffset") {
+            //400 MongoDBFormatException
+            alert("BadDateOffset");
+        }else if (data.message == "DateSlotOverlap") {
+            //400 MongoDBFormatException
+            alert("DateSlotOverlap");
+        }else if (data.message == "UserSubscribed") {
+            //400 MongoDBFormatException
+            alert("UserSubscribed");
+        } else {
+            alert("MisteryError");
+        }
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+
 }
