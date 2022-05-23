@@ -186,7 +186,7 @@ function subscribeToEvent(event){
 * Funzione che viene chiamata premendo il bottone di disiscrizione dall'evento
 */
 function removesubscriptionEvent() {
-    fetch('../api/v1/eventSubscription/createSubscription')
+    fetch('../api/v1/eventSubscription/deleteSubscription')
     .then( function() {
 
         // Torna alla pagina in cui era prima di fare il logout
