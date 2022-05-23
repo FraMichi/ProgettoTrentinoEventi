@@ -322,7 +322,7 @@ function checkIfLogged() {
 }
 
 /*
-    Contreolla le prenotazioni dell'alloggio specifico
+    Controlla le prenotazioni dell'alloggio specifico
 */
 function checkHousingPrenotation() {
     let urlParams = new URLSearchParams(window.location.search);
@@ -345,15 +345,13 @@ function checkHousingPrenotation() {
 
             // Altrimenti inserisci i dati ricevuti in una tabella
             let table = document.getElementById("prenotationTable");
-            JSON.parse(data).forEach((item, i) => {
+            data.forEach((item, i) => {
                 let row = table.insertRow(-1);
                 let cell1 = row.insertCell(0);
                 let cell2 = row.insertCell(1);
                 let cell3 = row.insertCell(2);
                 let dataInit = new Date(item.init);
                 let dataFinl = new Date(item.finl);
-                console.log(dataInit.toISOString())
-                console.log(dataFinl.toISOString())
                 cell1.innerHTML = dataInit.toISOString().split('T')[0];
                 cell2.innerHTML = dataFinl.toISOString().split('T')[0];
 
@@ -445,20 +443,21 @@ function createHousingSubscription(){
             //400 MongoDBFormatException
             alert("MongoDBFormatException");
         } else if (data.message == "TokenNotValid") {
-            //400 MongoDBFormatException
+            //401 TokenNotValid
             alert("TokenNotValid");
         }else if (data.message == "HousingNotFound") {
-            //400 MongoDBFormatException
+            //400 HousingNotFound
             alert("HousingNotFound");
         }else if (data.message == "BadDateOffset") {
-            //400 MongoDBFormatException
+            //400 BadDateOffset
             alert("BadDateOffset");
         }else if (data.message == "DateSlotOverlap") {
-            //400 MongoDBFormatException
+            //400 DateSlotOverlap
             alert("DateSlotOverlap");
         }else if (data.message == "UserSubscribed") {
-            //400 MongoDBFormatException
+            //400 UserSubscribed
             alert("UserSubscribed");
+            window.location.href = "./index.html";
         } else {
             alert("MisteryError");
         }

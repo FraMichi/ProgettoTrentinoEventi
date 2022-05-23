@@ -35,10 +35,10 @@ const router = express.Router();
  *               properties:
  *                 init:
  *                   type: string
- *                   description: Initial date of the specific prenotation slot
+ *                   description: Initial date of the specific prenotation slot in ISO8601 format
  *                 finl:
  *                   type: string
- *                   description: Final date of the spacific prenotation slot
+ *                   description: Final date of the spacific prenotation slot in ISO8601 format
  *                 free:
  *                   type: boolean
  *                   description: |
@@ -51,18 +51,30 @@ const router = express.Router();
  *                     true => the specific slot is already taken by the user identified by the token provided
  *
  *                     false => the specific slot is already occupied, but not by the user identified by the token provided
- *       401:
- *         description: The user is not logged
+ *       400:
+ *         description: The format of the housing id do not respect the standard format of MongoDB's id
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 success:
  *                   type: boolean
+ *                   description: the value is always false
  *                 message:
  *                   type: string
- *                   description: |
- *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ *                   description: MongoDBFormatException
+ *       404:
+ *         description: The specific housing was not found in the DB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: HousingNotFound
  */
 router.post('/getHousingSlots', async (req, res) =>{
     /*
@@ -86,9 +98,11 @@ router.post('/getHousingSlots', async (req, res) =>{
     tokenChecker(req, res, token);
 
     // Cerca le date di disponibilità dell'alloggio specifico
-    let house = await Housing.findOne({idAlloggio:housId});
-    if(!house){
-        res.status(404).json(JSON.stringify({success: false, message: "HousingNotFound"}));
+    let house = await Housing.find({_id:housId});
+    console.log(housId);
+    console.log(house);
+    if(house.length == 0){
+        res.status(404).json({success: false, message: "HousingNotFound"});
         return;
     }
 
@@ -143,7 +157,7 @@ router.post('/getHousingSlots', async (req, res) =>{
                 slotList[i] = null;
             } else {
                 // Altrimenti c'è uno slot libero tra i 2 slot
-                slotList[i] = {init: slotList[i-1].finl, finl: slotList[i+1].init, free: true};
+                slotList[i] = {init: slotList[i-1].finl, finl: slotList[i+1].init, free: true, ofUser: false};
             }
         }
     });
@@ -156,9 +170,96 @@ router.post('/getHousingSlots', async (req, res) =>{
     slotList=slotList.filter(n=>n);
 
     // Restituisci l'output JSON
-    res.status(200).json(JSON.stringify(slotList));
+    res.status(200).json(slotList);
 });
 
+
+/**
+ * @openapi
+ * /api/v1/housingSubscription/subscribeHousing:
+ *   post:
+ *     description: List all the subscription slots of a given housing
+ *     summary: List housing subscription slots
+ *     tags:
+ *       - housingSubscription
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token that rapresent the logged user
+ *               id:
+ *                 type: string
+ *                 description: The id of the specific housing
+ *     responses:
+ *       200:
+ *         description: Request successful was successful, but the new subscription has not been created. Check the message for more info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 succes:
+ *                   type: boolean
+ *                   description: Always false
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     BadDateOrder => the initial date is greater than the final date
+ *
+ *                     BadDateOffset => the slot required exits from the availability slot of the housing
+ *
+ *                     DateSlotOverlap => the slot required overlaps another slot already occupied
+ *       400:
+ *         description: The format of the housing id do not respect the standard format of MongoDB's id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: MongoDBFormatException
+ *       404:
+ *         description: The specific housing was not found in the DB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: HousingNotFound
+ *       401:
+ *         description: The token provided is not valid (login again to get a new one)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: TokenNotValid
+ *       201:
+ *         description: The subscription to the housing has been correctly created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always true
+ *                 message:
+ *                   type: string
+ *                   description: UserSubscribed
+ */
 router.post('/subscribeHousing', async (req, res) =>{
     /*
         Data inizio INCLUSA
@@ -187,14 +288,14 @@ router.post('/subscribeHousing', async (req, res) =>{
     // Controlla validità token
     tokenChecker(req, res, token);
     if(req.loggedUser == undefined){
-        res.status(401).json(JSON.stringify({success: false, message: "TokenNotValid"}));
+        res.status(401).json({success: false, message: "TokenNotValid"});
         return;
     }
 
     // Controlla se l'alloggio esiste
-    let house = await Housing.findOne({idAlloggio:housingId});
-    if(!house){
-        res.status(404).json(JSON.stringify({success: false, message: "HousingNotFound"}));
+    let house = await Housing.findOne({_id:housingId});
+    if(house.length == 0){
+        res.status(404).json({success: false, message: "HousingNotFound"});
         return;
     }
 
