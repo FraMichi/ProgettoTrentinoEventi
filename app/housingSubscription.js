@@ -340,6 +340,10 @@ router.post('/subscribeHousing', async (req, res) =>{
 
     newSubscription = await newSubscription.save();
     res.status(201).json({success:true, message:'UserSubscribed'});
+    
+    if (newSubscruption.success==true){
+        document.getElementById("prenotationText").innerHTML="Vuoi annullare la prenotazione? Premi <a href=\"javascript:removeHousingSubscription('"+id+"')\">qui</a>!";
+    }
 });
 
 module.exports = router;
