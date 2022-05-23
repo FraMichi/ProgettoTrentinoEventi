@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title id="windowTitle"></title>
+        <title id="windowTitle">Alloggio specifico</title>
         <script src="script.js"></script>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+        </style>
     </head>
     <body onload="getSpecificHousing(); checkIfLogged()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
@@ -38,6 +44,17 @@
                 <td><b>E-mail gestore</b></td>
                 <td id="creatorEmail"></td>
             </tr>
+        </table>
+
+        <h1>Tabella slot prenotazioni</h1>
+
+        <table id="prenotationTable">
+            <tr>
+                <td><b>Inizio</b></td>
+                <td><b>Fine</b></td>
+                <td><b>Prenotabile?</b></td>
+            </tr>
+            <script>checkHousingPrenotation();</script>
         </table>
     </body>
 </html>

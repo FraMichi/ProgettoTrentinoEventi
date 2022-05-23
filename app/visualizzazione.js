@@ -36,7 +36,7 @@ router.get('/eventList', async (req, res) => {
     res.status(200).json(eventsList);
 });
 
-/**
+ /**
  * @openapi
  * /api/v1/visualizzazione/housingList:
  *   get:
@@ -222,7 +222,6 @@ router.get('/event', async (req, res) => {
     // Ritorna la risposta
     res.status(200).json(finalResponse);
 });
-
 
  /**
   * @openapi

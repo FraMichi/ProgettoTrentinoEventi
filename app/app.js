@@ -8,6 +8,7 @@ const authentication = require('./authentication.js');
 const eventSubscription = require("./eventSubscription.js");
 const accommodation = require('./accommodation.js');
 const evento = require('./event.js');
+const housingSubscription = require("./housingSubscription.js");
 
 var fs = require('fs');
 const app = express();
@@ -28,7 +29,7 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js'] // files containing annotations as above
+  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js', './app/housingSubscription.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione
@@ -51,6 +52,7 @@ app.use('/api/v1/authentication', authentication);
 app.use('/api/v1/accommodation', accommodation);
 app.use('/api/v1/event', evento);
 app.use('/api/v1/eventSubscription', eventSubscription);
+app.use('/api/v1/housingSubscription', housingSubscription);
 
 app.use('/', express.static('static'));
 
