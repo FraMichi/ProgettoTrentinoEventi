@@ -137,6 +137,10 @@ function checkEventSubscription(){
         .then((resp) => resp.json())
         .then(function(data){
 
+            if(data.message == "MongoDBFormatException"){
+                alert("MongoDBFormatException");
+            }
+
             if(data.message == "UserSubscribed") {
                 document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
             }
@@ -176,6 +180,10 @@ function subscribeToEvent(event){
     })
     .then((resp) => resp.json()) // Trasforma i dati in formato JSON
     .then( function(data) {
+
+        if(data.message == "MongoDBFormatException"){
+            alert("MongoDBFormatException");
+        }
 
         if(data.message == 'UserAlreadySubscribed'){
             document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";

@@ -71,6 +71,14 @@ router.post('/eventSubcribable', async (req, res) => {
         return;
     }
 
+    // Controlla che l'id dell'evento rispetti il formato di MongoDB
+    if (!req.body.event.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "MongoDBFormatException"});
+      return;
+    }
+
+
     // Se user loggato controlla se già registrato ad evento specifico
     let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
 
@@ -161,6 +169,13 @@ router.post('/eventSubcribable', async (req, res) => {
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
 router.post('/createSubscription', async (req, res) =>{
+
+    // Controlla che l'id dell'evento rispetti il formato di MongoDB
+    if (!req.body.event.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "MongoDBFormatException"});
+      return;
+    }
 
     // Verifica se l'utente è loggato
     tokenChecker(req, res, req.body.token);
