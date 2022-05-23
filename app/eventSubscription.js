@@ -55,6 +55,18 @@ const router = express.Router();
  *                   type: string
  *                   description: |
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ *       400:
+ *         description: The format of the housing id do not respect the standard format of MongoDB's id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: MongoDBFormatException
  */
 router.post('/eventSubcribable', async (req, res) => {
 
@@ -167,7 +179,32 @@ router.post('/eventSubcribable', async (req, res) => {
  *                   type: string
  *                   description: |
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ *       400:
+ *         description: The format of the housing id do not respect the standard format of MongoDB's id
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: MongoDBFormatException
+ *       404:
+ *         description: The specific event was not found in the DB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: always false
+ *                 message:
+ *                   type: string
+ *                   description: EventNotFound
  */
+
 router.post('/createSubscription', async (req, res) =>{
 
     // Controlla che l'id dell'evento rispetti il formato di MongoDB
@@ -175,6 +212,13 @@ router.post('/createSubscription', async (req, res) =>{
       // Se non lo rispetta dichiara l'errore
       res.status(400).json({success: false, message: "MongoDBFormatException"});
       return;
+    }
+
+    // Controlla che l'evento esista
+    let eventControl = await Event.findOne({_id:req.body.event});
+    if(eventControl == null){
+        res.status(404).json({success: false, message: "EventNotFound"});
+        return;
     }
 
     // Verifica se l'utente è loggato
