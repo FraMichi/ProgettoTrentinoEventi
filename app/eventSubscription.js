@@ -216,5 +216,16 @@ router.post('/createSubscription', async (req, res) =>{
     }
 });
 
+router.delete('/deleteSubscription', async (req, res) => {
+    let eventSubscription = await eventSubscription.findOne({idTurista:req.loggedUser.id, idEvento:req.body.event}).exec();
+    if (!eventSubscription) {
+        res.status(404).send()
+        console.log('Iscrizione evento non trovata')
+        return;
+    }
+    await eventSubscription.deleteOne({idTurista:req.loggedUser.id, idEvento:req.body.event})
+    console.log('Iscrizione evento rimossa')
+    res.status(204).send()
+});
 
 module.exports = router;
