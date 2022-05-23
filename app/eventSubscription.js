@@ -15,17 +15,19 @@ const router = express.Router();
  *     summary: Check user subscription to event
  *     tags:
  *       - eventSubscription
- *     parameters:
- *       - in: body
- *         name: token
- *         type: string
- *         description: The token that rapresent the logged user
- *         required: true
- *       - in: body
- *         name: event
- *         type: string
- *         description: The id of the event
- *         required: true
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token that rapresent the logged user
+ *                 required: true
+ *               event:
+ *                 type: string
+ *                 description: The id of the event
+ *                 required: true
  *     responses:
  *       200:
  *         description: Request successful
@@ -97,17 +99,19 @@ router.post('/eventSubcribable', async (req, res) => {
  *     summary: Subscribe the user to the event
  *     tags:
  *       - eventSubscription
- *     parameters:
- *       - in: body
- *         name: token
- *         type: string
- *         description: The token that rapresent the logged user
- *         required: true
- *       - in: body
- *         name: event
- *         type: string
- *         description: The id of the event to subscribe to
- *         required: true
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token that rapresent the logged user
+ *                 required: true
+ *               event:
+ *                 type: string
+ *                 description: The id of the event
+ *                 required: true
  *     responses:
  *       200:
  *         description: The request was successful but it is not guaranteed that the new entry has been created, check the message field
