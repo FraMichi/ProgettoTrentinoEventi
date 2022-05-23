@@ -29,7 +29,7 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js', './app/housingSubscription.js', './app/accomodation.js', './app/event.js'] // files containing annotations as above
+  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js', './app/housingSubscription.js', './app/accommodation.js', './app/event.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione

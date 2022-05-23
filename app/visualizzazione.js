@@ -111,8 +111,8 @@ router.get('/housingList', async (req, res) => {
   *                   type: number
   *                   description: seats already occupied for the event
   *                 category:
-  *                   type: number
-  *                   description: seats already occupied for the event
+  *                   type: string
+  *                   description: the category of the event
   *                 creatorName:
   *                   type: string
   *                   description: the name of the user who created the event

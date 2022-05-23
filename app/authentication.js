@@ -33,6 +33,21 @@ const User = require('./models/user');
  *         success:
  *          type: boolean
  *          description: Vale true se non ci sono stati errori, false se la password è sbagliata
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene info specifiche
+ *         token:
+ *          type: string
+ *          description: Token criptato che contiene info relative all'utente
+ *         name:
+ *          type: string
+ *          description: Nome utente
+ *         id:
+ *          type: string
+ *          description: Id utente
+ *         expireTime:
+ *          type: number
+ *          description: Tempo di validità del token espresso in secondi
  *    400:
  *     description: Restituisce errore se non sono stati inseriti tutti i campi!
  *     content:
@@ -85,7 +100,11 @@ router.post('/login', async (req, res) => {
   	if (user.password != req.body.password) {
     		res.status(200).json({
             success: false,
-            message: 'Password sbagliata'
+            message: 'Password sbagliata',
+            token: null,
+            name: null,
+            id: null,
+            expireTime: null
         });
     		return;
   	}
@@ -112,6 +131,7 @@ router.post('/login', async (req, res) => {
     // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
     res.status(200).json({
       	success: true,
+        message: 'Login effettuato',
         token: token,
         name: user.nome,
         id: user._id,
@@ -160,7 +180,19 @@ router.post('/login', async (req, res) => {
  *        properties:
  *         success:
  *          type: boolean
- *          description: Vale true ed indica che non ci sono stati errori
+ *          description: Vale true se non ci sono stati errori, false se la password è sbagliata
+ *         token:
+ *          type: string
+ *          description: Token criptato che contiene info relative all'utente
+ *         name:
+ *          type: string
+ *          description: Nome utente
+ *         id:
+ *          type: string
+ *          description: Id utente
+ *         expireTime:
+ *          type: number
+ *          description: Tempo di validità del token espresso in secondi
  *    400:
  *     description: Restituisce errori in caso di campi non inseriti, formato data o email non corretto, o tipo di utente non corretto
  *     content:
@@ -306,9 +338,6 @@ router.post('/subscribe', async (req, res) => {
  *         success:
  *          type: boolean
  *          description: Vale true ed indica che non ci sono stati errori
- *         name:
- *          type: string
- *          description: Contiene il nome dell utente
  *         message:
  *          type: string
  *          description: Messaggio che contiene un messaggio di successo
@@ -394,9 +423,6 @@ router.post('/checkIfLogged', async (req, res) => {
  *         message:
  *          type: string
  *          description: Messaggio che contiene l'errore
- *         category:
- *          type: boolean
- *          description: Contiene la categoria dell'utente
  */
 router.post('/checkIfGestore', async (req, res) => {
 
@@ -424,7 +450,7 @@ router.post('/checkIfGestore', async (req, res) => {
                 category: "gestore"
             });
         } else {
-            res.status(404).json({
+            res.status(200).json({
                 success: false,
                 message: "L'utente è un turista",
                 category: "turista"

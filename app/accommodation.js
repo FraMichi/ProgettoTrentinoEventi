@@ -5,7 +5,7 @@ const Housing = require('./models/housing');
 const User = require('./models/user');
 const Event = require ('./models/event');
 
-// Route per creazione alloggio
+// Router per creazione alloggio
 /**
  * @openapi
  * /api/v1/accommodation/create:
@@ -53,7 +53,7 @@ const Event = require ('./models/event');
  *         message:
  *          type: string
  *          description: Messaggio che contiene un messaggio di successo
- *		400:
+ *    400:
  *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
  *     content:
  *      application/json:
@@ -105,13 +105,13 @@ router.post('/create', async (req, res) => {
 
   	// Crea il nuovo alloggio
   	let housing = new Housing({
-    		titolo: req.body.name,
-    	  descrizione: req.body.description,
-    	  dataInizio: req.body.dstart,
-    		dataFine: req.body.dend,
-    		indirizzo: req.body.address,
-    	  citta: req.body.city,
-    		idGestore: req.body.idUser,
+        titolo: req.body.name,
+        descrizione: req.body.description,
+        dataInizio: req.body.dstart,
+        dataFine: req.body.dend,
+        indirizzo: req.body.address,
+        citta: req.body.city,
+        idGestore: req.body.idUser,
     });
 
   	// Aggiunge l'alloggio creato nel DB e restituisce un messaggio di conferma

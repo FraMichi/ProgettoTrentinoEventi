@@ -34,10 +34,10 @@ const router = express.Router();
  *             schema:
  *               properties:
  *                 init:
- *                   type: string
+ *                   type: Date
  *                   description: Initial date of the specific prenotation slot in ISO8601 format
  *                 finl:
- *                   type: string
+ *                   type: Date
  *                   description: Final date of the spacific prenotation slot in ISO8601 format
  *                 free:
  *                   type: boolean
@@ -166,6 +166,8 @@ router.post('/getHousingSlots', async (req, res) =>{
         }
     });
 
+    console.log(slotList)
+
     // Togli il primo elemento (che non serve)
     slotList.shift();
     // Toglio l'ultimo elemento (che non serve)
@@ -182,8 +184,8 @@ router.post('/getHousingSlots', async (req, res) =>{
  * @openapi
  * /api/v1/housingSubscription/subscribeHousing:
  *   post:
- *     description: List all the subscription slots of a given housing
- *     summary: List housing subscription slots
+ *     description: Require to create a subscription of a given user to a given housing
+ *     summary: Subscribe user to housing
  *     tags:
  *       - housingSubscription
  *     requestBody:

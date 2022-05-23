@@ -11,7 +11,7 @@ const router = express.Router();
  * @openapi
  * /api/v1/eventSubscription/eventSubcribable:
  *   post:
- *     description: Check if the user is alreadi subscribed to the specific event
+ *     description: Check if the user is already subscribed to the specific event
  *     summary: Check user subscription to event
  *     tags:
  *       - eventSubscription
@@ -95,7 +95,7 @@ router.post('/eventSubcribable', async (req, res) => {
  * @openapi
  * /api/v1/eventSubscription/createSubscription:
  *   post:
- *     description: Require to subscrive the user to the specific event
+ *     description: Require to subscribe the user to the specific event
  *     summary: Subscribe the user to the event
  *     tags:
  *       - eventSubscription

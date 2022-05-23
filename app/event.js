@@ -14,7 +14,7 @@ const Category = require ('./models/category');
  *   description: Controlla se le informazioni inserite nel form sono corrette e crea il nuovo evento caricandolo nel DB
  *   summary: Crea un nuovo evento
  *   tags:
- *    - accommodation
+ *    - eventCreation
  *   requestBody:
  *    content:
  *     application/json:
@@ -27,10 +27,10 @@ const Category = require ('./models/category');
  *         type: string
  *         description: Contiene la descrizione dell'evento
  *        dstart:
- *         type: date
+ *         type: Date
  *         description: Contiene la data di inizio disponibilità dell'evento
  *        dend:
- *         type: data
+ *         type: Date
  *         description: Contiene la data di fine disponibilità dell'evento
  *        address:
  *         type: string
@@ -60,7 +60,7 @@ const Category = require ('./models/category');
  *         message:
  *          type: string
  *          description: Messaggio che contiene un messaggio di successo
- *	  400:
+ *    400:
  *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
  *     content:
  *      application/json:
@@ -77,51 +77,51 @@ router.post('/create', async (req, res) => {
 
   	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
   	if (!req.body.name || !req.body.description || !req.body.dstart || !req.body.dend || !req.body.address || !req.body.city || !req.body.total || !req.body.idCategoria) {
-    		res.status(400).json({
-      			success: false,
-      			message: 'Inserire tutti i campi'
-    		});
-    		return;
+		res.status(400).json({
+  			success: false,
+  			message: 'Inserire tutti i campi'
+		});
+		return;
   	}
 
   	// Controlla se la data di inizio e fine sono nel formato corretto, se no invia risposta con messaggio d'errore
     var date_regex = /^([1-9][0-9][0-9][0-9])\-(0[1-9]|1[0-2])\-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$/;
   	if (!date_regex.test(req.body.dstart)) {
-    		res.status(400).json({
-      			success: false,
-      			message: 'Formato data non corretto'
-    		});
-    		return;
+		res.status(400).json({
+  			success: false,
+  			message: 'Formato data non corretto'
+		});
+		return;
   	}
   	if (!date_regex.test(req.body.dend)) {
-    		res.status(400).json({
-      			success: false,
-      			message: 'Formato data non corretto'
-    		});
-    		return;
+		res.status(400).json({
+  			success: false,
+  			message: 'Formato data non corretto'
+		});
+		return;
   	}
 
   	// Controlla se la data di inizio è prima della data di fine, se no invia risposta con messaggio d'errore
   	if (req.body.dend < req.body.dstart) {
-    		res.status(400).json({
-      			success: false,
-      			message: 'La data di fine disponibilità e precedente alla data di inizio'
-    		});
-    		return;
+		res.status(400).json({
+  			success: false,
+  			message: 'La data di fine disponibilità e precedente alla data di inizio'
+		});
+		return;
   	}
 
   	// Crea il nuovo evento
   	let evento = new Event({
-    		titolo: req.body.name,
-    	  descrizione: req.body.description,
-    	  dataInizio: req.body.dstart,
-    		dataFine: req.body.dend,
-    		indirizzo: req.body.address,
-    	  citta: req.body.city,
+        titolo: req.body.name,
+        descrizione: req.body.description,
+        dataInizio: req.body.dstart,
+        dataFine: req.body.dend,
+        indirizzo: req.body.address,
+        citta: req.body.city,
         postiDisponibili: req.body.total,
         postiTotali: req.body.total,
         idCategoria: req.body.idCategoria,
-    		idGestore: req.body.idUser,
+        idGestore: req.body.idUser,
     });
 
   	// Aggiunge l'evento creato nel DB
@@ -137,8 +137,8 @@ router.post('/create', async (req, res) => {
  * @openapi
  * /api/v1/event/category:
  *  post:
- *   description: Controlla se le informazioni inserite nel form sono corrette e crea il nuovo evento caricandolo nel DB
- *   summary: Crea un nuovo evento
+ *   description: Ottieni lista di categorie degli eventi
+ *   summary: Lista categorie eventi
  *   tags:
  *    - eventCategory
  *   responses:
