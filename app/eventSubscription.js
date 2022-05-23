@@ -223,7 +223,7 @@ router.delete('/deleteSubscription', async (req, res) => {
         console.log('Iscrizione evento non trovata')
         return;
     }
-    await eventSubscription.deleteOne()
+    await eventSubscription.deleteOne({idTurista:req.loggedUser.id, idEvento:req.body.event})
     console.log('Iscrizione evento rimossa')
     res.status(204).send()
 });
