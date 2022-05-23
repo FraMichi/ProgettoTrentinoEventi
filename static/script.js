@@ -187,7 +187,9 @@ function subscribeToEvent(event){
 */
 function removesubscriptionEvent() {
     fetch('../api/v1/eventSubscription/deleteSubscription') {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { idTurista: req.loggedUser.id, idEvento: req.body.event}
     })
     .then( function() {
 
