@@ -346,4 +346,16 @@ router.post('/subscribeHousing', async (req, res) =>{
     }
 });
 
+router.delete('/deleteHousingSubscription', async (req, res) => {
+    let housingSubscription = await housingSubscription.findOne({idAlloggio: housingId, idTurista: req.loggedUser.id, dataInizio: initDate.toISOString(), dataFine: finlDate.toISOString()}).exec();
+    if (!housingSubscription) {
+        res.status(404).send()
+        console.log('Prenotazione alloggio non trovata')
+        return;
+    }
+    await eventSubscription.deleteOne({idAlloggio: housingId, idTurista: req.loggedUser.id, dataInizio: initDate.toISOString(), dataFine: finlDate.toISOString()})
+    console.log('Prenotazione alloggio annullata')
+    res.status(204).send()
+});
+
 module.exports = router;
