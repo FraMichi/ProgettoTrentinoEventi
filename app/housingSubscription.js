@@ -99,17 +99,19 @@ router.post('/getHousingSlots', async (req, res) =>{
 
     // Cerca le date di disponibilità dell'alloggio specifico
     let house = await Housing.find({_id:housId});
-    console.log(housId);
-    console.log(house);
     if(house.length == 0){
         res.status(404).json({success: false, message: "HousingNotFound"});
         return;
     }
 
+    console.log(house);
+    console.log(house.dataInizio);
+    console.log(house.dataFine);
 
-    let tmpInitDate = house.dataInizio;   // Data iniziale
 
-    let tmpFinlDate = house.dataFine;     // Data finale
+    let tmpInitDate = house[0].dataInizio;   // Data iniziale
+
+    let tmpFinlDate = house[0].dataFine;     // Data finale
 
     // Inizializza lista degli slot
     let slotList = [{init: null, finl: tmpInitDate, free: false}];
@@ -146,6 +148,8 @@ router.post('/getHousingSlots', async (req, res) =>{
 
     // Inserisci l'ultimo elemento nella lista di slot
     slotList.push({init: tmpFinlDate, finl: null, free: false});
+
+    console.log(slotList)
 
     // Per ogni "elemento da controllare" nella lista degli slot
     slotList.forEach((item, i) => {

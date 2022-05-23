@@ -60,7 +60,7 @@ const Category = require ('./models/category');
  *         message:
  *          type: string
  *          description: Messaggio che contiene un messaggio di successo
- *		400:
+ *	  400:
  *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
  *     content:
  *      application/json:
