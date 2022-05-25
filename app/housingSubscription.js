@@ -104,11 +104,6 @@ router.post('/getHousingSlots', async (req, res) =>{
         return;
     }
 
-    console.log(house);
-    console.log(house.dataInizio);
-    console.log(house.dataFine);
-
-
     let tmpInitDate = house[0].dataInizio;   // Data iniziale
 
     let tmpFinlDate = house[0].dataFine;     // Data finale
@@ -149,8 +144,6 @@ router.post('/getHousingSlots', async (req, res) =>{
     // Inserisci l'ultimo elemento nella lista di slot
     slotList.push({init: tmpFinlDate, finl: null, free: false});
 
-    console.log(slotList)
-
     // Per ogni "elemento da controllare" nella lista degli slot
     slotList.forEach((item, i) => {
         if(item == '###-MARK-###')
@@ -165,8 +158,6 @@ router.post('/getHousingSlots', async (req, res) =>{
             }
         }
     });
-
-    console.log(slotList)
 
     // Togli il primo elemento (che non serve)
     slotList.shift();
@@ -342,6 +333,37 @@ router.post('/subscribeHousing', async (req, res) =>{
 
     newSubscription = await newSubscription.save();
     res.status(201).json({success:true, message:'UserSubscribed'});
+});
+
+
+router.post('/houseList', async (req, res) => {
+
+    // Verifica se utente loggato
+    tokenChecker(req, res, req.body.token);
+
+    // Se utente non loggato (token decoded nella req = undefined)
+    if(req.loggedUser == undefined) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'UserNotLogged'
+        });
+        return;
+    }
+
+    // Se utente loggato, prende la lista di tutti gli alloggi ai quali è scritto
+    let houses = await HousingSubscription.find({idTurista: req.loggedUser.id}).exec();
+
+    // Se non è iscritto a nessun alloggio scrive un messaggio sulla pagina
+    if (Object.keys(houses).length == 0) {
+        res.status(400).json({
+            success: false,
+            message: 'Non hai prenotato nessun alloggio'
+        });
+        return;
+    }
+    let housesList = houses.map((houseItem) => {return{idAlloggio: houseItem.idAlloggio};});
+    res.status(200).json(housesList);
 });
 
 module.exports = router;

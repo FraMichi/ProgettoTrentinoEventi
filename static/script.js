@@ -728,21 +728,80 @@ function getSubEvents() {
                         var a = document.createElement("a");
                         let today = new Date();
                         let dataFin = new Date(data.finlDate);
-                        console.log(title);
-                        console.log(data.finlDate);
-                        console.log(today);
 
                         if (dataFin < today) {
                             //Evento passato
-                            console.log("passato");
                             a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.idEvento);
                             a.innerHTML = title;
                             li.appendChild(a);
                             ulP.appendChild(li);
                         } else {
                             // Evento futuro
-                            console.log("futuro");
                             a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.idEvento);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulF.appendChild(li);
+                        }
+                    })
+                    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+                })
+            }
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+
+};
+
+/*
+    Richiede lista eventi esistenti
+*/
+function getSubHousings() {
+
+    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
+
+        // Esegue la richiesta degli eventi all'api specifica
+        fetch('../api/v1/housingSubscription/houseList', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( {token: token} )
+        })
+        .then((resp) => resp.json())
+        .then(function(data){
+
+            // Controlla se sono stati resituiti messaggi di errore
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgSubHouse").innerHTML = data.message;
+            } else {
+                var ulF = document.getElementById("listFuture");
+                var ulP = document.getElementById("listPast");
+                return data.map(function(item){
+                    fetch('../api/v1/visualizzazione/housing?id=' + item.idAlloggio)
+                    .then((resp) => resp.json())
+                    .then(function(data){
+
+                        let title = data.title;
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        let today = new Date();
+                        let dataFin = new Date(data.finlDate);
+
+                        if (dataFin < today) {
+                            //Alloggio passato
+                            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.idAlloggio);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulP.appendChild(li);
+                        } else {
+                            // Evento futuro
+                            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.idAlloggio);
                             a.innerHTML = title;
                             li.appendChild(a);
                             ulF.appendChild(li);
