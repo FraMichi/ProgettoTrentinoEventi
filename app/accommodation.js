@@ -111,7 +111,7 @@ router.post('/create', async (req, res) => {
         dataFine: req.body.dend,
         indirizzo: req.body.address,
         citta: req.body.city,
-        idGestore: req.body.idUser,
+        idGestore: req.body.userId,
     });
 
   	// Aggiunge l'alloggio creato nel DB e restituisce un messaggio di conferma

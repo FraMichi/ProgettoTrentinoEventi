@@ -217,4 +217,35 @@ router.post('/createSubscription', async (req, res) =>{
 });
 
 
+router.post('/eventList', async (req, res) => {
+
+    // Verifica se utente loggato
+    tokenChecker(req, res, req.body.token);
+
+    // Se utente non loggato (token decoded nella req = undefined)
+    if(req.loggedUser == undefined) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'UserNotLogged'
+        });
+        return;
+    }
+
+    // Se utente loggato, prende la lista di tutti gli eventi ai quali è scritto
+    let events = await EventSubscription.find({idTurista: req.loggedUser.id}).exec();
+
+    // Se non è iscritto a nessun evento scrive un messaggio sulla pagina
+    if (Object.keys(events).length == 0) {
+        res.status(400).json({
+            success: false,
+            message: 'Non sei iscritto/a a nessun evento'
+        });
+        return;
+    }
+    let eventsList = events.map((eventItem) => {return{idEvento: eventItem.idEvento};});
+    res.status(200).json(eventsList);
+});
+
+
 module.exports = router;
