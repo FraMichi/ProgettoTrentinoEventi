@@ -216,7 +216,48 @@ router.post('/createSubscription', async (req, res) =>{
     }
 });
 
-
+/**
+ * @openapi
+ * /api/v1/eventSubscription/eventList:
+ *   post:
+ *     description: Elenca tutti gli eventi a cui l utente si e iscritto
+ *     summary: Lista di eventi prenotati
+ *     tags:
+ *       - eventSubscriptionVisualization
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token che rappresenta l'utente loggato
+ *     responses:
+ *       200:
+ *         description: Risultato ottenuto, la risposta contiene una lista degli eventi prenotati in formato JSON
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: |
+ *                     true => la lista è piena, ci sono prenotazioni
+ *
+ *                     false => la lista è vuota, non ci sono prenotazioni
+ *       401:
+ *         description: L'utente non è autenticato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: vale sempre false
+ *                 message:
+ *                   type: string
+ *                   description: Messaggio che contiene l'errore
+ */
 router.post('/eventList', async (req, res) => {
 
     // Verifica se utente loggato
@@ -237,7 +278,7 @@ router.post('/eventList', async (req, res) => {
 
     // Se non è iscritto a nessun evento scrive un messaggio sulla pagina
     if (Object.keys(events).length == 0) {
-        res.status(400).json({
+        res.status(200).json({
             success: false,
             message: 'Non sei iscritto/a a nessun evento'
         });

@@ -335,7 +335,48 @@ router.post('/subscribeHousing', async (req, res) =>{
     res.status(201).json({success:true, message:'UserSubscribed'});
 });
 
-
+/**
+ * @openapi
+ * /api/v1/housingSubscription/houseList:
+ *   post:
+ *     description: Elenca tutti gli alloggi a cui l utente si e iscritto
+ *     summary: Lista di alloggi prenotati
+ *     tags:
+ *       - housingSubscriptionVisualization
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token che rappresenta l'utente loggato
+ *     responses:
+ *       200:
+ *         description: Risultato ottenuto, la risposta contiene una lista degli alloggi prenotati in formato JSON
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: |
+ *                     true => la lista è piena, ci sono prenotazioni
+ *
+ *                     false => la lista è vuota, non ci sono prenotazioni
+ *       401:
+ *         description: L'utente non è autenticato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: vale sempre false
+ *                 message:
+ *                   type: string
+ *                   description: Messaggio che contiene l'errore
+ */
 router.post('/houseList', async (req, res) => {
 
     // Verifica se utente loggato
@@ -346,7 +387,7 @@ router.post('/houseList', async (req, res) => {
         // Ritorna codice 401
         res.status(401).json({
             success: false,
-            message: 'UserNotLogged'
+            message: 'Utente non loggato'
         });
         return;
     }
@@ -356,7 +397,7 @@ router.post('/houseList', async (req, res) => {
 
     // Se non è iscritto a nessun alloggio scrive un messaggio sulla pagina
     if (Object.keys(houses).length == 0) {
-        res.status(400).json({
+        res.status(200).json({
             success: false,
             message: 'Non hai prenotato nessun alloggio'
         });
