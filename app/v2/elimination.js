@@ -13,7 +13,7 @@ const HousingSubscription = require ('./../models/housingsubscription');
  * @openapi
  * /api/v2/elimination/deleteEvent:
  *  delete:
- *   description: Controlla se il token é valido, l'alloggio esiste e l'utente è il creatore dell'evento
+ *   description: Controlla se il token é valido, l'evento esiste e l'utente è il creatore dell'evento
  *   summary: Elimina un evento
  *   tags:
  *    - eventElimination
@@ -125,50 +125,29 @@ router.delete('/deleteEvent', async (req, res) => {
   	});
 });
 
-// Route per creazione evento
+// Route per eliminazione alloggio
 /**
  * @openapi
- * /api/v1/event/create:
- *  post:
- *   description: Controlla se le informazioni inserite nel form sono corrette e crea il nuovo evento caricandolo nel DB
- *   summary: Crea un nuovo evento
+ * /api/v2/elimination/housingEvent:
+ *  delete:
+ *   description: Controlla se il token é valido, l'alloggio esiste e l'utente è il creatore dell'alloggio
+ *   summary: Elimina un alloggio
  *   tags:
- *    - eventCreation
+ *    - housingElimination
  *   requestBody:
  *    content:
  *     application/json:
  *      schema:
  *       properties:
- *        name:
+ *        token:
  *         type: string
- *         description: Contiene il nome dell'evento
- *        description:
+ *         description: Contiene il token dell'utente loggato
+ *        housingId:
  *         type: string
- *         description: Contiene la descrizione dell'evento
- *        dstart:
- *         type: Date
- *         description: Contiene la data di inizio disponibilità dell'evento
- *        dend:
- *         type: Date
- *         description: Contiene la data di fine disponibilità dell'evento
- *        address:
- *         type: string
- *         description: Contiene l'indirizzo dell'evento
- *        city:
- *         type: string
- *         description: Contiene la città in cui si trova l'evento
- *        total:
- *         type: number
- *         description: Contiene il numero di utenti totali che si possono iscrivere all'evento
- *        idCategoria:
- *         type: string
- *         description: Contiene l'id della categoria dell'evento
- *        idUser:
- *         type: string
- *         description: Contiene l'id del gestore che ha creato l'evento
+ *         description: Contiene l'id dell'alloggio
  *   responses:
  *    200:
- *     description: sono stati controllati tutti i campi e non sono stati trovati errori, si procede con il caricamento dell'evento sul DB
+ *     description: non ci sono errori e l'alloggio è stato eliminato correttamente
  *     content:
  *      application/json:
  *       schema:
@@ -179,8 +158,32 @@ router.delete('/deleteEvent', async (req, res) => {
  *         message:
  *          type: string
  *          description: Messaggio che contiene un messaggio di successo
- *    400:
- *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
+ *    401:
+ *     description: Restituisce errore se il token non è valido
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *    403:
+ *     description: Restituisce errore se l'utente non è proprietario dell'alloggio
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *    404:
+ *     description: Restituisce errore se non è stato trovato l'utente
  *     content:
  *      application/json:
  *       schema:
