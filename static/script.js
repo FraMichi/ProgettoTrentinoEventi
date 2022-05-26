@@ -703,7 +703,7 @@ function getSubEvents() {
         token = biscuit.token;
 
         // Esegue la richiesta degli eventi all'api specifica
-        fetch('../api/v1/eventSubscription/eventList', {
+        fetch('../api/v2/visualizzazione/eventList', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( {token: token} )
@@ -754,7 +754,7 @@ function getSubEvents() {
 };
 
 /*
-    Richiede lista eventi esistenti
+    Richiede lista alloggi esistenti
 */
 function getSubHousings() {
 
@@ -767,7 +767,7 @@ function getSubHousings() {
         token = biscuit.token;
 
         // Esegue la richiesta degli eventi all'api specifica
-        fetch('../api/v1/housingSubscription/houseList', {
+        fetch('../api/v2/visualizzazione/houseList', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( {token: token} )
