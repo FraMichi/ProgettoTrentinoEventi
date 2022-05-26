@@ -3,13 +3,13 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cookieParser = require("cookie-parser");
 
-const visualizzazione = require('./visualizzazione.js');
-const authentication = require('./authentication.js');
-const eventSubscription = require("./eventSubscription.js");
-const accommodation = require('./accommodation.js');
-const evento = require('./event.js');
-const housingSubscription = require("./housingSubscription.js");
-const getCreatedEntries = require("./getCreatedEntries.js");
+const visualizzazione = require('./v1/visualizzazione.js');
+const authentication = require('./v1/authentication.js');
+const eventSubscription = require("./v1/eventSubscription.js");
+const accommodation = require('./v1/accommodation.js');
+const evento = require('./v1/event.js');
+const housingSubscription = require("./v1/housingSubscription.js");
+const getCreatedEntries = require("./v2/getCreatedEntries.js");
 
 var fs = require('fs');
 const app = express();

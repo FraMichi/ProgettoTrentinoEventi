@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const tokenChecker = require("./tokenChecker.js");
+const tokenChecker = require("./../tokenChecker.js");
 
 // Modelli Mongoose
-const Event = require('./models/event');
-const Category = require('./models/category');
-const User = require('./models/user');
-const Housing = require('./models/housing');
+const Event = require('./../models/event');
+const Category = require('./../models/category');
+const User = require('./../models/user');
+const Housing = require('./../models/housing');
 
 // Dato il token del gestore, ritorna la lista di tutti gli eventi caricati
 router.post('/getCreatedEvents', async (req, res) => {
