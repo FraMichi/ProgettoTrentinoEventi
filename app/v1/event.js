@@ -121,7 +121,7 @@ router.post('/create', async (req, res) => {
         postiDisponibili: req.body.total,
         postiTotali: req.body.total,
         idCategoria: req.body.idCategoria,
-        idGestore: req.body.idUser,
+        idGestore: req.body.userId,
     });
 
   	// Aggiunge l'evento creato nel DB
