@@ -754,7 +754,7 @@ function getSubEvents() {
 };
 
 /*
-    Richiede lista eventi esistenti
+    Richiede lista alloggi esistenti
 */
 function getSubHousings() {
 
