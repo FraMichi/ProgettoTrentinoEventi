@@ -9,20 +9,95 @@ const Category = require('./../models/category');
 const User = require('./../models/user');
 const Housing = require('./../models/housing');
 
-// Dato il token del gestore, ritorna la lista di tutti gli eventi caricati
+
+/**
+ * @openapi
+ * /api/v2/getCreatedEntries/getCreatedEvents:
+ *   post:
+ *     description: Dato il token del gestore ritorna la lista di tutti gli eventi caricati, solo gli utenti di tipo gestore possono visualizzare gli eventi che hanno caricato
+ *     summary: Ottieni lista eventi caricati
+ *     tags:
+ *       - getCreatedEntries
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token che rappresenta l'utente loggato
+ *     responses:
+ *       200:
+ *         description: Viene restituita una lista in formato JSON degli eventi creati dal gestore specifico. Ogni oggetto rispetta il seguente formato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: Id dell'evento
+ *                 title:
+ *                   type: string
+ *                   description: Titolo dell'evento
+ *                 descr:
+ *                   type: string
+ *                   description: Descrizione dell'evento
+ *                 init:
+ *                   type: string
+ *                   description: Data di inizio dell'evento *
+ *                 finl:
+ *                   type: string
+ *                   description: Data di fine dell'evento
+ *                 addrs:
+ *                   type: string
+ *                   description: Indirizzo dell'evento
+ *                 seats:
+ *                   type: number
+ *                   description: Numero di posti ancora disponibili
+ *                 allSt:
+ *                   type: number
+ *                   description: Numero di posti totali
+ *                 categ:
+ *                   type: string
+ *                   description: Categoria dell'evento *
+ *       401:
+ *         description: Il token fornito non è valido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Sempre false
+ *                 message:
+ *                   type: string
+ *                   description: TokenNotValid
+ *       403:
+ *         description: Il token fornito rappresenta un utente NON gestore
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Sempre false
+ *                 message:
+ *                   type: string
+ *                   description: BadUserType
+ */
 router.post('/getCreatedEvents', async (req, res) => {
     // Controlla validità token
-    // PARAM: token
+    // PARAM_DONE: token
     tokenChecker(req, res, req.body.token);
     if(req.loggedUser == undefined){
-        // RESPO: 401 TokenNotValid
+        // RESPO_DONE: 401 TokenNotValid
         res.status(401).json({success: false, message: "TokenNotValid"});
         return;
     }
 
     // Controlla che utente sia gestore
     if (req.loggedUser.userType != "gestore"){
-        // RESPO: 403 BadUserType
+        // RESPO_DONE: 403 BadUserType
         res.status(403).json({success: false, message: "BadUserType"});
         return;
     }
@@ -39,7 +114,7 @@ router.post('/getCreatedEvents', async (req, res) => {
     let eventsList = events.map((eventItem) => {
         return{id: eventItem._id, title: eventItem.titolo, descr: eventItem.descrizione, init: eventItem.dataInizio, finl: eventItem.dataFine, addrs: eventItem.indirizzo, seats: eventItem.postiDisponibili, allSt: eventItem.postiTotali, categ: catList[eventItem.idCategoria]}
     });
-    // RESPO: 200 {id: eventItem._id, title: eventItem.titolo, descr: eventItem.descrizione, init: eventItem.dataInizio, finl: eventItem.dataFine, addrs: eventItem.indirizzo, seats: eventItem.postiDisponibili, allSt: eventItem.postiTotali, categ: catList[eventItem.idCategoria]}
+    // RESPO_DONE: 200 {id: eventItem._id, title: eventItem.titolo, descr: eventItem.descrizione, init: eventItem.dataInizio, finl: eventItem.dataFine, addrs: eventItem.indirizzo, seats: eventItem.postiDisponibili, allSt: eventItem.postiTotali, categ: catList[eventItem.idCategoria]}
     res.status(200).json(eventsList);
 });
 
