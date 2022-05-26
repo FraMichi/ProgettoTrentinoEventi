@@ -899,6 +899,8 @@ function getCreatedHousings() {
 
     })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+}
+
 // Funzione che imposta l'attributo 'href' del bottone per l'eliminazione dell'evento
 function setDeleteEventButton() {
 
