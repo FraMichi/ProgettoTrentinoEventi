@@ -754,7 +754,7 @@ function getSubEvents() {
 };
 
 /*
-    Richiede lista alloggi esistenti
+    Richiede lista eventi esistenti
 */
 function getSubHousings() {
 
@@ -816,59 +816,85 @@ function getSubHousings() {
 };
 
 /*
-    Richiede lista prenotati all'evento specifico
+    Richiede lista eventi creati dall'utente
 */
-function getIscrittiEvento() {
-    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+function getCreatedEvents() {
+
+    // Ottieni token utente
     let biscuit = getCookie('user');
-    let token;
+    let token;                          // Token dell'utente qualora presente
     if(biscuit != undefined){
         biscuit = JSON.parse(biscuit);
         //token dell'utente
         token = biscuit.token;
-
-        var urlParams = new URLSearchParams(window.location.search);
-        if(urlParams.has('eventId')){
-            // Id evento
-            var id = urlParams.get('eventId');
-
-            // Chiamata api per ottenere il titolo
-            fetch('../api/v1/visualizzazione/event?id='+id)
-            .then((resp) => resp.json())
-            .then(function(data){
-                document.getElementById("title").innerHTML=data.title;
-            })
-            .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
-
-            // Chiamata api per ottenere gli iscritti all'evento
-            fetch('../api/v2/visualizzazione/eventSubscription', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify( {token: token, eventId: id, userId: biscuit.id} )
-            })
-            .then((resp) => resp.json())
-            .then(function(data){
-
-                // Controlla se sono stati resituiti messaggi di errore
-                if(data.success == false) {
-                    // In caso affermativo mostra il messaggio
-                    document.getElementById("errorMsgSubHouse").innerHTML = data.message;
-                } else {
-                    var tr = document.getElementById("list");
-                    var tdNome = document.createElement("td");
-                    var tdCognome = document.createElement("td");
-                    var tdData = document.createElement("td");
-                    var tdEmail = document.createElement("td");
-
-                    tr.appendChild(tdNome);
-                    tr.appendChild(tdCognome);
-                    tr.appendChild(tdData);
-                    tr.appendChild(tdEmail);
-                }
-            })
-            .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
-        } else {
-            console.err("Attenzione: parametro 'eventId' non presente nella query");
-        }
     }
-}
+
+    // Esegue la richiesta degli eventi all'api specifica
+    fetch('../api/v2/getCreatedEntries/getCreatedEvents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( {token: token} )
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+        if(data.message != undefined){
+            alert(data.message);
+            // Torna alla pagina in cui era prima di fare il login
+            window.location.href = "/index.html";
+        } else {
+            var ul = document.getElementById("list");
+            return data.map(function(item){
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+                a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+                a.innerHTML = item.title
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+        }
+
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
+    Richiede lista eventi creati dall'utente
+*/
+function getCreatedHousings() {
+
+    // Ottieni token utente
+    let biscuit = getCookie('user');
+    let token;                          // Token dell'utente qualora presente
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
+    }
+
+    // Esegue la richiesta degli eventi all'api specifica
+    fetch('../api/v2/getCreatedEntries/getCreatedHousings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( {token: token} )
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+        if(data.message != undefined){
+            alert(data.message);
+            // Torna alla pagina in cui era prima di fare il login
+            window.location.href = "/index.html";
+        } else {
+            var ul = document.getElementById("list");
+            return data.map(function(item){
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+                a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
+                a.innerHTML = item.title
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+        }
+
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
