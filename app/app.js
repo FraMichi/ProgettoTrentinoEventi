@@ -12,6 +12,8 @@ const housingSubscription = require("./v1/housingSubscription.js");
 const getCreatedEntries = require("./v2/getCreatedEntries.js");
 const visualizzazioneV2 = require('./v2/visualizzazione.js');
 
+const elimination = require("./v2/elimination.js");
+
 var fs = require('fs');
 const app = express();
 
@@ -58,6 +60,7 @@ app.use('/api/v1/housingSubscription', housingSubscription);
 
 app.use('/api/v2/getCreatedEntries', getCreatedEntries);
 app.use('/api/v2/visualizzazione', visualizzazioneV2);
+app.use('/api/v2/elimination', elimination);
 
 app.use('/', express.static('static'));
 

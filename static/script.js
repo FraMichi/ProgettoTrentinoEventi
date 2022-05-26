@@ -899,4 +899,90 @@ function getCreatedHousings() {
 
     })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione dell'evento
+function setDeleteEventButton() {
+
+    // Prende l'id dell'evento dall'URL
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+
+        var id = urlParams.get('eventId');
+    }
+
+    // Modifica il contenuto dell'elemento
+    document.getElementById('deleteEvent').innerHTML = 'Elimina evento';
+
+    // Imposta l'attributo 'href' dell'elemento
+    document.getElementById('deleteEvent').setAttribute('href', 'javascript:deleteEvent("' + id +'")');
+};
+
+// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione dell'alloggio
+function setDeleteHousingButton() {
+
+    // Prende l'id dell'alloggio dall'URL
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+
+        var id = urlParams.get('housingId');
+    }
+
+    // Modifica il contenuto dell'elemento
+    document.getElementById('deleteHousing').innerHTML = 'Elimina alloggio';
+
+    // Imposta l'attributo 'href' dell'elemento
+    document.getElementById('deleteHousing').setAttribute('href', 'javascript:deleteHousing("' + id +'")');
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
+ * Manda la richiesta all'API per l'eliminazione dell'evento
+ */
+function deleteEvent(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "/index.html";
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione dell'alloggio
+ */
+function deleteHousing(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteHousing', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "/index.html";
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
 };
