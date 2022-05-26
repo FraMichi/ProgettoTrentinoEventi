@@ -13,7 +13,7 @@
 
 
 
-    <body onload="getSpecificEvent(); checkEventSubscription(); checkIfLogged()">
+    <body onload="getSpecificEvent(); checkEventSubscription(); setDeleteEventButton(); checkIfLogged()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
@@ -61,6 +61,10 @@
             <h2>Effettua prenotazione</h2>
             <p id="prenotationText">
             </p>
+        </div>
+
+        <div>
+            <a id="deleteEvent"></a>
         </div>
 
     </body>

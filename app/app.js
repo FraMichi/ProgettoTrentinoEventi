@@ -10,6 +10,8 @@ const accommodation = require('./v1/accommodation.js');
 const evento = require('./v1/event.js');
 const housingSubscription = require("./v1/housingSubscription.js");
 
+const elimination = require("./v2/elimination.js");
+
 var fs = require('fs');
 const app = express();
 
@@ -53,6 +55,8 @@ app.use('/api/v1/accommodation', accommodation);
 app.use('/api/v1/event', evento);
 app.use('/api/v1/eventSubscription', eventSubscription);
 app.use('/api/v1/housingSubscription', housingSubscription);
+
+app.use('/api/v2/elimination', elimination);
 
 app.use('/', express.static('static'));
 
