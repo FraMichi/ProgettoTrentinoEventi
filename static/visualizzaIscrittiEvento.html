@@ -11,24 +11,20 @@
         </style>
     </head>
 
-    <body onload="getSpecificEvent(); getIscrittiEvento(); checkIfLogged()">
+    <body onload=" getIscrittiEvento(); checkIfLogged()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
         <h1 id="title"></h1>
-        <table>
+        <p id="description"></p>
+        <p>Posti ancora disponibili: </p>
+        <p id="seats"></p>
+        <table id="list">
             <tr>
-                <th><b>Nome</b></th>
-                <th><b>Cognome</b></th>
-                <th><b>Data di nascita</b></th>
-                <th><b>Indirizzo email</b></th>
-            </tr>
-
-            <tr id="list">
-                <td id="nome"></td>
-                <td id="cognome"></td>
-                <td id="dataNascita"></td>
-                <td id="email"></td>
+                <td><b>Nome</b></td>
+                <td><b>Cognome</b></td>
+                <td><b>Data di nascita</b></td>
+                <td><b>Email</b></td>
             </tr>
         </table>
 
