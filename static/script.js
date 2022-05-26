@@ -828,7 +828,6 @@ function getCreatedEvents() {
     if(biscuit != undefined){
         biscuit = JSON.parse(biscuit);
         //token dell'utente
-        console.log(biscuit)
         token = biscuit.token;
     }
 
@@ -842,12 +841,56 @@ function getCreatedEvents() {
     .then(function(data){
         if(data.message != undefined){
             alert(data.message);
+            // Torna alla pagina in cui era prima di fare il login
+            window.location.href = "/index.html";
         } else {
             var ul = document.getElementById("list");
             return data.map(function(item){
                 var li = document.createElement("li");
                 var a = document.createElement("a");
                 a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+                a.innerHTML = item.title
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+        }
+
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
+    Richiede lista eventi creati dall'utente
+*/
+function getCreatedHousings() {
+
+    // Ottieni token utente
+    let biscuit = getCookie('user');
+    let token;                          // Token dell'utente qualora presente
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
+    }
+
+    // Esegue la richiesta degli eventi all'api specifica
+    fetch('../api/v2/getCreatedEntries/getCreatedHousings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( {token: token} )
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+        if(data.message != undefined){
+            alert(data.message);
+            // Torna alla pagina in cui era prima di fare il login
+            window.location.href = "/index.html";
+        } else {
+            var ul = document.getElementById("list");
+            return data.map(function(item){
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+                a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
                 a.innerHTML = item.title
                 li.appendChild(a);
                 ul.appendChild(li);
