@@ -180,6 +180,18 @@ router.delete('/deleteEvent', async (req, res) => {
  *         message:
  *          type: string
  *          description: Messaggio che contiene un messaggio di successo
+ *    400:
+ *     description: Restituisce errore se l'id dell'alloggio non rispetta il formato di mongoDB
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
  *    401:
  *     description: Restituisce errore se il token non è valido
  *     content:
@@ -227,6 +239,16 @@ router.delete('/deleteHousing', async (req, res) => {
         res.status(401).json({
             success: false,
             message: 'Token non valido'
+        });
+        return;
+    }
+
+    // Controlla validita dell'id dell'alloggio
+    if (!req.body.housingId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
         });
         return;
     }
