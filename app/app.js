@@ -3,12 +3,13 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const cookieParser = require("cookie-parser");
 
-const visualizzazione = require('./v1/visualizzazione.js');
-const authentication = require('./v1/authentication.js');
-const eventSubscription = require("./v1/eventSubscription.js");
-const accommodation = require('./v1/accommodation.js');
-const evento = require('./v1/event.js');
-const housingSubscription = require("./v1/housingSubscription.js");
+const visualizzazione = require('./visualizzazione.js');
+const authentication = require('./authentication.js');
+const eventSubscription = require("./eventSubscription.js");
+const accommodation = require('./accommodation.js');
+const evento = require('./event.js');
+const housingSubscription = require("./housingSubscription.js");
+const getCreatedEntries = require("./getCreatedEntries.js");
 
 var fs = require('fs');
 const app = express();
@@ -29,7 +30,7 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js'] // files containing annotations as above
+  apis: ['./app/authentication.js', './app/visualizzazione.js', './app/eventSubscription.js', './app/housingSubscription.js', './app/accommodation.js', './app/event.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione
@@ -53,6 +54,8 @@ app.use('/api/v1/accommodation', accommodation);
 app.use('/api/v1/event', evento);
 app.use('/api/v1/eventSubscription', eventSubscription);
 app.use('/api/v1/housingSubscription', housingSubscription);
+
+app.use('/api/v2/getCreatedEntries', getCreatedEntries);
 
 app.use('/', express.static('static'));
 

@@ -325,7 +325,7 @@ function checkIfLogged() {
 
                 // Il bottone "iscriviti" viene cambiato con il nome dell'utente
                 document.getElementById("topRightButton02").removeAttribute("href");
-                document.getElementById("topRightButton02").setAttribute("href", '#');
+                document.getElementById("topRightButton02").setAttribute("href", 'profile.html');
                 document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>" + JSON.parse(getCookie("user")).name + "</div>"
             } else { // Se l'utente fa il logout i bottoni devono essere ripristinati come lo erano prima di fare il login
 
@@ -334,7 +334,7 @@ function checkIfLogged() {
                 document.getElementById("topRightButton01").setAttribute("href", "/login.html");
                 document.getElementById("topRightButton01").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Login</div>"
 
-                // Il bottone "iscriviti" viene cambiato con il nome dell'utente
+                // Il bottone con il nome dell'utente viene cambiato con il bottone "Iscriviti"
                 document.getElementById("topRightButton02").removeAttribute("href");
                 document.getElementById("topRightButton02").setAttribute("href", "/subscribe.html");
                 document.getElementById("topRightButton02").innerHTML = "<div align='center' style='width: 100%; height:100%;'>Iscriviti</div>"
@@ -387,6 +387,8 @@ function createHouse() {
 
             // Se l'utente non è loggato manda alla pagina di login
             if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgHouse").innerHTML = data.message;
                 window.location.href = "/login.html";
             }
             else {
@@ -400,7 +402,7 @@ function createHouse() {
                 .then(function(data){
 
                     if(data.success == false) {
-                        document.getElementById("errorMsgCreate").innerHTML = data.message;
+                        document.getElementById("errorMsgHouse").innerHTML = data.message;
                         window.location.href = "/index.html";
                     }
                     else {
@@ -411,7 +413,7 @@ function createHouse() {
                         fetch('../api/v1/accommodation/create', {
                            method: 'POST',
                            headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, idUser: idUser } )
+                           body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, userId: userId } )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
@@ -419,10 +421,11 @@ function createHouse() {
                             // Controlla se sono stati resituiti messaggi di errore
                             if(data.success == false) {
                                 // In caso affermativo mostra il messaggio
-                                document.getElementById("errorMsgCreate").innerHTML = data.message;
+                                document.getElementById("errorMsgHouse").innerHTML = data.message;
                             } else {
                                 //In caso negativo torna alla pagina in cui era prima
                                 window.location.href = "/index.html";
+                                alert("Alloggio creato correttamente");
                             }
                         })
                     } else {
@@ -469,7 +472,9 @@ function creaEvento() {
 
             // Se l'utente non è loggato manda alla pagina di login
             if(data.success == false) {
-              window.location.href = "/login.html";
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgEvent").innerHTML = data.message;
+                window.location.href = "/login.html";
             } else {
                 // Se l'utente loggato è un gestore allora procede con la creazione dell'Evento
                 fetch('../api/v1/authentication/checkIfGestore', {
@@ -481,7 +486,7 @@ function creaEvento() {
                 .then(function(data){
 
                     if(data.success == false) {
-                        document.getElementById("errorMsgCreate").innerHTML = data.message;
+                        document.getElementById("errorMsgEvent").innerHTML = data.message;
                         window.location.href = "/index.html";
                     } else {
                         var tipoDiUser = data.category;
@@ -491,7 +496,7 @@ function creaEvento() {
                         fetch('../api/v1/event/create', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, total: total, idCategoria: idCategoria, idUser: idUser} )
+                            body: JSON.stringify( { name: name, description: description, dstart: dstart, dend: dend, address: address, city: city, total: total, idCategoria: idCategoria, userId: userId} )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
@@ -499,9 +504,10 @@ function creaEvento() {
                             // Controlla se sono stati resituiti messaggi di errore
                             if(data.success == false) {
                                 // In caso affermativo mostra il messaggio
-                                document.getElementById("errorMsgCreate").innerHTML = data.message;
+                                document.getElementById("errorMsgEvent").innerHTML = data.message;
                             } else {
                                 //In caso negativo torna alla pagina in cui era prima
+                                alert("Evento creato correttamente");
                                 window.location.href = "/index.html";
                             }
                         })
@@ -682,3 +688,172 @@ function createHousingSubscription(){
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 
 }
+
+/*
+    Richiede lista eventi esistenti
+*/
+function getSubEvents() {
+
+    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
+
+        // Esegue la richiesta degli eventi all'api specifica
+        fetch('../api/v1/eventSubscription/eventList', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( {token: token} )
+        })
+        .then((resp) => resp.json())
+        .then(function(data){
+
+            // Controlla se sono stati resituiti messaggi di errore
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgSubEvent").innerHTML = data.message;
+            } else {
+                var ulF = document.getElementById("listFuture");
+                var ulP = document.getElementById("listPast");
+                return data.map(function(item){
+                    fetch('../api/v1/visualizzazione/event?id=' + item.idEvento)
+                    .then((resp) => resp.json())
+                    .then(function(data){
+
+                        let title = data.title;
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        let today = new Date();
+                        let dataFin = new Date(data.finlDate);
+
+                        if (dataFin < today) {
+                            //Evento passato
+                            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.idEvento);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulP.appendChild(li);
+                        } else {
+                            // Evento futuro
+                            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.idEvento);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulF.appendChild(li);
+                        }
+                    })
+                    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+                })
+            }
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+
+};
+
+/*
+    Richiede lista eventi esistenti
+*/
+function getSubHousings() {
+
+    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
+
+        // Esegue la richiesta degli eventi all'api specifica
+        fetch('../api/v1/housingSubscription/houseList', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( {token: token} )
+        })
+        .then((resp) => resp.json())
+        .then(function(data){
+
+            // Controlla se sono stati resituiti messaggi di errore
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgSubHouse").innerHTML = data.message;
+            } else {
+                var ulF = document.getElementById("listFuture");
+                var ulP = document.getElementById("listPast");
+                return data.map(function(item){
+                    fetch('../api/v1/visualizzazione/housing?id=' + item.idAlloggio)
+                    .then((resp) => resp.json())
+                    .then(function(data){
+
+                        let title = data.title;
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        let today = new Date();
+                        let dataFin = new Date(data.finlDate);
+
+                        if (dataFin < today) {
+                            //Alloggio passato
+                            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.idAlloggio);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulP.appendChild(li);
+                        } else {
+                            // Evento futuro
+                            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.idAlloggio);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulF.appendChild(li);
+                        }
+                    })
+                    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+                })
+            }
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+
+};
+
+/*
+    Richiede lista eventi creati dall'utente
+*/
+function getCreatedEvents() {
+
+    // Ottieni token utente
+    let biscuit = getCookie('user');
+    let token;                          // Token dell'utente qualora presente
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        console.log(biscuit)
+        token = biscuit.token;
+    }
+
+    // Esegue la richiesta degli eventi all'api specifica
+    fetch('../api/v2/getCreatedEntries/getCreatedEvents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( {token: token} )
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+        if(data.message != undefined){
+            alert(data.message);
+        } else {
+            var ul = document.getElementById("list");
+            return data.map(function(item){
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+                a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+                a.innerHTML = item.title
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+        }
+
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
