@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const Housing = require('./models/housing');
-const User = require('./models/user');
-const Event = require ('./models/event');
-const Category = require ('./models/category');
+const Housing = require('./../models/housing');
+const User = require('./../models/user');
+const Event = require ('./../models/event');
+const Category = require ('./../models/category');
 
 // Route per creazione evento
 /**

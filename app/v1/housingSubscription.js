@@ -1,9 +1,9 @@
 const express = require('express');
 const cookieParser = require("cookie-parser");
-const tokenChecker = require("./tokenChecker.js");
+const tokenChecker = require("./../tokenChecker.js");
 
-const HousingSubscription = require('./models/housingsubscription');
-const Housing = require('./models/housing');
+const HousingSubscription = require('./../models/housingsubscription');
+const Housing = require('./../models/housing');
 
 const router = express.Router();
 
