@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const tokenChecker = require("./tokenChecker.js");
 
 const EventSubscription = require('./models/eventsubscription');
-const Event = require('./models/event');
+const Event = require('./../models/event');
 
 const router = express.Router();
 

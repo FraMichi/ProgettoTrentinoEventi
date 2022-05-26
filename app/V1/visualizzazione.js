@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 // Modelli Mongoose
-const Event = require('./models/event');
-const Category = require('./models/category');
-const User = require('./models/user');
-const Housing = require('./models/housing');
+const Event = require('./../models/event');
+const Category = require('./../models/category');
+const User = require('./../models/user');
+const Housing = require('./../models/housing');
 
  /**
   * @openapi
