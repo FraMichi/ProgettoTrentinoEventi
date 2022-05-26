@@ -813,6 +813,62 @@ function getSubHousings() {
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     }
-
-
 };
+
+/*
+    Richiede lista prenotati all'evento specifico
+*/
+function getIscrittiEvento() {
+    // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
+
+        var urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.has('eventId')){
+            // Id evento
+            var id = urlParams.get('eventId');
+
+            // Chiamata api per ottenere il titolo
+            fetch('../api/v1/visualizzazione/event?id='+id)
+            .then((resp) => resp.json())
+            .then(function(data){
+                document.getElementById("title").innerHTML=data.title;
+            })
+            .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+
+            // Chiamata api per ottenere gli iscritti all'evento
+            fetch('../api/v2/visualizzazione/eventSubscription', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( {token: token, eventId: id, userId: biscuit.id} )
+            })
+            .then((resp) => resp.json())
+            .then(function(data){
+
+                // Controlla se sono stati resituiti messaggi di errore
+                if(data.success == false) {
+                    // In caso affermativo mostra il messaggio
+                    document.getElementById("errorMsgSubHouse").innerHTML = data.message;
+                } else {
+                    var tr = document.getElementById("list");
+                    var tdNome = document.createElement("td");
+                    var tdCognome = document.createElement("td");
+                    var tdData = document.createElement("td");
+                    var tdEmail = document.createElement("td");
+
+                    tr.appendChild(tdNome);
+                    tr.appendChild(tdCognome);
+                    tr.appendChild(tdData);
+                    tr.appendChild(tdEmail);
+                }
+            })
+            .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+        } else {
+            console.err("Attenzione: parametro 'eventId' non presente nella query");
+        }
+    }
+}

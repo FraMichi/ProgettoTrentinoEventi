@@ -154,4 +154,34 @@ router.post('/eventList', async (req, res) => {
     res.status(200).json(eventsList);
 });
 
+router.post('/eventSubscription', async (req, res) => {
+
+    // Verifica se utente loggato
+    tokenChecker(req, res, req.body.token);
+
+    // Se utente non loggato (token decoded nella req = undefined)
+    if(req.loggedUser == undefined) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'Utente non loggato'
+        });
+        return;
+    }
+
+    // Se utente loggato, prende la lista di tutti gli alloggi ai quali è scritto
+    let houses = await HousingSubscription.find({idTurista: req.loggedUser.id}).exec();
+
+    // Se non è iscritto a nessun alloggio scrive un messaggio sulla pagina
+    if (Object.keys(houses).length == 0) {
+        res.status(200).json({
+            success: false,
+            message: 'Non hai prenotato nessun alloggio'
+        });
+        return;
+    }
+    let housesList = houses.map((houseItem) => {return{idAlloggio: houseItem.idAlloggio};});
+    res.status(200).json(housesList);
+});
+
 module.exports = router;
