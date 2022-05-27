@@ -192,11 +192,15 @@ router.post('/eventSubscription', async (req, res) => {
         });
         return;
     }
-    let subList = subscribers.map(async (subItem) => {
-        userSubscribed = await User.findOne({_id: subItem.idTurista}).exec();
-        return{nome: userSubscribed.nome, cognome: userSubscribed.cognome, dataDiNascita: userSubscribed.dataDiNascita, email: userSubscribed.email};
-    });
-    console.log(subList);
+
+    var subList = [];
+
+    for(var i in subscribers){
+        userSubscribed = await User.findOne({_id: subscribers[i].idTurista}).exec();
+
+        subList.push({nome: userSubscribed.nome, cognome: userSubscribed.cognome, dataDiNascita: userSubscribed.dataDiNascita, email: userSubscribed.email});
+    }
+
     res.status(200).json(subList);
 });
 
