@@ -545,6 +545,26 @@ function getCategory() {
 };
 
 /*
+    Richiede lista delle categorie esistenti per i filtri
+*/
+function getCategoryFilter() {
+    // Esegue la richiesta degli eventi all'api specifica
+    fetch('../api/v1/event/category')
+    .then((resp) => resp.json())
+    .then(function(data){
+                var select = document.getElementById("filterList");
+                return data.map(function(item){
+
+                    var option = document.createElement("option");
+                    option.innerHTML = item.title;
+                    option.setAttribute("value", item.id);
+                    select.appendChild(option);
+                })
+            })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
     Controlla le prenotazioni dell'alloggio specifico
 */
 function checkHousingPrenotation() {
