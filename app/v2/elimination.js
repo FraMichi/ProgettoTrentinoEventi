@@ -400,7 +400,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
 
     // aggiorna posti disponibili per l'Evento
     postiDisponibili=evento.postiDisponibili;
-    let evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
+    let Evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
 
   	res.status(200).json({
     		success: true,
