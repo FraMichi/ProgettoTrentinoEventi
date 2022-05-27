@@ -1014,8 +1014,27 @@ function deleteHousing(id) {
 */
 function getEventsFiltered() {
 
+    // Prende i filtri passati nella URL
+    var urlParams = new URLSearchParams(window.location.search);
+
+    if(urlParams.has('city')){
+        var city = urlParams.get('city');
+    }
+
+    if(urlParams.has('startDate')){
+        var startDate = urlParams.get('startDate');
+    }
+
+    if(urlParams.has('endDate')){
+        var endDate = urlParams.get('endDate');
+    }
+
+    if(urlParams.has('filterCategory')){
+        var filterCategory = urlParams.get('filterCategory');
+    }
+
     // Manda la richiesta all'api
-    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents')
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate + '&filterCategory=' + filterCategory)
     .then((resp) => resp.json())
     .then(function(data){
 
