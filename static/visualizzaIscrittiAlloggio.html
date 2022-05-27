@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title id="windowTitle">Iscritti evento specifico</title>
+        <title id="windowTitle">Iscritti alloggio specifico</title>
         <script src="script.js"></script>
         <style>
             table, th, td {
@@ -11,23 +11,25 @@
         </style>
     </head>
 
-    <body onload=" getIscrittiEvento(); checkIfLogged()">
+    <body onload=" getIscrittiAlloggio(); checkIfLogged()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
         <h1 id="title"></h1>
-        <p id="description"></p>
-        <p>Posti ancora disponibili: <a id="seats"></a></p>
-        <h2>Tabella iscrizioni:</h2>
+        <p>Data di inizio disponibilità: <a id="init"></a></p>
+        <p>Data di fine disponibilità: <a id="finl"></a></p>
+        <h2>Tabella prenotazioni:</h2>
         <table id="list">
             <tr>
+                <td><b>Inizio</b></td>
+                <td><b>Fine</b></td>
                 <td><b>Nome</b></td>
                 <td><b>Cognome</b></td>
                 <td><b>Data di nascita</b></td>
                 <td><b>Email</b></td>
             </tr>
         </table>
-        <p>Torna alla <a href="/visualizzaEventiCreati.html">lista eventi</a></p>
+        <p>Torna alla <a href="/visualizzaAlloggiCreati.html">lista alloggi</a></p>
 
     </body>
 </html>
