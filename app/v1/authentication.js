@@ -120,8 +120,8 @@ router.post('/login', async (req, res) => {
       	id: user._id
   	}
 
-    // Scadenza dopo 2 minuti
-    expire = 120;
+    // Scadenza dopo 30 minuti
+    expire = 1800;
   	var options = {
   		  expiresIn: expire
   	}
@@ -293,7 +293,7 @@ router.post('/subscribe', async (req, res) => {
     		email: user.email,
     		id: user._id
   	}
-    expire = 120; // Scadenza dopo 2 minuti
+    expire = 1800; // Scadenza dopo 30 minuti
 
   	var options = {
     		expiresIn: expire
