@@ -386,6 +386,11 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
 
   	// Elimina l'iscrizione dell'utente dall'evento
   	await EventSubscription.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
+	
+	// aggiorna posti disponibili per l'Evento
+        postiDisponibili=evento.postiDisponibili;
+        let evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
+
 
   	res.status(200).json({
     		success: true,
