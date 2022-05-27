@@ -1018,25 +1018,22 @@ function deleteSubscriptionEvent() {
  * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
  * Manda la richiesta all'API per l'eliminazione della prenotazione di un alloggio
  */
-function deleteHousingSubscription() {
+function deleteSubscriptionEvent(id) {
 
     // Se c'è il cookie dell'utente prende i suoi elementi
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
 
-        fetch('../api/v2/elimination/deleteHousingSubscription', {
+        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, housingId: id} )
+            body: JSON.stringify( { token: token, eventId: id} )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-            alert(data.message);
-            window.location.href = "/index.html";
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
-    } else {
-        alert("Effettua il login");
     }
 
 };
