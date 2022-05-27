@@ -335,6 +335,7 @@ router.delete('/deleteHousing', async (req, res) => {
  *          description: |
                UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
  */
+
 router.delete('/deleteSubscriptionEvent', async (req, res) => {
 
   	// Controlla se il token è valido
@@ -359,6 +360,9 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
         return;
     }
 
+    // Prova a prendere l'evento dal database
+    let evento = await Event.findOne({ _id: req.body.eventId }).exec();
+
   	// Controlla se l'evento esiste, se no invia un messaggio di errore
   	if (!evento) {
 		res.status(401).json({
@@ -369,7 +373,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
   	}
 
     // Se user loggato controlla se registrato ad evento specifico
-    let iscrizione = await EventSubscription.findOne({ idTurista: req.loggedUser.id, idEvento: req.body.event });
+    let iscrizione = await EventSubscription.findOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
 
     // Se non iscritto, invia un messaggio di errore
     if (!iscrizione) {
@@ -381,13 +385,14 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
   	}
 
   	// Elimina l'iscrizione dell'utente dall'evento
-  	await EventSubscription.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.event });
+  	await EventSubscription.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
 
   	res.status(200).json({
     		success: true,
     		message: 'Iscrizione evento eliminata!'
   	});
 });
+
 
 
 
