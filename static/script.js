@@ -1008,3 +1008,32 @@ function deleteHousing(id) {
     }
 
 };
+
+/*
+    Richiede lista eventi filtrati
+*/
+function getEventsFiltered() {
+
+    // Manda la richiesta all'api
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents')
+    .then((resp) => resp.json())
+    .then(function(data){
+
+        // Prende la lista dall'HTML in cui inserire gli eventi
+        var ul = document.getElementById("list");
+        return data.map(function(item){
+
+            // Crea gli elementi necessari per la lista
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+
+            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+            a.innerHTML = item.title
+
+            // Li aggiunge alla lista
+            li.appendChild(a);
+            ul.appendChild(li);
+        })
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
