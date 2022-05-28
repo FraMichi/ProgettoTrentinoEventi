@@ -34,7 +34,7 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js', './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js'] // files containing annotations as above
+  apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js', './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/elimination.js', './app/v2/visualizzazioneFiltrata.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione

@@ -150,7 +150,7 @@ router.delete('/deleteEvent', async (req, res) => {
 // Route per eliminazione alloggio
 /**
  * @openapi
- * /api/v2/elimination/housingEvent:
+ * /api/v2/elimination/deleteHousing:
  *  delete:
  *   description: Controlla se il token é valido, l'alloggio esiste e l'utente è il creatore dell'alloggio
  *   summary: Elimina un alloggio
