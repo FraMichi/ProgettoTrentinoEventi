@@ -506,7 +506,7 @@ router.delete('/deleteHousingSubscription', async (req, res) => {
     }
 
     // Se user loggato controlla se registrato ad alloggio specifico
-    let prenotations = await HousingSubscription.findOne({idAlloggio: housingId, idTurista: req.loggedUser.id});
+    let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.housingId, idTurista: req.loggedUser.id});
 
     // Se non prenotato, invia un messaggio di errore
     if (!prenotations) {
@@ -518,7 +518,7 @@ router.delete('/deleteHousingSubscription', async (req, res) => {
   	}
 
   	// Elimina l'iscrizione dell'utente dall'evento
-  	await HousingSubscription.deleteOne({ idAlloggio: housingId, idTurista: req.loggedUser.id });
+  	await HousingSubscription.deleteOne({ idAlloggio: req.body.housingId, idTurista: req.loggedUser.id });
 
 
   	res.status(200).json({
