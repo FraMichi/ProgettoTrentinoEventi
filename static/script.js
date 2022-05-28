@@ -1014,45 +1014,48 @@ function deleteHousing(id) {
 */
 function getEventsFiltered() {
 
-    // Prende i filtri passati nella URL
-    var urlParams = new URLSearchParams(window.location.search);
+    // Prende i valori inseriti nei filtri
 
-    if(urlParams.has('city')){
-        var city = urlParams.get('city');
-    }
-
-    if(urlParams.has('startDate')){
-        var startDate = urlParams.get('startDate');
-    }
-
-    if(urlParams.has('endDate')){
-        var endDate = urlParams.get('endDate');
-    }
-
-    if(urlParams.has('filterCategory')){
-        var filterCategory = urlParams.get('filterCategory');
-    }
+    var city = document.getElementById('filterCitta').value;
+    var startDate = document.getElementById('filterStartDate').value;
+    var endDate = document.getElementById('filterEndDate').value;
+    var filterCategory = document.getElementById('filterList').value;
 
     // Manda la richiesta all'api
-    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate + '&filterCategory=' + filterCategory)
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate + '&filterCategory=' + filterCategory, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json'}
+    })
     .then((resp) => resp.json())
     .then(function(data){
 
         // Prende la lista dall'HTML in cui inserire gli eventi
         var ul = document.getElementById("list");
-        return data.map(function(item){
+
+        // Rimuove tutti gli eventi già nella lista
+        while(ul.hasChildNodes()) {
+            ul.removeChild(ul.childNodes[0]);
+        }
+
+        for (var i in data.eventsList) {
 
             // Crea gli elementi necessari per la lista
             var li = document.createElement("li");
             var a = document.createElement("a");
 
-            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
-            a.innerHTML = item.title
+            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + data.eventsList[i].id);
+            a.innerHTML = data.eventsList[i].title;
 
             // Li aggiunge alla lista
             li.appendChild(a);
             ul.appendChild(li);
-        })
+
+        }
+
+        if(data.success == false)
+        {
+            document.getElementById('errorMessage').innerHTML = data.message;
+        }
     })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
