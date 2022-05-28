@@ -4,6 +4,42 @@ const Event = require('./../models/event');
 const Category = require('./../models/category');
 
 
+
+// Route per filtrare gli eventi
+/**
+ * @openapi
+ * /api/v2/visualizzazioneFiltrata/getFilterEvents:
+ *  delete:
+ *   description: Resitituisce gli eventi che soddisfano i filtri applicati
+ *   summary: Filtra gli eventi
+ *   tags:
+ *    - eventFiltering
+ *   responses:
+ *    200:
+ *     description: non ci sono errori e gli eventi sono stati filtrati correttamente
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale true dato che tutti i campi sono corretti
+ *         eventsList:
+ *          type: string
+ *          description: Contiene la lista degli eventi filtrati
+ *    400:
+ *     description: Restituisce errore se il formato delle date non è corretto, il formato dell'id della categoria non rispetta quello di mongoDB e la data di inizio è maggiore di quella di fine
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ */
 router.get('/getFilterEvents', async (req, res) => {
 
     city = req.query.city;
@@ -82,7 +118,7 @@ router.get('/getFilterEvents', async (req, res) => {
     // Creo la lista di eventi da ritornare, solo con id e titolo
     let eventsList = events.map((eventItem) => {return{id: eventItem._id, title: eventItem.titolo};})
 
-    res.status(200).json({success: false, eventsList: eventsList});
+    res.status(200).json({success: true, eventsList: eventsList});
 });
 
 module.exports = router;
