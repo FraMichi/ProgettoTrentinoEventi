@@ -587,7 +587,7 @@ function checkHousingPrenotation() {
 
                 } else {
                     if(item.ofUser) {
-                        cell3.innerHTML = "Hai gia prenotato questo slot. Annulla <a href=\"javascript:deleteHousingSubscription('"urlParams.get('housingId')"')\">qui</a>!";
+                        cell3.innerHTML = "Hai gia prenotato questo slot. Annulla <a href=\"javascript:deleteHousingSubscription('"+urlParams.get('housingId')+"')\">qui</a>!";
                     } else {
                         cell3.innerHTML = "Questo slot è già prenotato!";
                     }
