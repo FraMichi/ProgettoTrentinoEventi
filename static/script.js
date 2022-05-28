@@ -1184,6 +1184,7 @@ function getIscrittiAlloggio() {
         console.error("Attenzione: parametro 'housingId' non presente nella query");
     }
 };
+
 /*
  *  Richiede lista eventi filtrati
 */
@@ -1220,6 +1221,55 @@ function getEventsFiltered() {
 
             a.setAttribute("href", "/visualizzaEvento.html?eventId=" + data.eventsList[i].id);
             a.innerHTML = data.eventsList[i].title;
+
+            // Li aggiunge alla lista
+            li.appendChild(a);
+            ul.appendChild(li);
+
+        }
+
+        if(data.success == false)
+        {
+            document.getElementById('errorMessage').innerHTML = data.message;
+        }
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
+ *  Richiede lista eventi filtrati
+*/
+function getHousingsFiltered() {
+
+    // Prende i valori inseriti nei filtri
+    var city = document.getElementById('filterCitta').value;
+    var startDate = document.getElementById('filterStartDate').value;
+    var endDate = document.getElementById('filterEndDate').value;
+
+    // Manda la richiesta all'api
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterHousings?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json'}
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+
+        // Prende la lista dall'HTML in cui inserire gli alloggi
+        var ul = document.getElementById("list");
+
+        // Rimuove tutti gli alloggi già nella lista
+        while(ul.hasChildNodes()) {
+            ul.removeChild(ul.childNodes[0]);
+        }
+
+        for (var i in data.housingsList) {
+
+            // Crea gli elementi necessari per la lista
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+
+            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + data.housingsList[i].id);
+            a.innerHTML = data.housingsList[i].title;
 
             // Li aggiunge alla lista
             li.appendChild(a);
