@@ -1045,12 +1045,12 @@ function deleteHousingSubscription(id) {
 * Crea una recensione per un evento e la salva nel database
 */
 function createEventReview(id) {
-  // Prende i dati dal form della creazione
-  var message = document.getElementById("housingReview").value;
-  var answer = document.getElementById("housingReviewAnswer").value;
-  var idEvento = document.getElementById("eventId").value;
-  var idUtente = document.getElementById("idUtente").value;
-  var idGestore = document.getElementById("idGestore").value;
+  // Prende l'id dell'evento dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('eventId')){
+
+      var id = urlParams.get('eventId');
+  }
 
   if(getCookie("user")) {
       token = JSON.parse(getCookie("user")).token;
@@ -1091,9 +1091,9 @@ function createEventReview(id) {
                         }
                     })
                  .catch( error => console.error(error) );
-
       }
-  });
+      }
+  }
 }
 
 /*
@@ -1102,12 +1102,12 @@ function createEventReview(id) {
 */
 function createHousingReview() {
 
-    // Prende i dati dal form della creazione
-    var message = document.getElementById("housingReview").value;
-    var answer = document.getElementById("housingReviewAnswer").value;
-    var idAlloggio = document.getElementById("housingId").value;
-    var idUtente = document.getElementById("idUtente").value;
-    var idGestore = document.getElementById("idGestore").value;
+  // Prende l'id dell'alloggio dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('housingId')){
+
+      var id = urlParams.get('housingId');
+  }
 
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
@@ -1148,9 +1148,9 @@ function createHousingReview() {
                           }
                       })
                    .catch( error => console.error(error) );
-
         }
-    });
+        }
+    }
   }
 
 // Funzione che imposta l'attributo 'href' del bottone per l'eliminazione della recensione di un evento

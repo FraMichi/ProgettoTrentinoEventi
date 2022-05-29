@@ -67,17 +67,14 @@
             <a id="deleteEvent"></a>
         </div>
 
-        <div style="visibility: visible">
             <h2>Lascia una recensione</h2>
-            <textarea rows='10' cols='30'  name='review'> Inserisci qui il testo </textarea>
-            <p id="reviewText">
-            </p>
-            <button type="button" onclick="createEventReview()">Invia</button>
-            <div>
-                <a id="deleteEventReview"></a>
-            </div>
+            <form action="api/v2/review" method="post">
+              <label for="eventReview">Inserisci il messaggio:</label><br>
+              <textarea id ="eventReview" name="eventReview" rows="10" cols="30"></textarea><br/>
 
-        </div>
+              <button type="button" onclick="createEventReview()">Inserisci recensione</button>
+
+
 
     </body>
 </html>
