@@ -1111,17 +1111,17 @@ function createHousingReview() {
   var urlParams = new URLSearchParams(window.location.search);
   if(urlParams.has('housingId')){
 
-      var id = urlParams.get('housingId');
+      var housingId = urlParams.get('housingId');
   }
 
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
         userId = JSON.parse(getCookie("user")).id;
 
-        fetch('../api/v1/authentication/checkIfLogged', {
+        fetch('../api/v2/review/createEventReview', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token } )
+            body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review,token: token } )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
@@ -1137,7 +1137,7 @@ function createHousingReview() {
                         fetch('../api/v2/review/createHousingReview', {
                            method: 'POST',
                            headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { message: message, answer: answer, idAlloggio: housingId, idUtente: idUtente, idGestore: idGestore } )
+                           body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review,token: token } )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
@@ -1146,10 +1146,12 @@ function createHousingReview() {
                             if(data.success == false) {
                                 // In caso affermativo mostra il messaggio
                                 document.getElementById("errorMsgHouse").innerHTML = data.message;
+                                window.location.href = "/index.html";
+                                alert("Recensione alloggio non inviata");
                             } else {
                               //In caso negativo torna alla pagina di visualizzazione
-                              window.location.href = "/visualizzaAlloggio.html?housingId="+id;
-                              alert("Recensione alloggio creata correttamente");
+                              window.location.href = "/index.html";
+                              alert("Recensione alloggio inviata");
                           }
                       })
                    .catch( error => console.error(error) );
