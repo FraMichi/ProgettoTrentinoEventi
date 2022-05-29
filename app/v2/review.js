@@ -118,7 +118,22 @@ router.post('/createEventReview', async (req, res) => {
 		return;
   	}
 
-    //Controllo data evento passata
+    //Controllo data evento sia passata
+      var oggi = new Date();
+      let dend = event[0].dataFine;
+
+      var diff = dend.getTime()  - oggi.getTime();
+      //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
+      if (diff >= 0) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'Evento ancora non avvenuto'
+        });
+        return;
+          };
+
+
 
   	// Crea la recensione evento
   	let eventreview = new EventReview({

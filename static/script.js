@@ -1049,17 +1049,20 @@ function createEventReview(id) {
   var urlParams = new URLSearchParams(window.location.search);
   if(urlParams.has('eventId')){
 
-      var id = urlParams.get('eventId');
+      var eventId = urlParams.get('eventId');
   }
+
+  // Prendo la Recensione
+  var review = document.getElementById("eventReview").value;
 
   if(getCookie("user")) {
       token = JSON.parse(getCookie("user")).token;
       userId = JSON.parse(getCookie("user")).id;
 
-      fetch('../api/v1/authentication/checkIfLogged', {
+      fetch('../api/v2/review/createEventReview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify( { token: token } )
+          body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review,token: token } )
       })
       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
       .then( function(data) {
@@ -1075,7 +1078,7 @@ function createEventReview(id) {
                       fetch('../api/v2/review/createEventReview', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { message: message, answer: answer, idEvento: eventId, idUtente: idUtente, idGestore: idGestore } )
+                         body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review,token: token } )
                       })
                       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                       .then( function(data) {
@@ -1084,15 +1087,17 @@ function createEventReview(id) {
                           if(data.success == false) {
                               // In caso affermativo mostra il messaggio
                               document.getElementById("errorMsgHouse").innerHTML = data.message;
+                              window.location.href = "/index.html";
+                              alert("Recensione evento non inviata");
                           } else {
                             //In caso negativo torna alla pagina di visualizzazione
-                            window.location.href = "/visualizzaEvento.html?eventId="+id;
-                            alert("Recensione alloggio creata correttamente");
+                            window.location.href = "/index.html";
+                            alert("Recensione evento inviata");
                         }
                     })
                  .catch( error => console.error(error) );
       }
-      }
+    });
   }
 }
 
@@ -1149,7 +1154,7 @@ function createHousingReview() {
                       })
                    .catch( error => console.error(error) );
         }
-        }
+      });
     }
   }
 
