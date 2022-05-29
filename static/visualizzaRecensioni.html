@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Visualizzazione recensioni</title>
+        <script src="script.js"></script>
+    </head>
+    <body onload="checkIfLogged()">
+        <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
+        <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
+        <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
+        <h1>Lista delle recensioni</h1>
+
+        <ul id="list" name="list">
+        </ul>
+        <script>
+            getReviews();
+        </script>
+
+    </body>
+</html>
+
+
+//lista vuota con id in html, dentro lo script prendo id
+//visualizza alloggio e evento possibilità di vedere mettere link mostrato solo all'utente registrato all'evento, si apre nuova pagina dove aggiungere Recensione
+//gestore di quell'evento viene un altro link rispondi a recensioni.
+
+/*
+
+
+*/

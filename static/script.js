@@ -138,7 +138,7 @@ function checkEventSubscription(){
         .then(function(data){
 
             if(data.message == "UserSubscribed") {
-                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
+                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento! Vuoi disiscriverti? Premi <a href=\"javascript:deleteSubscriptionEvent('"+id+"')\">qui</a>!";
             }
             else if(data.message == "UserNotSubscribed") {
                 document.getElementById("prenotationText").innerHTML = "Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
@@ -587,9 +587,9 @@ function checkHousingPrenotation() {
 
                 } else {
                     if(item.ofUser) {
-                        cell3.innerHTML = "Hai gia prenotato questo slot";
+                        cell3.innerHTML = "Hai gia prenotato questo slot. Vuoi annullare la prenotazione? Premi <a href=\"javascript:deleteHousingSubscription('"+id+"')\">qui</a>!";
                     } else {
-                        cell3.innerHTML = "Questo slot è già prenotato";
+                        cell3.innerHTML = "Questo slot è già prenotato. Vuoi annullare la prenotazione? Premi <a href=\"javascript:deleteHousingSubscription('"+id+"')\">qui</a>!";
                     }
                 }
 
@@ -987,4 +987,133 @@ function deleteHousing(id) {
         alert("Effettua il login");
     }
 
+};
+
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico, di annullamento iscrizione.
+ * Manda la richiesta all'API per l'eliminazione dell'iscrizione all'evento
+ */
+function deleteSubscriptionEvent(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di prenotazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione della prenotazione di un alloggio
+ */
+function deleteHousingSubscription(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteHousingSubscription', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata ?.
+* Crea il nuovo alloggio e lo salva nel database
+*/
+function createReview() {
+
+    // Prende i dati dal form della creazione
+    var name = document.getElementById("name").value;
+    var surname = document.getElementById("surname").value;
+    var email = document.getElementById("email").value;
+    var message = document.getElementById("message").value;
+
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+        userId = JSON.parse(getCookie("user")).id;
+
+        fetch('../api/v1/authentication/checkIfLogged', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token } )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+
+            // Se l'utente non è loggato manda alla pagina di login
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgEvent").innerHTML = data.message;
+                window.location.href = "/login.html";
+            } else {
+                // Se l'utente loggato è un turista allora procede con la creazione della recensione
+                fetch('../api/v1/authentication/checkIfTurista', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify( { userId: userId } )
+                })
+                .then((resp) => resp.json())
+                .then(function(data){
+
+                    if(data.success == false) {
+                        document.getElementById("errorMsgEvent").innerHTML = data.message;
+                        window.location.href = "/index.html";
+                    } else {
+                        var tipoDiUser = data.category;
+                    }
+
+                    if(tipoDiUser == 'turista') {
+                        fetch('../api/v2/reviews/create', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify( { name: name, surname: surname, email: email, message: message} )
+                        })
+                        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                        .then( function(data) {
+
+                            // Controlla se sono stati resituiti messaggi di errore
+                            if(data.success == false) {
+                                // In caso affermativo mostra il messaggio
+                                document.getElementById("errorMsgEvent").innerHTML = data.message;
+                            } else {
+                                //In caso negativo torna alla pagina in cui era prima
+                                alert("Recensione creata correttamente");
+                                window.location.href = "/index.html";
+                            }
+                        })
+                    } else {
+                        window.location.href = "/index.html";
+                    }
+                })
+                .catch( error => console.error(error) );
+              }
+          })
+          .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+      } else {
+          window.location.href = "/login.html";
+      }
 };

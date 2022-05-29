@@ -286,4 +286,246 @@ router.delete('/deleteHousing', async (req, res) => {
   	});
 });
 
+// Route per eliminazione iscrizione ad evento
+/**
+ * @openapi
+ * /api/v2/elimination/deleteSubscriptionEvent:
+ *  delete:
+ *   description: Controlla se il token é valido, l'evento esiste e l'utente è iscritto dell'evento
+ *   summary: Elimina l'iscrizione ad un evento specifico
+ *   tags:
+ *    - EventSubscriptionElimination
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        token:
+ *         type: string
+ *         description: Contiene il token dell'utente loggato
+ *         requied: true
+         event:
+ *         type: string
+ *         description: Contiene l'id dell'evento
+ *   responses:
+ *    200:
+ *     description: non ci sono errori e l'iscrizione è stata eliminata correttamente
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *         message:
+ *          type: string
+ *          description: |
+              UserNotSubscribed => l'utente non è iscritto all'evento specifico
+              UserSubscribed => l'utente è già iscritto all'evento specifico
+ *    401:
+ *     description: l'utente non è iscritto
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: |
+ *         message:
+ *          type: string
+ *          description: |
+               UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+      404:
+ *     description: Restituisce errore se non è stato trovato l'evento
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ */
+router.delete('/deleteSubscriptionEvent', async (req, res) => {
+
+  	// Controlla se il token è valido
+    tokenChecker(req, res, req.body.token);
+
+    // Se non è valido ritorna un messaggio di errore
+    if(req.loggedUser == undefined) {
+        res.status(401).json({
+            success: false,
+            message: 'Token non valido'
+        });
+        return;
+    }
+
+    // Controlla validita dell'id dell'evento
+    if (!req.body.eventId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
+        });
+        return;
+    }
+
+    // Prova a prendere l'evento dal database
+    let evento = await Event.findOne({ _id: req.body.eventId }).exec();
+
+  	// Controlla se l'evento esiste, se no invia un messaggio di errore
+  	if (!evento) {
+		res.status(401).json({
+        success: false,
+        message: 'Evento non trovato'
+        });
+		return;
+  	}
+
+    // Se user loggato controlla se registrato ad evento specifico
+    let iscrizione = await EventSubscription.findOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
+
+    // Se non iscritto, invia un messaggio di errore
+    if (!iscrizione) {
+		res.status(404).json({
+        success: false,
+        message: 'Utente non iscritto all evento'
+        });
+		return;
+  	}
+
+  	// Elimina l'iscrizione dell'utente dall'evento
+  	await EventSubscription.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
+
+    // aggiorna posti disponibili per l'Evento
+    postiDisponibili=evento.postiDisponibili;
+    let evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
+
+  	res.status(200).json({
+    		success: true,
+    		message: 'Iscrizione evento eliminata!'
+  	});
+});
+
+// Route per annullamento prenotazione alloggio
+/**
+ * @openapi
+ * /api/v2/elimination/deleteHousingSubscription:
+ *  delete:
+ *   description: Controlla se il token é valido, l'appartamento esiste e l'utente ha prenotato l'alloggio per un periodo di tempo
+ *   summary: Elimina la prenotazione ad un alloggio specifico
+ *   tags:
+ *    - HousingSubscriptionElimination
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        token:
+ *         type: string
+ *         description: Contiene il token dell'utente loggato
+ *         requied: true
+         event:
+ *         type: string
+ *         description: Contiene l'id dell'alloggio
+ *   responses:
+ *    200:
+ *     description: non ci sono errori e la prenotazione è stata eliminata correttamente
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *         message:
+ *          type: string
+ *          description: |
+              UserNotSubscribed => l'utente non è prenotato all'alloggio specifico
+              UserSubscribed => l'utente è già prenotato all'allogggio specifico
+ *    401:
+ *     description: l'utente non è iscritto
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: |
+ *         message:
+ *          type: string
+ *          description: |
+               UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+ *     404:
+ *     description: Restituisce errore se non è stato trovato l'alloggio
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ */
+router.delete('/deleteHousingSubscription', async (req, res) => {
+
+    // Controlla se il token è valido
+    tokenChecker(req, res, req.body.token);
+
+    // Se non è valido ritorna un messaggio di errore
+    if(req.loggedUser == undefined) {
+        res.status(401).json({
+            success: false,
+            message: 'Token non valido'
+        });
+        return;
+    }
+
+    // Controlla validita dell'id dell'alloggio
+    if (!req.body.housingId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
+        });
+        return;
+    }
+
+    // Prova a prendere l'alloggio dal database
+    let alloggio = await Housing.findOne({ _id: req.body.housingId }).exec();
+
+    // Controlla se l'alloggio esiste, se no invia un messaggio di errore
+    if (!alloggio) {
+    res.status(404).json({
+        success: false,
+        message: 'Alloggio non trovato'
+        });
+    return;
+    }
+
+    // Se user loggato controlla se registrato ad alloggio specifico
+    let prenotations = await HousingSubscription.findOne({idAlloggio: housingId, idTurista: req.loggedUser.id, dataInizio: initDate.toISOString(), dataFine: finlDate.toISOString()});
+
+    // Se non prenotato, invia un messaggio di errore
+    if (!prenotations) {
+		res.status(404).json({
+        success: false,
+        message: 'Utente non prenotato per l alloggio scelto'
+        });
+		return;
+  	}
+
+  	// Elimina l'iscrizione dell'utente dall'evento
+  	await HousingSubscription.deleteOne({ idAlloggio: housingId, idTurista: req.loggedUser.id, dataInizio: initDate.toISOString(), dataFine: finlDate.toISOString() });
+
+
+  	res.status(200).json({
+    		success: true,
+    		message: 'Prenotazione alloggio eliminata!'
+  	});
+});
+
+
 module.exports = router;
