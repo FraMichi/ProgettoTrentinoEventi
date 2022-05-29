@@ -392,7 +392,7 @@ router.delete('/deleteEventReview', async (req, res) => {
   	}
 
     // Controlla se l'utente è il creatore della recensione, se no invia un messaggio di errore
-    if(evento.idUtente != req.loggedUser.id) {
+    if(eventreview.idUtente != req.loggedUser.id) {
         res.status(403).json({
         success: false,
         message: "Non sei il proprietario della recensione evento"
@@ -525,12 +525,12 @@ router.delete('/deleteHousingReview', async (req, res) => {
 
 /**
  * @openapi
- * /api/v1/visualizzazione/event:
+ * /api/v2/review/eventReview:
  *   get:
- *     description: Gets the details of a specific event
- *     summary: Details of one event
+ *     description: Gets the reviews of a specific event
+ *     summary: Reviews of one event
  *     tags:
- *       - eventVisualization
+ *       - eventReviewsVisualization
  *     parameters:
  *       - in: query
  *         name: id
@@ -539,47 +539,26 @@ router.delete('/deleteHousingReview', async (req, res) => {
  *         required: true
  *     responses:
  *       200:
- *         description: Details of an event in JSON format
+ *         description: Reviews of an event in JSON format
  *         content:
  *           application/json:
  *             schema:
  *               properties:
- *                 title:
+ *                 idUtente:
  *                   type: string
- *                   description: title of the event
- *                 description:
+ *                   description: Id of the author of the review
+ *                 message:
  *                   type: string
- *                   description: description of the event
- *                 initDate:
+ *                   description: the review of the event
+ *                 idGestore:
  *                   type: string
- *                   description: date of the beginning of the event in ISO8601 format
- *                 finlDate:
+ *                   description: id of the creator of the event
+ *                 answer:
  *                   type: string
- *                   description: date of the ending of the event in ISO8601 format
- *                 address:
+ *                   description: the answer of the creator of the event
+ *                 delete:
  *                   type: string
- *                   description: address of the event
- *                 city:
- *                   type: string
- *                   description: city where the event takes place
- *                 seatsAvailable:
- *                   type: integer
- *                   description: seats still available for the event
- *                 seatsOccupied:
- *                   type: number
- *                   description: seats already occupied for the event
- *                 category:
- *                   type: string
- *                   description: the category of the event
- *                 creatorName:
- *                   type: string
- *                   description: the name of the user who created the event
- *                 creatorSurname:
- *                   type: string
- *                   description: the surname of the user who created the event
- *                 creatorEmail:
- *                   type: string
- *                   description: the email of the user who created the event
+ *                   description: delete event review
  *       404:
  *         description: Some data are not found on the DB
  *         content:
@@ -603,7 +582,7 @@ router.delete('/deleteHousingReview', async (req, res) => {
  *                   type: string
  *                   description: specifications regarding the specific error
  */
-router.get('/event', async (req, res) => {
+router.get('/eventReview', async (req, res) => {
 
    // Controlla che sia effettivamente presente il parametro id
    if (!req.query.id) {
@@ -637,18 +616,6 @@ router.get('/event', async (req, res) => {
        return;
    }
 
-   // Trova categoria dell'evento
-   let eventCategory = await Category.findOne({_id: eventItem.idCategoria});
-
-   // Se la categoria non viene trovata restituisci un errore
-   if(!eventCategory) {
-       res.status(404).json({
-           success: false,
-           message: "Categoria non trovata"
-       });
-       return;
-   }
-
    // Trova gestore dell'evento
    let eventCreator = await User.findOne({_id: eventItem.idGestore});
 
@@ -661,20 +628,33 @@ router.get('/event', async (req, res) => {
        return;
    }
 
+   // Prova a prendere la recensione dal database
+   let eventreview = await EventReview.findOne({ idUtente: req.loggedUser.id, idEvento: req.body.eventId }).exec();
+
+   // Controlla se la recensione esiste, se no invia un messaggio di errore
+   if (!eventreview) {
+   res.status(404).json({
+       success: false,
+       message: 'Recensione evento non trovata'
+       });
+   return;
+   }
+
+   // Controlla se l'utente è il creatore della recensione, se no invia un messaggio di errore
+   if(eventreview.idUtente != req.loggedUser.id) {
+       res.status(403).json({
+       success: false,
+       message: "Non sei il proprietario della recensione evento"
+       });
+   return;
+   }
+
    // Risorsa finale
    let finalResponse = {
-       title: eventItem.titolo,
-       description: eventItem.descrizione,
-       initDate: eventItem.dataInizio,
-       finlDate: eventItem.dataFine,
-       address: eventItem.indirizzo,
-       city: eventItem.citta,
-       seatsAvailable: eventItem.postiDisponibili,
-       seatsOccupied: eventItem.postiTotali,
-       category: eventCategory.tipoCategoria,
-       creatorName: eventCreator.nome,
-       creatorSurname: eventCreator.cognome,
-       creatorEmail: eventCreator.email
+     recensione: eventreview.Messaggio,
+     risposta: eventreview.Risposta,
+     idUtente: eventreview.idUtente,
+     idGestore: eventreview.idGestore
    };
 
    // Ritorna la risposta
@@ -683,17 +663,17 @@ router.get('/event', async (req, res) => {
 
 /**
  * @openapi
- * /api/v1/visualizzazione/housing:
+ * /api/v2/review/housingReview:
  *   get:
- *     description: Gets the details of a specific housing
- *     summary: Details of one housing
+ *     description: Gets the reviews of a specific housing
+ *     summary: Reviews of one housing
  *     tags:
- *       - housingVisualization
+ *       - housingReviewVisualization
  *     parameters:
  *       - in: query
  *         name: id
  *         type: string
- *         description: The id of the specific housing you want to get the details
+ *         description: The id of the specific housing you want to get the reviews
  *         required: true
  *     responses:
  *       200:
@@ -702,33 +682,21 @@ router.get('/event', async (req, res) => {
  *           application/json:
  *             schema:
  *               properties:
- *                 title:
+ *                 review:
  *                   type: string
  *                   description: title of the housing
- *                 description:
+ *                 answer:
  *                   type: string
- *                   description: description of the housing
- *                 initDate:
+ *                   description: answer of the housing owner
+ *                 idAlloggio:
  *                   type: string
- *                   description: date of the beginning of the housing availability slot in ISO8601 format
- *                 finlDate:
+ *                   description: id of the house
+ *                 idUtente:
  *                   type: string
- *                   description: date of the ending of the housing availability slot in ISO8601 format
- *                 address:
+ *                   description: id of the user who write the review
+ *                 idGestore:
  *                   type: string
- *                   description: address of the housing
- *                 city:
- *                   type: string
- *                   description: city where the housing is located
- *                 creatorName:
- *                   type: string
- *                   description: the name of the user who created the housing
- *                 creatorSurname:
- *                   type: string
- *                   description: the surname of the user who created the housing
- *                 creatorEmail:
- *                   type: string
- *                   description: the email of the user who created the housing
+ *                   description: id of the user who can answer
  *       404:
  *         description: Some data are not found on the DB
  *         content:
@@ -752,7 +720,7 @@ router.get('/event', async (req, res) => {
  *                   type: string
  *                   description: specifications regarding the specific error
  */
-router.get('/housing', async (req, res) => {
+router.get('/housingReview', async (req, res) => {
 
    // Controlla che sia effettivamente presente il parametro id
    if (!req.query.id) {
@@ -798,17 +766,24 @@ router.get('/housing', async (req, res) => {
        return;
    }
 
+   // Prova a prendere la recensione dal database
+   let housingreview = await HousingReview.findOne({ idUtente: req.loggedUser.id, idAlloggio: req.body.housingId }).exec();
+
+   // Controlla se la recensione esiste, se no invia un messaggio di errore
+   if (!housingreview) {
+   res.status(404).json({
+       success: false,
+       message: 'Recensione alloggio non trovata'
+       });
+   return;
+   }
+
    // Risorsa finale
    let finalResponse = {
-       title: housingItem.titolo,
-       description: housingItem.descrizione,
-       initDate: housingItem.dataInizio,
-       finlDate: housingItem.dataFine,
-       address: housingItem.indirizzo,
-       city: housingItem.citta,
-       creatorName: housingCreator.nome,
-       creatorSurname: housingCreator.cognome,
-       creatorEmail: housingCreator.email
+     recensione: housingreview.Messaggio,
+     risposta: housingreview.Risposta,
+     idUtente: housingreview.idUtente,
+     idGestore: housingreview.idGestore
    };
 
    // Ritorna la risposta
