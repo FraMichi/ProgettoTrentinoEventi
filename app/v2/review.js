@@ -262,7 +262,20 @@ router.post('/createHousingReview', async (req, res) => {
 		return;
   	}
 
-    // Contollo date soggiorno passate
+    // Contollo data soggiorno passata
+      var oggi = new Date();
+      let dend = house[0].dataFine;
+
+      var diff = dend.getTime()  - oggi.getTime();
+      //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
+      if (diff >= 0) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'Soggiorno ancora non avvenuto'
+        });
+        return;
+          };
 
   	// Crea la recensione per l'alloggio
   	let housingreview = new HousingReview({
