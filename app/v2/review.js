@@ -522,3 +522,5 @@ router.delete('/deleteHousingReview', async (req, res) => {
     		message: 'Recensione alloggio eliminata!'
   	});
 });
+
+module.exports = router;
