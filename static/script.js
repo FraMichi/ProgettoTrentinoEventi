@@ -1039,3 +1039,204 @@ function deleteHousingSubscription(id) {
     }
 
 };
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
+* Crea una recensione per un evento e la salva nel database
+*/
+function createEventReview(id) {
+  // Prende i dati dal form della creazione
+  var message = document.getElementById("housingReview").value;
+  var answer = document.getElementById("housingReviewAnswer").value;
+  var idEvento = document.getElementById("eventId").value;
+  var idUtente = document.getElementById("idUtente").value;
+  var idGestore = document.getElementById("idGestore").value;
+
+  if(getCookie("user")) {
+      token = JSON.parse(getCookie("user")).token;
+      userId = JSON.parse(getCookie("user")).id;
+
+      fetch('../api/v1/authentication/checkIfLogged', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify( { token: token } )
+      })
+      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+      .then( function(data) {
+
+          // Se l'utente non è loggato manda alla pagina di login
+          if(data.success == false) {
+              // In caso affermativo mostra il messaggio
+              document.getElementById("errorMsgHouse").innerHTML = data.message;
+              window.location.href = "/login.html";
+          }
+          else {
+              // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
+                      fetch('../api/v2/review/createEventReview', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify( { message: message, answer: answer, idEvento: eventId, idUtente: idUtente, idGestore: idGestore } )
+                      })
+                      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                      .then( function(data) {
+
+                          // Controlla se sono stati resituiti messaggi di errore
+                          if(data.success == false) {
+                              // In caso affermativo mostra il messaggio
+                              document.getElementById("errorMsgHouse").innerHTML = data.message;
+                          } else {
+                            //In caso negativo torna alla pagina di visualizzazione
+                            window.location.href = "/visualizzaEvento.html?eventId="+id;
+                            alert("Recensione alloggio creata correttamente");
+                        }
+                    })
+                 .catch( error => console.error(error) );
+
+      }
+  });
+}
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata ?.
+* Crea una recensione per un alloggio e la salva nel database
+*/
+function createHousingReview() {
+
+    // Prende i dati dal form della creazione
+    var message = document.getElementById("housingReview").value;
+    var answer = document.getElementById("housingReviewAnswer").value;
+    var idAlloggio = document.getElementById("housingId").value;
+    var idUtente = document.getElementById("idUtente").value;
+    var idGestore = document.getElementById("idGestore").value;
+
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+        userId = JSON.parse(getCookie("user")).id;
+
+        fetch('../api/v1/authentication/checkIfLogged', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token } )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+
+            // Se l'utente non è loggato manda alla pagina di login
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgHouse").innerHTML = data.message;
+                window.location.href = "/login.html";
+            }
+            else {
+                // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
+                        fetch('../api/v2/review/createHousingReview', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' },
+                           body: JSON.stringify( { message: message, answer: answer, idAlloggio: housingId, idUtente: idUtente, idGestore: idGestore } )
+                        })
+                        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                        .then( function(data) {
+
+                            // Controlla se sono stati resituiti messaggi di errore
+                            if(data.success == false) {
+                                // In caso affermativo mostra il messaggio
+                                document.getElementById("errorMsgHouse").innerHTML = data.message;
+                            } else {
+                              //In caso negativo torna alla pagina di visualizzazione
+                              window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+                              alert("Recensione alloggio creata correttamente");
+                          }
+                      })
+                   .catch( error => console.error(error) );
+
+        }
+    });
+  }
+
+// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione della recensione di un evento
+function setDeleteEventReviewButton() {
+
+    // Prende l'id dell'evento dall'URL
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+
+        var id = urlParams.get('eventId');
+    }
+
+    // Modifica il contenuto dell'elemento
+    document.getElementById('deleteEventReview').innerHTML = 'Elimina recensione evento';
+
+    // Imposta l'attributo 'href' dell'elemento
+    document.getElementById('deleteEventReview').setAttribute('href', 'javascript:deleteEventReview("' + id +'")');
+};
+
+// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione della recensione dell'alloggio
+function setDeleteHousingReviewButton() {
+
+    // Prende l'id dell'alloggio dall'URL
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+
+        var id = urlParams.get('housingId');
+    }
+
+    // Modifica il contenuto dell'elemento
+    document.getElementById('deleteHousingReview').innerHTML = 'Elimina recensione alloggio';
+
+    // Imposta l'attributo 'href' dell'elemento
+    document.getElementById('deleteHousingReview').setAttribute('href', 'javascript:deleteHousingReview("' + id +'")');
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
+ * Manda la richiesta all'API per l'eliminazione della recensione di un evento
+ */
+function deleteEventReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/review/deleteEventReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "//visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione di una recensione di un alloggio
+ */
+function deleteHousingReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/review/deleteHousingReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "//visualizzaAlloggio.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
