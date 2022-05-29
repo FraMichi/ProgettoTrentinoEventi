@@ -138,7 +138,7 @@ function checkEventSubscription(){
         .then(function(data){
 
             if(data.message == "UserSubscribed") {
-                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
+                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento! Vuoi disiscriverti? Premi <a href=\"javascript:deleteSubscriptionEvent('"+id+"')\">qui</a>!";
             }
             else if(data.message == "UserNotSubscribed") {
                 document.getElementById("prenotationText").innerHTML = "Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
@@ -1027,6 +1027,7 @@ function deleteHousing(id) {
 
 };
 
+<<<<<<< HEAD
 /*
     Richiede lista iscritti all'evento specifico
 */
@@ -1283,4 +1284,53 @@ function getHousingsFiltered() {
         }
     })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+=======
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico, di annullamento iscrizione.
+ * Manda la richiesta all'API per l'eliminazione dell'iscrizione all'evento
+ */
+function deleteSubscriptionEvent() {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEventi.html";
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione della prenotazione di un alloggio
+ */
+function deleteSubscriptionEvent(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+>>>>>>> FraMichi-disiscrizioneeventiV2.1
 };

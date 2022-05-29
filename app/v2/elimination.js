@@ -286,4 +286,119 @@ router.delete('/deleteHousing', async (req, res) => {
   	});
 });
 
+// Route per eliminazione iscrizione ad evento
+/**
+ * @openapi
+ * /api/v2/elimination/deleteSubscriptionEvent:
+ *  delete:
+ *   description: Controlla se il token é valido, l'evento esiste e l'utente è iscritto dell'evento
+ *   summary: Elimina l'iscrizione ad un evento specifico
+ *   tags:
+ *    - EventSubscriptionElimination
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        token:
+ *         type: string
+ *         description: Contiene il token dell'utente loggato
+ *         requied: true
+         event:
+ *         type: string
+ *         description: Contiene l'id dell'evento
+ *   responses:
+ *    200:
+ *     description: non ci sono errori e l'iscrizione è stata eliminata correttamente
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *         message:
+ *          type: string
+ *          description: |
+              UserNotSubscribed => l'utente non è iscritto all'evento specifico
+              UserSubscribed => l'utente è già iscritto all'evento specifico
+ *    401:
+ *     description: l'utente non è iscritto
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: |
+ *         message:
+ *          type: string
+ *          description: |
+               UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+ */
+
+router.delete('/deleteSubscriptionEvent', async (req, res) => {
+
+  	// Controlla se il token è valido
+    tokenChecker(req, res, req.body.token);
+
+    // Se non è valido ritorna un messaggio di errore
+    if(req.loggedUser == undefined) {
+        res.status(401).json({
+            success: false,
+            message: 'Token non valido'
+        });
+        return;
+    }
+
+    // Controlla validita dell'id dell'evento
+    if (!req.body.eventId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
+        });
+        return;
+    }
+
+    // Prova a prendere l'evento dal database
+    let evento = await Event.findOne({ _id: req.body.eventId }).exec();
+
+  	// Controlla se l'evento esiste, se no invia un messaggio di errore
+  	if (!evento) {
+		res.status(401).json({
+        success: false,
+        message: 'Evento non trovato'
+        });
+		return;
+  	}
+
+    // Se user loggato controlla se registrato ad evento specifico
+    let iscrizione = await EventSubscription.findOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
+
+    // Se non iscritto, invia un messaggio di errore
+    if (!iscrizione) {
+		res.status(404).json({
+        success: false,
+        message: 'Utente non iscritto all evento'
+        });
+		return;
+  	}
+
+  	// Elimina l'iscrizione dell'utente dall'evento
+  	await EventSubscription.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
+	
+	// aggiorna posti disponibili per l'Evento
+        postiDisponibili=evento.postiDisponibili;
+        let Evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
+
+
+  	res.status(200).json({
+    		success: true,
+    		message: 'Iscrizione evento eliminata!'
+  	});
+});
+
+
+
+
 module.exports = router;
