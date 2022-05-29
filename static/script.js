@@ -1062,7 +1062,7 @@ function createEventReview(id) {
       fetch('../api/v2/review/createEventReview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review,token: token } )
+          body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review, token: token } )
       })
       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
       .then( function(data) {
@@ -1114,14 +1114,17 @@ function createHousingReview() {
       var housingId = urlParams.get('housingId');
   }
 
+  // Prendo la Recensione
+  var review = document.getElementById("housingReview").value;
+
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
         userId = JSON.parse(getCookie("user")).id;
 
-        fetch('../api/v2/review/createEventReview', {
+        fetch('../api/v2/review/createHousingReview', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review,token: token } )
+            body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review, token: token } )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
