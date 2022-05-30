@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+
+const cookieParser = require("cookie-parser");
+const tokenChecker = require("./../tokenChecker.js");
+
 const Housing = require('./../models/housing');
 const User = require('./../models/user');
 const Event = require ('./../models/event');
 const Category = require ('./../models/category');
 const EventReview = require ('./../models/eventreview');
-const HousingReview = require ('./../models/housigreview');
+const HousingReview = require ('./../models/housingreview');
+const EventSubscription = require('./../models/eventsubscription');
+const HousingSubscription = require('./../models/housingsubscription');
 
 // Route per creazione recensione evento
 /**
@@ -152,14 +158,14 @@ router.post('/createEventReview', async (req, res) => {
     }
 
     // Crea la recensione evento
-  	let eventreview = new EventReview({
+  	let eventReview = new EventReview({
         recensione: req.body.review,
         idEvento: req.body.idEvento,
         idUtente: req.loggedUser.id
     });
 
   	// Aggiunge la recensione creata nel DB
-  	eventreview = await eventreview.save();
+  	eventReview = await eventReview.save();
   	res.status(201).json({
     		success: true,
     		message: 'Recensione evento creata correttamente!'
@@ -310,7 +316,7 @@ router.post('/createHousingReview', async (req, res) => {
 
 
   	// Crea la recensione per l'alloggio
-  	let housingreview = new HousingReview({
+  	let housingReview = new HousingReview({
         recensione: req.body.message,
         risposta: req.body.answer,
         idAlloggio: req.body.housingId,
@@ -320,7 +326,7 @@ router.post('/createHousingReview', async (req, res) => {
     });
 
   	// Aggiunge la recensione creata nel DB
-  	housingreview = await housingreview.save();
+  	housingReview = await housingReview.save();
   	res.status(200).json({
     		success: true,
     		message: 'Recensione alloggio creata correttamente!'
