@@ -1071,7 +1071,7 @@ function createEventReview(id) {
                           // Controlla se sono stati resituiti messaggi di errore
                           if(data.success == false) {
                               // In caso affermativo mostra il messaggio
-                              alert("Recensione non inviata");
+                              alert(data.message);
                               window.location.href = "/index.html";
                           } else {
                             //In caso negativo torna alla pagina di visualizzazione
@@ -1088,7 +1088,7 @@ function createEventReview(id) {
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
 * Crea una recensione per un alloggio e la salva nel database
 */
-function createHousingReview() {
+function createHousingReview(id) {
 
   // Prende l'id dell'alloggio dall'URL
   var urlParams = new URLSearchParams(window.location.search);
@@ -1116,7 +1116,7 @@ function createHousingReview() {
                             // Controlla se sono stati resituiti messaggi di errore
                             if(data.success == false) {
                                 // In caso affermativo mostra il messaggio
-                                alert("Recensione alloggio non inviata");
+                                alert(data.message);
                                 window.location.href = "/index.html";
                             } else {
                               //In caso negativo torna alla pagina di visualizzazione

@@ -115,7 +115,7 @@ router.post('/createEventReview', async (req, res) => {
   }
 
   // Se user loggato controlla se già registrato ad evento specifico
-  let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
+  let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.idEvento});
 
   // Se non iscritto
   if(!iscrizione) {
@@ -161,7 +161,9 @@ router.post('/createEventReview', async (req, res) => {
   	let eventReview = new EventReview({
         recensione: req.body.review,
         idEvento: req.body.idEvento,
-        idUtente: req.loggedUser.id
+        idUtente: req.loggedUser.id,
+        idGestore:"",
+        risposta:""
     });
 
   	// Aggiunge la recensione creata nel DB
@@ -273,22 +275,22 @@ router.post('/createHousingReview', async (req, res) => {
   }
 
   // Se user loggato controlla se registrato ad alloggio specifico
-  let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.housingId, idTurista: req.loggedUser.id});
+  let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.idAlloggio, idTurista: req.loggedUser.id});
 
   // Se non prenotato, invia un messaggio di errore
   if (!prenotations) {
   res.status(200).json({
-      success: true,
+      success: false,
       message: 'UserNotSubscribed'
       });
   return;
   }
 
-  let house = await Housing.findOne({_id:housingId});
+  let house = await Housing.findOne({_id: req.body.idAlloggio});
 
     // Contollo data soggiorno passata
       var oggi = new Date();
-      let dend = house.dataFine;
+      let dend = prenotations.dataFine;
 
       var diff = dend.getTime()  - oggi.getTime();
       //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
@@ -318,11 +320,10 @@ router.post('/createHousingReview', async (req, res) => {
   	// Crea la recensione per l'alloggio
   	let housingReview = new HousingReview({
         recensione: req.body.message,
-        risposta: req.body.answer,
         idAlloggio: req.body.housingId,
         idUtente: req.body.userId,
-        idGestore: req.body.userId,
-
+        idGestore: "",
+        risposta: ""
     });
 
   	// Aggiunge la recensione creata nel DB
