@@ -1044,7 +1044,7 @@ function deleteHousingSubscription(id) {
 * Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
 * Crea una recensione per un evento e la salva nel database
 */
-function createEventReview(id) {
+function create(id) {
   // Prende l'id dell'evento dall'URL
   var urlParams = new URLSearchParams(window.location.search);
   if(urlParams.has('eventId')){
@@ -1134,31 +1134,69 @@ function createHousingReview() {
 /*
     Ottiene id evento da query URL ed esegue chiamata API per ottenere le review dell'evento
 */
-function getEventReview() {
+function eventReview() {
 
-  // Esegue la richiesta degli eventi all'api specifica
-   fetch('../api/v2/visualizzazioneReview/eventReview')
-   .then((resp) => resp.json())
-   .then(function(data){
+  // Leggi il cookie e convertilo in JSON per poter estrarre il token
+    let biscuit = getCookie('user');
+    let token;
+    if(biscuit != undefined){
+        biscuit = JSON.parse(biscuit);
+        //token dell'utente
+        token = biscuit.token;
 
-       var ul = document.getElementById("listreview");
-       return data.map(function(item){
-           var li = document.createElement("li");
-           var a = document.createElement("a");
-           a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
-           a.innerHTML = item.review
-           a.innerHTML = item.answer
-           li.appendChild(a);
-           ul.appendChild(li);
-       })
-   })
-   .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
-};
+        // Esegue la richiesta degli eventi all'api specifica
+        fetch('../api/v2/visualizzazioneReview/eventReview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( {token: token} )
+        })
+        .then((resp) => resp.json())
+        .then(function(data){
+
+            // Controlla se sono stati resituiti messaggi di errore
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgSubEvent").innerHTML = data.message;
+            } else {
+                var ul = document.getElementById("listreview");
+                return data.map(function(item){
+                    fetch('../api/v2/visualizzazioneReview/event?id=' + item.idEvento)
+                    .then((resp) => resp.json())
+                    .then(function(data){
+
+                        let title = data.title;
+                        var li = document.createElement("li");
+                        var a = document.createElement("a");
+                        let today = new Date();
+                        let dataFin = new Date(data.finlDate);
+
+                        if (dataFin < today) {
+                            //Evento passato
+                            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.idEvento);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulP.appendChild(li);
+                        } else {
+                            // Evento futuro
+                            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.idEvento);
+                            a.innerHTML = title;
+                            li.appendChild(a);
+                            ulF.appendChild(li);
+                        }
+                    })
+                    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+                })
+            }
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    };
+
+
 
 /*
     Ottiene id alloggi da query URL ed esegue chiamata API per ottenere le review dell'alloggio specifico
 */
-function getHousingReview() {
+function HousingReview() {
 
   // Esegue la richiesta degli eventi all'api specifica
    fetch('../api/v2/visualizzazioneReview/housingReview')
