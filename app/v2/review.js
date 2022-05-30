@@ -295,7 +295,7 @@ router.post('/createHousingReview', async (req, res) => {
   	});
 });
 
-// Route per eliminazione recensione evento  SCHEMA REQUEST
+// Route per eliminazione recensione evento
 /**
  * @openapi
  * /api/v2/review/deleteEventReview:
@@ -642,7 +642,7 @@ router.get('/eventReview', async (req, res) => {
 
    // Controlla se l'utente è il creatore della recensione, se no invia un messaggio di errore
    if(eventreview.idUtente != req.loggedUser.id) {
-       res.status(403).json({
+       res.status(404).json({
        success: false,
        message: "Non sei il proprietario della recensione evento"
        });
