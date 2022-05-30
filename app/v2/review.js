@@ -121,7 +121,7 @@ router.post('/createEventReview', async (req, res) => {
   if(!iscrizione) {
       // Segnala che l'utente non è iscritto
       res.status(200).json({
-          success: true,
+          success: false,
           message: 'UserNotSubscribed'
       });
       return;

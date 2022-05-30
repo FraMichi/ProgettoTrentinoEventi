@@ -1059,26 +1059,11 @@ function createEventReview(id) {
       token = JSON.parse(getCookie("user")).token;
       userId = JSON.parse(getCookie("user")).id;
 
-      fetch('../api/v2/review/createEventReview', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify( { idEvento: eventId, review: review, token: token } )
-      })
-      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-      .then( function(data) {
-
-          // Se l'utente non è loggato manda alla pagina di login
-          if(data.success == false) {
-              // In caso affermativo mostra il messaggio
-              document.getElementById("errorMsgHouse").innerHTML = data.message;
-              window.location.href = "/login.html";
-          }
-          else {
-              // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
+  // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
                       fetch('../api/v2/review/createEventReview', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review,token: token } )
+                         body: JSON.stringify( { idEvento: eventId, review: review,token: token } )
                       })
                       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                       .then( function(data) {
@@ -1096,10 +1081,9 @@ function createEventReview(id) {
                         }
                     })
                  .catch( error => console.error(error) );
-      }
-    });
-  }
-};
+    }
+  };
+
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
@@ -1121,26 +1105,11 @@ function createHousingReview() {
         token = JSON.parse(getCookie("user")).token;
         userId = JSON.parse(getCookie("user")).id;
 
-        fetch('../api/v2/review/createHousingReview', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { idAlloggio: housingId,  review: review, token: token } )
-        })
-        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-
-            // Se l'utente non è loggato manda alla pagina di login
-            if(data.success == false) {
-                // In caso affermativo mostra il messaggio
-                document.getElementById("errorMsgHouse").innerHTML = data.message;
-                window.location.href = "/login.html";
-            }
-            else {
-                // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
+        // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
                         fetch('../api/v2/review/createHousingReview', {
                            method: 'POST',
                            headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review,token: token } )
+                           body: JSON.stringify( { idAlloggio: housingId, review: review,token: token } )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
@@ -1158,7 +1127,5 @@ function createHousingReview() {
                           }
                       })
                    .catch( error => console.error(error) );
-        }
-      });
-    }
+      }
   };
