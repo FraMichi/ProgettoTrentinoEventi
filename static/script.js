@@ -1099,7 +1099,7 @@ function createEventReview(id) {
       }
     });
   }
-}
+};
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
@@ -1161,92 +1161,4 @@ function createHousingReview() {
         }
       });
     }
-  }
-
-// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione della recensione di un evento
-function setDeleteEventReviewButton() {
-
-    // Prende l'id dell'evento dall'URL
-    var urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('eventId')){
-
-        var id = urlParams.get('eventId');
-    }
-
-    // Modifica il contenuto dell'elemento
-    document.getElementById('deleteEventReview').innerHTML = 'Elimina recensione evento';
-
-    // Imposta l'attributo 'href' dell'elemento
-    document.getElementById('deleteEventReview').setAttribute('href', 'javascript:deleteEventReview("' + id +'")');
-};
-
-// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione della recensione dell'alloggio
-function setDeleteHousingReviewButton() {
-
-    // Prende l'id dell'alloggio dall'URL
-    var urlParams = new URLSearchParams(window.location.search);
-    if(urlParams.has('housingId')){
-
-        var id = urlParams.get('housingId');
-    }
-
-    // Modifica il contenuto dell'elemento
-    document.getElementById('deleteHousingReview').innerHTML = 'Elimina recensione alloggio';
-
-    // Imposta l'attributo 'href' dell'elemento
-    document.getElementById('deleteHousingReview').setAttribute('href', 'javascript:deleteHousingReview("' + id +'")');
-};
-
-/*
- * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
- * Manda la richiesta all'API per l'eliminazione della recensione di un evento
- */
-function deleteEventReview(id) {
-
-    // Se c'è il cookie dell'utente prende i suoi elementi
-    if(getCookie("user")) {
-        token = JSON.parse(getCookie("user")).token;
-
-        fetch('../api/v2/review/deleteEventReview', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, eventId: id} )
-        })
-        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-            alert(data.message);
-            window.location.href = "//visualizzaEvento.html?eventId="+id;
-        })
-        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
-    } else {
-        alert("Effettua il login");
-    }
-
-};
-
-/*
- * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
- * Manda la richiesta all'API per l'eliminazione di una recensione di un alloggio
- */
-function deleteHousingReview(id) {
-
-    // Se c'è il cookie dell'utente prende i suoi elementi
-    if(getCookie("user")) {
-        token = JSON.parse(getCookie("user")).token;
-
-        fetch('../api/v2/review/deleteHousingReview', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, housingId: id} )
-        })
-        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-            alert(data.message);
-            window.location.href = "//visualizzaAlloggio.html?eventId="+id;
-        })
-        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
-    } else {
-        alert("Effettua il login");
-    }
-
-};
+  };
