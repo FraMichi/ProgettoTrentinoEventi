@@ -160,7 +160,7 @@ router.post('/createEventReview', async (req, res) => {
 
   	// Aggiunge la recensione creata nel DB
   	eventreview = await eventreview.save();
-  	res.status(200).json({
+  	res.status(201).json({
     		success: true,
     		message: 'Recensione evento creata correttamente!'
   	});
@@ -380,7 +380,16 @@ router.post('/createHousingReview', async (req, res) => {
  */
 router.delete('/deleteEventReview', async (req, res) => {
 
-  	// Controlla se il token è valido
+  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+  if (!req.body.eventId || !req.body.token ) {
+  res.status(400).json({
+      success: false,
+      message: 'Parametri mancanti'
+  });
+  return;
+  }
+
+    // Controlla se il token è valido
     tokenChecker(req, res, req.body.token);
 
     // Se non è valido ritorna un messaggio di errore
@@ -390,15 +399,6 @@ router.delete('/deleteEventReview', async (req, res) => {
             message: 'Token non valido'
         });
         return;
-    }
-
-    // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-    if (!req.body.message || !req.body.answer || !req.body.event || !req.body.userId || !req.body.userId ) {
-    res.status(400).json({
-        success: false,
-        message: 'Inserire tutti i campi'
-    });
-    return;
     }
 
     // Controlla validita dell'id dell'evento
@@ -422,16 +422,7 @@ router.delete('/deleteEventReview', async (req, res) => {
         });
 		return;
   	}
-
-    // Controlla se l'utente è il creatore della recensione, se no invia un messaggio di errore
-    if(evento.idUtente != req.loggedUser.id) {
-        res.status(403).json({
-        success: false,
-        message: "Non sei il proprietario della recensione evento"
-        });
-		return;
-    }
-
+    
   	// Elimina la recensione evento dal DB
   	await EventReview.deleteOne({ idUtente: req.loggedUser.id, idEvento: req.body.eventId });
 
