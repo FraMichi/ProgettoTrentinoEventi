@@ -1071,9 +1071,8 @@ function createEventReview(id) {
                           // Controlla se sono stati resituiti messaggi di errore
                           if(data.success == false) {
                               // In caso affermativo mostra il messaggio
-                              document.getElementById("errorMsgHouse").innerHTML = data.message;
+                              alert("Recensione non inviata");
                               window.location.href = "/index.html";
-                              alert("Recensione evento non inviata");
                           } else {
                             //In caso negativo torna alla pagina di visualizzazione
                             window.location.href = "/index.html";
@@ -1117,9 +1116,8 @@ function createHousingReview() {
                             // Controlla se sono stati resituiti messaggi di errore
                             if(data.success == false) {
                                 // In caso affermativo mostra il messaggio
-                                document.getElementById("errorMsgHouse").innerHTML = data.message;
-                                window.location.href = "/index.html";
                                 alert("Recensione alloggio non inviata");
+                                window.location.href = "/index.html";
                             } else {
                               //In caso negativo torna alla pagina di visualizzazione
                               window.location.href = "/index.html";
