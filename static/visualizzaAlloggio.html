@@ -68,12 +68,17 @@
 
           <button type="button" onclick="createHousingReview()">Inserisci recensione</button>
 
+
           <h2>Lista Recensioni</h2>
-          <ul id="listreview" name="listreview">
-          </ul>
-          <script>
-              getHousingReview();
-          </script>
+          <table>
+              <tr>
+                  <td><b>Descrizione</b></td>
+                  <td id="review"></td>
+              </tr>
+              <tr>
+                  <td><b>Risposta</b></td>
+                  <td id="answer"></td>
+              </tr>
 
           <button type="button" onclick="deleteEventReview()">Elimina recensione</button>
 

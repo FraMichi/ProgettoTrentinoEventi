@@ -73,14 +73,21 @@
               <textarea id ="eventReview" name="eventReview" rows="10" cols="30"></textarea><br/>
 
               <button type="button" onclick="createEventReview()">Inserisci recensione</button>
+            
 
 
               <h2>Lista Recensioni</h2>
-              <ul id="listreview" name="listreview">
-              </ul>
-              <script>
-                  getEventReview();
-              </script>
+              <table>
+                  <tr>
+                      <td><b>Descrizione</b></td>
+                      <td id="review"></td>
+                  </tr>
+                  <tr>
+                      <td><b>Risposta</b></td>
+                      <td id="answer"></td>
+                  </tr>
+
+              </table>
 
               <button type="button" onclick="deleteEventReview()">Elimina recensione</button>
 

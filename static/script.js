@@ -1262,4 +1262,5 @@ function HousingReview() {
     } else {
         console.err("Attenzione: parametro 'housingId' non presente nella query");
     }
+}
 };
