@@ -1062,7 +1062,7 @@ function createEventReview(id) {
       fetch('../api/v2/review/createEventReview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review, token: token } )
+          body: JSON.stringify( { idEvento: eventId, review: review, token: token } )
       })
       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
       .then( function(data) {
