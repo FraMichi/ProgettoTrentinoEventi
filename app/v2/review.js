@@ -235,6 +235,15 @@ router.post('/createEventReview', async (req, res) => {
 */
 router.post('/createHousingReview', async (req, res) => {
 
+  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+    if (!req.body.review || !req.body.idAlloggio || !req.body.token  ) {
+    res.status(400).json({
+        success: false,
+        message: 'Parametri mancanti'
+    });
+    return;
+    }
+
   // Verifica se utente loggato
   tokenChecker(req, res, req.body.token);
 
@@ -247,37 +256,33 @@ router.post('/createHousingReview', async (req, res) => {
       });
       return;
   }
+  // Controlla che l'idAlloggio rispetti il formato di MongoDB
+  if (!req.body.idAlloggio.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
 
   // Se user loggato controlla se registrato ad alloggio specifico
   let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.housingId, idTurista: req.loggedUser.id});
 
   // Se non prenotato, invia un messaggio di errore
   if (!prenotations) {
-  res.status(404).json({
-      success: false,
-      message: 'Utente non prenotato per l alloggio scelto'
+  res.status(200).json({
+      success: true,
+      message: 'UserNotSubscribed'
       });
   return;
   }
 
-  // Altrimenti segnala che l'utente è prenotato
-  res.status(200).json({
-      success: true,
-      message: 'UserSubscribed'
-  });
-
-  	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  	if (!req.body.message || !req.body.answer || !req.body.housingId || !req.body.userId || !req.body.userId ) {
-		res.status(400).json({
-  			success: false,
-  			message: 'Inserire tutti i campi'
-		});
-		return;
-  	}
+  let house = await Housing.findOne({_id:housingId});
 
     // Contollo data soggiorno passata
       var oggi = new Date();
-      let dend = house[0].dataFine;
+      let dend = house.dataFine;
 
       var diff = dend.getTime()  - oggi.getTime();
       //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
@@ -289,6 +294,20 @@ router.post('/createHousingReview', async (req, res) => {
         });
         return;
           };
+
+          // Controllo che l'utente non abbia creato già altre recensioni per l'alloggio
+        let housingreview = await HousingReview.findOne({idUtente: req.loggedUser.id, idAlloggio: req.body.idAlloggio});
+
+        // Se non iscritto
+        if(!housingreview) {
+            // Segnala che l'utente non è iscritto
+            res.status(200).json({
+                success: false,
+                message: 'Recensione già presente'
+            });
+            return;
+        }
+
 
   	// Crea la recensione per l'alloggio
   	let housingreview = new HousingReview({
@@ -422,7 +441,7 @@ router.delete('/deleteEventReview', async (req, res) => {
         });
 		return;
   	}
-    
+
   	// Elimina la recensione evento dal DB
   	await EventReview.deleteOne({ idUtente: req.loggedUser.id, idEvento: req.body.eventId });
 
@@ -432,7 +451,7 @@ router.delete('/deleteEventReview', async (req, res) => {
   	});
 });
 
-// Route per eliminazione alloggio
+// Route per eliminazione recensione alloggio
 /**
  * @openapi
  * /api/v2/review/deleteHousingReview:
@@ -504,6 +523,15 @@ router.delete('/deleteEventReview', async (req, res) => {
  */
 router.delete('/deleteHousingReview', async (req, res) => {
 
+  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+if (!req.body.housingId || !req.body.token ) {
+res.status(400).json({
+    success: false,
+    message: 'Parametri mancanti'
+});
+return;
+}
+
   	// Controlla se il token è valido
     tokenChecker(req, res, req.body.token);
 
@@ -512,6 +540,16 @@ router.delete('/deleteHousingReview', async (req, res) => {
         res.status(401).json({
             success: false,
             message: 'Token non valido'
+        });
+        return;
+    }
+
+    // Controlla validita dell'id dell'alloggio
+    if (!req.body.housingId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
         });
         return;
     }
@@ -527,15 +565,6 @@ router.delete('/deleteHousingReview', async (req, res) => {
         });
 		return;
   	}
-
-    // Controlla se l'utente è il creatore della recensione, se no invia un messaggio di errore FARE
-    if(alloggio.idUtente != req.loggedUser.id) {
-        res.status(403).json({
-        success: false,
-        message: "Non sei il proprietario della recensione dell'alloggio"
-        });
-		return;
-    }
 
   	// Elimina la recensione alloggio dal DB
   	await HousingReview.deleteOne({ idUtente: req.loggedUser.id, idAlloggio: req.body.housingId });

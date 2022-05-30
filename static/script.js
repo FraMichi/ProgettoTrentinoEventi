@@ -1124,7 +1124,7 @@ function createHousingReview() {
         fetch('../api/v2/review/createHousingReview', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review, token: token } )
+            body: JSON.stringify( { idAlloggio: housingId,  review: review, token: token } )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
