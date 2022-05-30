@@ -90,6 +90,36 @@ router.post('/createEventReview', async (req, res) => {
       return;
   }
 
+  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+  if (!req.body.message || !req.body.answer || !req.body.event || !req.body.userId || !req.body.userId ) {
+  res.status(400).json({
+      success: false,
+      message: 'Inserire tutti i campi'
+  });
+  return;
+  }
+
+  // Controlla che l'id rispetti il formato di MongoDB
+  if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
+
+  // Controlla che l'idEvento rispetti il formato di MongoDB
+  if (!req.query.event.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
+
+
   // Se user loggato controlla se già registrato ad evento specifico
   let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
 
@@ -102,21 +132,6 @@ router.post('/createEventReview', async (req, res) => {
       });
       return;
   }
-
-  // Altrimenti segnala che l'utente è iscritto
-  res.status(200).json({
-      success: true,
-      message: 'UserSubscribed'
-  });
-
-  	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  	if (!req.body.message || !req.body.answer || !req.body.event || !req.body.userId || !req.body.userId ) {
-		res.status(400).json({
-  			success: false,
-  			message: 'Inserire tutti i campi'
-		});
-		return;
-  	}
 
     //Controllo data evento sia passata
       var oggi = new Date();
@@ -132,8 +147,6 @@ router.post('/createEventReview', async (req, res) => {
         });
         return;
           };
-
-
 
   	// Crea la recensione evento
   	let eventreview = new EventReview({
