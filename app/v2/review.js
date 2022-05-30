@@ -790,4 +790,253 @@ router.get('/housingReview', async (req, res) => {
    res.status(200).json(finalResponse);
 });
 
+// Route per creazione risposta recensione evento MODIFICARE SCHEMA
+/**
+ * @openapi
+ * /api/v2/review/createEventAnswerReview:
+ *  post:
+ *   description: Controlla se le informazioni inserite nel form sono corrette e crea una recensione ad un evento caricandola nel DB
+ *   summary: Crea una recensione evento
+ *   tags:
+ *    - eventReviewCreation
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *         description: Contiene la recensione dell'evento
+ *        answer:
+ *         type: string
+ *         description: Contiene la risposta del gestore evento alla recensione
+ *        idEvento:
+ *         type: string
+ *         description: Contiene l'id dell'evento
+ *        idUtente:
+ *         type: string
+ *         description: Contiene l'id dell'utente che scrive la recensione
+ *        idGestore:
+ *         type: string
+ *         description: Contiene l'id del gestore che può rispondere alla recensione
+ *   responses:
+ *    200:
+ *     description: sono stati controllati tutti i campi e non sono stati trovati errori, si procede con il caricamento dell'evento sul DB
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale true dato che tutti i campi sono corretti
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene un messaggio di successo
+ *    400:
+ *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ */
+router.post('/createEventReview', async (req, res) => {
+
+  // Verifica se utente loggato
+  tokenChecker(req, res, req.body.token);
+
+  // Se utente non loggato (token decoded nella req = undefined)
+  if(req.loggedUser == undefined) {
+      // Ritorna codice 401
+      res.status(401).json({
+          success: false,
+          message: 'UserNotLogged'
+      });
+      return;
+  }
+
+  // Se user loggato controlla se già registrato ad evento specifico
+  let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
+
+  // Se non iscritto
+  if(!iscrizione) {
+      // Segnala che l'utente non è iscritto
+      res.status(200).json({
+          success: true,
+          message: 'UserNotSubscribed'
+      });
+      return;
+  }
+
+  // Altrimenti segnala che l'utente è iscritto
+  res.status(200).json({
+      success: true,
+      message: 'UserSubscribed'
+  });
+//MODIFICARE CAMPI
+  	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+  	if (!req.body.message || !req.body.answer || !req.body.event || !req.body.userId || !req.body.userId ) {
+		res.status(400).json({
+  			success: false,
+  			message: 'Inserire tutti i campi'
+		});
+		return;
+  	}
+
+    // Controlla se l'utente è il creatore dell'evento, se no invia un messaggio di errore
+    if(evento.idGestore != req.loggedUser.id) {
+        res.status(403).json({
+        success: false,
+        message: "Non sei il proprietario dell'evento"
+        });
+		return;
+    }
+
+  	// Crea la risposta alla recensione evento
+  	let eventanswerreview = new EventAnswerReview({
+        risposta: req.body.answer,
+        idGestore: req.body.userId,
+
+    });
+
+  	// Aggiunge la risposta alla recensione creata nel DB
+  	eventanswerreview = await eventanswerreview.save();
+  	res.status(200).json({
+    		success: true,
+    		message: 'Recensione evento creata correttamente!'
+  	});
+});
+
+// Route per rispondere recensione alloggio MODIFICA SCHEMA
+/**
+ * @openapi
+ * /api/v2/review/createHousingAnswerReview:
+ *  post:
+ *   description: Controlla se le informazioni inserite nel form sono corrette e crea una risposta ad una recensione ad un alloggio caricandola nel DB
+ *   summary: Crea una risposta ad una recensione alloggio
+ *   tags:
+ *    - housingReviewAnswerCreation
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       properties:
+ *        message:
+ *         type: string
+ *         description: Contiene la recensione dell'alloggio
+ *        answer:
+ *         type: string
+ *         description: Contiene la risposta del gestore dell'alloggio alla recensione
+ *        idAlloggio:
+ *         type: string
+ *         description: Contiene l'id dell'alloggio a cui si vuole lasciare una recensione
+ *        idUtente:
+ *         type: string
+ *         description: Contiene l'id dell'utente che scrive la recensione
+ *        idGestore:
+ *         type: string
+ *         description: Contiene l'id del gestore che può rispondere alla recensione
+ *   responses:
+ *    200:
+ *     description: sono stati controllati tutti i campi e non sono stati trovati errori, si procede con il caricamento dell'evento sul DB
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale true dato che tutti i campi sono corretti
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene un messaggio di successo
+ *    400:
+ *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *     404:
+ *     description: Restituisce errore se non è stato trovato l'alloggio
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+*/
+router.post('/createHousingAnswerReview', async (req, res) => {
+
+  // Verifica se utente loggato
+  tokenChecker(req, res, req.body.token);
+
+  // Se utente non loggato (token decoded nella req = undefined)
+  if(req.loggedUser == undefined) {
+      // Ritorna codice 401
+      res.status(401).json({
+          success: false,
+          message: 'UserNotLogged'
+      });
+      return;
+  }
+
+  // Controlla se l'utente è il creatore dell'alloggio, se no invia un messaggio di errore
+  if(alloggio.idGestore != req.loggedUser.id) {
+      res.status(403).json({
+      success: false,
+      message: "Non sei il proprietario dell'alloggio"
+      });
+  return;
+  }
+
+//MODIFICARE CAMPI
+  	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+  	if (!req.body.message || !req.body.answer || !req.body.housingId || !req.body.userId || !req.body.userId ) {
+		res.status(400).json({
+  			success: false,
+  			message: 'Inserire tutti i campi'
+		});
+		return;
+  	}
+
+  	// Crea la risposta alla recensione
+  	let housinganswerreview = new HousingAnswerReview({
+        risposta: req.body.answer,
+        idGestore: req.body.userId,
+    });
+//MODIFICARE SALVATAGGIO
+  	// Aggiunge la risposta creata nel DB
+  	housingreview = await housingreview.save();
+  	res.status(200).json({
+    		success: true,
+    		message: 'Recensione alloggio creata correttamente!'
+  	});
+});
+
 module.exports = router;

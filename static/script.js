@@ -1346,26 +1346,26 @@ function getHousingReview() {
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
 * Crea la risposta ad una recensione e la salva nel DB
 */
-function createAnswerHousingReview() {
+function createAnswerEventReview() {
 
   // Prende l'id dell'alloggio dall'URL
   var urlParams = new URLSearchParams(window.location.search);
-  if(urlParams.has('housingId')){
+  if(urlParams.has('eventId')){
 
-      var housingId = urlParams.get('housingId');
+      var housingId = urlParams.get('eventId');
   }
 
   // Prendo la Recensione
-  var review = document.getElementById("housingReview").value;
+  var review = document.getElementById("eventReview").value;
 
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
         userId = JSON.parse(getCookie("user")).id;
 
-        fetch('../api/v2/review/createAnswerHousingReview', {
+        fetch('../api/v2/review/createAnswerEventReview', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review, token: token } )
+            body: JSON.stringify( { idEvento: eventId, idGestore: userId, review: review, answer:answer, token: token } )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
@@ -1377,11 +1377,11 @@ function createAnswerHousingReview() {
                 window.location.href = "/login.html";
             }
             else {
-                // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
-                        fetch('../api/v2/review/createHousingReview', {
+                // Se l'utente loggato è un gestore allora procede con la creazione della risposta alla recensione all'alloggio
+                        fetch('../api/v2/review/createEventAnswerReview', {
                            method: 'POST',
                            headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review,token: token } )
+                           body: JSON.stringify( { idEvento: eventId, idGestore: userId, review: review, answer: answer, token: token } )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
@@ -1391,11 +1391,76 @@ function createAnswerHousingReview() {
                                 // In caso affermativo mostra il messaggio
                                 document.getElementById("errorMsgHouse").innerHTML = data.message;
                                 window.location.href = "/index.html";
-                                alert("Recensione alloggio non inviata");
+                                alert("Risposta recensione non inviata");
                             } else {
                               //In caso negativo torna alla pagina di visualizzazione
                               window.location.href = "/index.html";
-                              alert("Recensione alloggio inviata");
+                              alert("Risposta recensione inviata");
+                          }
+                      })
+                   .catch( error => console.error(error) );
+        }
+      });
+    }
+  };
+
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata ?.
+* Crea la risposta ad una recensione e la salva nel DB
+*/
+function createAnswerHousingReview() {
+
+  // Prende l'id dell'alloggio dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('housingId')){
+
+      var housingId = urlParams.get('housingId');
+  }
+
+  // Controllo se sono il gestore dell'alloggio
+
+  // Prendo la Recensione
+  var review = document.getElementById("housingReview").value;
+
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+        userId = JSON.parse(getCookie("user")).id;
+
+        fetch('../api/v2/review/createAnswerHousingReview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { idAlloggio: housingId, idGestore: userId, review: review, answer:answer, token: token } )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+
+            // Se l'utente non è loggato manda alla pagina di login
+            if(data.success == false) {
+                // In caso affermativo mostra il messaggio
+                document.getElementById("errorMsgHouse").innerHTML = data.message;
+                window.location.href = "/login.html";
+            }
+            else {
+                // Se l'utente loggato è un gestore allora procede con la creazione della risposta alla recensione all'alloggio
+                        fetch('../api/v2/review/createHousingAnswerReview', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' },
+                           body: JSON.stringify( { idAlloggio: housingId, idGestore: userId, review: review, answer: answer, token: token } )
+                        })
+                        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                        .then( function(data) {
+
+                            // Controlla se sono stati resituiti messaggi di errore
+                            if(data.success == false) {
+                                // In caso affermativo mostra il messaggio
+                                document.getElementById("errorMsgHouse").innerHTML = data.message;
+                                window.location.href = "/index.html";
+                                alert("Risposta recensione non inviata");
+                            } else {
+                              //In caso negativo torna alla pagina di visualizzazione
+                              window.location.href = "/index.html";
+                              alert("Risposta recensione inviata");
                           }
                       })
                    .catch( error => console.error(error) );
