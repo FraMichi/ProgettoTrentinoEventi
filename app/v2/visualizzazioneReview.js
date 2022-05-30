@@ -71,8 +71,8 @@ const HousingReview = require ('./../models/housingreview');
 router.get('/eventReview', async (req, res) => {
 
   let eventReview = await EventReview.find().exec();
-  let eventReviewList = eventReview.map((eventReview) => {return{review: review, answer: answer};})
-  res.status(200).json(eventReviewList);
+  let listreview = eventReview.map((eventReview) => {return{review: review, answer: answer};})
+  res.status(200).json(listreview);
 });
 
 /**
@@ -136,72 +136,9 @@ router.get('/eventReview', async (req, res) => {
  */
 router.get('/housingReview', async (req, res) => {
 
-   // Controlla che sia effettivamente presente il parametro id
-   if (!req.query.id) {
-       // Se l'id non è presente nella query
-       res.status(400).json({
-           success: false,
-           message: "Id non presente nella query"
-       });
-       return;
-   }
-
-   // Controlla che l'id rispetti il formato di MongoDB
-   if (!req.query.id.match(/^[0-9a-fA-F]{24}$/)) {
-       // Se non lo rispetta dichiara l'errore
-       res.status(400).json({
-           success: false,
-           message: "Id non conforme al formato MongoDB"
-       });
-       return;
-   }
-
-   // Cerca nel DB l'alloggio specifico
-   let housingItem = await Housing.findOne({_id: req.query.id});
-
-   // Se l'evento non viene trovato restituisci un errore
-   if(!housingItem) {
-       res.status(404).json({
-           success: false,
-           message: "Alloggio non trovato"
-       });
-       return;
-   }
-
-   // Trova creatore dell'evento
-   let housingCreator = await User.findOne({_id: housingItem.idGestore});
-
-   // Se il gestore non viene trovato restituisci un errore
-   if(!housingCreator) {
-       res.status(404).json({
-           success: false,
-           message: "Gestore non trovato"
-       });
-       return;
-   }
-
-   // Prova a prendere la recensione dal database
-   let housingreview = await HousingReview.findOne({ idUtente: req.loggedUser.id, idAlloggio: req.body.housingId }).exec();
-
-   // Controlla se la recensione esiste, se no invia un messaggio di errore
-   if (!housingreview) {
-   res.status(404).json({
-       success: false,
-       message: 'Recensione alloggio non trovata'
-       });
-   return;
-   }
-
-   // Risorsa finale
-   let finalResponse = {
-     recensione: housingreview.Messaggio,
-     risposta: housingreview.Risposta,
-     idUtente: housingreview.idUtente,
-     idGestore: housingreview.idGestore
-   };
-
-   // Ritorna la risposta
-   res.status(200).json(finalResponse);
+  let housingReview = await HousingReview.find().exec();
+  let listreview = houingReview.map((housingReview) => {return{review: review, answer: answer};})
+  res.status(200).json(listreview);
 });
 
 module.exports = router;

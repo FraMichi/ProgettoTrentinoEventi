@@ -1059,26 +1059,11 @@ function createEventReview(id) {
       token = JSON.parse(getCookie("user")).token;
       userId = JSON.parse(getCookie("user")).id;
 
-      fetch('../api/v2/review/createEventReview', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review, token: token } )
-      })
-      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-      .then( function(data) {
-
-          // Se l'utente non è loggato manda alla pagina di login
-          if(data.success == false) {
-              // In caso affermativo mostra il messaggio
-              document.getElementById("errorMsgHouse").innerHTML = data.message;
-              window.location.href = "/login.html";
-          }
-          else {
-              // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
+  // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
                       fetch('../api/v2/review/createEventReview', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { idEvento: eventId, idUtente: userId, review: review,token: token } )
+                         body: JSON.stringify( { idEvento: eventId, review: review,token: token } )
                       })
                       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                       .then( function(data) {
@@ -1096,10 +1081,9 @@ function createEventReview(id) {
                         }
                     })
                  .catch( error => console.error(error) );
-      }
-    });
-  }
-}
+    }
+  };
+
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
@@ -1121,26 +1105,11 @@ function createHousingReview() {
         token = JSON.parse(getCookie("user")).token;
         userId = JSON.parse(getCookie("user")).id;
 
-        fetch('../api/v2/review/createHousingReview', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review, token: token } )
-        })
-        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-
-            // Se l'utente non è loggato manda alla pagina di login
-            if(data.success == false) {
-                // In caso affermativo mostra il messaggio
-                document.getElementById("errorMsgHouse").innerHTML = data.message;
-                window.location.href = "/login.html";
-            }
-            else {
-                // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
+        // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
                         fetch('../api/v2/review/createHousingReview', {
                            method: 'POST',
                            headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { idAlloggio: housingId, idUtente: userId, review: review,token: token } )
+                           body: JSON.stringify( { idAlloggio: housingId, review: review,token: token } )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
@@ -1158,10 +1127,9 @@ function createHousingReview() {
                           }
                       })
                    .catch( error => console.error(error) );
-        }
-      });
-    }
+      }
   };
+
 
 /*
     Ottiene id evento da query URL ed esegue chiamata API per ottenere le review dell'evento
@@ -1173,12 +1141,13 @@ function getEventReview() {
    .then((resp) => resp.json())
    .then(function(data){
 
-       var ul = document.getElementById("list");
+       var ul = document.getElementById("listreview");
        return data.map(function(item){
            var li = document.createElement("li");
            var a = document.createElement("a");
            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
-           a.innerHTML = item.title
+           a.innerHTML = item.review
+           a.innerHTML = item.answer
            li.appendChild(a);
            ul.appendChild(li);
        })
@@ -1191,43 +1160,21 @@ function getEventReview() {
 */
 function getHousingReview() {
 
-  let urlParams = new URLSearchParams(window.location.search);
-  if(urlParams.has('housingId')){
-      let biscuit = getCookie('user');
-      let token;
-      if(biscuit != undefined){
-          biscuit = JSON.parse(biscuit);
-          //token dell'utente
-          token = biscuit.token;
-      }
+  // Esegue la richiesta degli eventi all'api specifica
+   fetch('../api/v2/visualizzazioneReview/housingReview')
+   .then((resp) => resp.json())
+   .then(function(data){
 
-      // Chiamata api
-      fetch('../api/v2/review/housingReview', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify( { idAlloggio: urlParams.get('housingId'), idUtente: userId, review: review, token: token} )
-      })
-      .then((resp) => resp.json())
-      .then(function(data){
-
-          // Altrimenti inserisci i dati ricevuti in una tabella
-          let table = document.getElementById("housingReviewTable");
-          data.forEach((item, i) => {
-              let row = table.insertRow(-1);
-              let cell1 = row.insertCell(0);
-              let cell2 = row.insertCell(1);
-              let cell3 = row.insertCell(2);
-              let cell4 = row.insertCell(3);
-              let cell5 = row.insertCell(4);
-              cell1.innerHTML = document.getElementById("idUtente");
-              cell2.innerHTML = document.getElementById("Messaggio");
-              cell3.innerHTML = document.getElementById("idGestore");
-              cell4.innerHTML = document.getElementById("Risposta");
-              cell5.innerHTML = "Rimuovi recensione <a href=\"javascript:deleteHoousingReview('"+id+"')\">qui</a>!";
-          });
-
-
-      })
-      .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
-  }
-  }
+       var ul = document.getElementById("listreview");
+       return data.map(function(item){
+           var li = document.createElement("li");
+           var a = document.createElement("a");
+           a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
+           a.innerHTML = item.review
+           a.innerHTML = item.answer
+           li.appendChild(a);
+           ul.appendChild(li);
+       })
+   })
+   .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
