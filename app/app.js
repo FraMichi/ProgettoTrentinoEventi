@@ -14,6 +14,8 @@ const visualizzazioneV2 = require('./v2/visualizzazione.js');
 
 const elimination = require("./v2/elimination.js");
 const visualizzazioneFiltrata = require("./v2/visualizzazioneFiltrata.js");
+const review = require('./v2/review.js');
+const visualizzazioneReview = require('./v2/visualizzazioneReview.js');
 
 var fs = require('fs');
 const app = express();
@@ -63,6 +65,8 @@ app.use('/api/v2/visualizzazioneFiltrata', visualizzazioneFiltrata);
 app.use('/api/v2/getCreatedEntries', getCreatedEntries);
 app.use('/api/v2/visualizzazione', visualizzazioneV2);
 app.use('/api/v2/elimination', elimination);
+app.use('/api/v2/review', review);
+app.use('/api/v2/visualizzazioneReview', visualizzazioneReview);
 
 app.use('/', express.static('static'));
 
