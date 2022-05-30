@@ -1216,3 +1216,50 @@ function HousingReview() {
    })
    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
+
+/*
+    Ottiene id evento da query URL ed esegue chiamata API per ottenere le recensioni dell'evento specifico
+*/
+function EventReview() {
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+        // Id evento
+        var id = urlParams.get('eventId');
+
+        // Chiamata api
+        fetch('../api/v2/visualizzazioneReview/eventReview?id='+id)
+        .then((resp) => resp.json())
+        .then(function(data){
+            document.getElementById("review").innerHTML=data.review;
+            document.getElementById("answer").innerHTML=data.answer;
+
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.err("Attenzione: parametro 'eventId' non presente nella query");
+    }
+};
+
+/*
+    Ottiene id alloggi da query URL ed esegue chiamata API per ottenere le recensioni dell'alloggio specifico
+*/
+function HousingReview() {
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+        // Id alloggio
+        var id = urlParams.get('housingId');
+
+        // Chiamata api
+        fetch('../api/v2/visualizzazioneReview/housingReview?id='+id)
+        .then((resp) => resp.json())
+        .then(function(data){
+            document.getElementById("review").innerHTML=data.review;
+            document.getElementById("answer").innerHTML=data.answer;
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.err("Attenzione: parametro 'housingId' non presente nella query");
+    }
+};
