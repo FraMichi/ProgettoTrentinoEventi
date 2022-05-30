@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+
+const cookieParser = require("cookie-parser");
+const tokenChecker = require("./../tokenChecker.js");
+
 const Housing = require('./../models/housing');
 const User = require('./../models/user');
 const Event = require ('./../models/event');
 const Category = require ('./../models/category');
 const EventReview = require ('./../models/eventreview');
 const HousingReview = require ('./../models/housingreview');
+const EventSubscription = require('./../models/eventsubscription');
+const HousingSubscription = require('./../models/housingsubscription');
 
 // Route per creazione recensione evento
 /**
@@ -77,6 +83,14 @@ const HousingReview = require ('./../models/housingreview');
  */
 router.post('/createEventReview', async (req, res) => {
 
+  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+  if (!req.body.review || !req.body.idEvento || !req.body.token  ) {
+  res.status(400).json({
+      success: false,
+      message: 'Parametri mancanti'
+  });
+  return;
+  }
   // Verifica se utente loggato
   tokenChecker(req, res, req.body.token);
 
@@ -90,37 +104,34 @@ router.post('/createEventReview', async (req, res) => {
       return;
   }
 
+  // Controlla che l'id rispetti il formato di MongoDB
+  if (!req.body.idEvento.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
+
   // Se user loggato controlla se già registrato ad evento specifico
-  let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
+  let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.idEvento});
 
   // Se non iscritto
   if(!iscrizione) {
       // Segnala che l'utente non è iscritto
       res.status(200).json({
-          success: true,
+          success: false,
           message: 'UserNotSubscribed'
       });
       return;
   }
 
-  // Altrimenti segnala che l'utente è iscritto
-  res.status(200).json({
-      success: true,
-      message: 'UserSubscribed'
-  });
+ let evento = await Event.findOne({_id: req.body.idEvento});
 
-  	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  	if (!req.body.message || !req.body.answer || !req.body.event || !req.body.userId || !req.body.userId ) {
-		res.status(400).json({
-  			success: false,
-  			message: 'Inserire tutti i campi'
-		});
-		return;
-  	}
-
-    //Controllo data evento sia passata
-      var oggi = new Date();
-      let dend = event[0].dataFine;
+  //Controllo data evento sia passata
+    var oggi = new Date();
+    let dend = evento.dataFine;
 
       var diff = dend.getTime()  - oggi.getTime();
       //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
@@ -133,21 +144,31 @@ router.post('/createEventReview', async (req, res) => {
         return;
           };
 
+    // Controllo che l'utente non abbia creato già altre recensioni per l'evento
+    let eventreview = await EventReview.findOne({idUtente: req.loggedUser.id, idEvento: req.body.idEvento});
 
+    // Se non iscritto
+    if(!eventreview) {
+        // Segnala che l'utente non è iscritto
+        res.status(200).json({
+            success: false,
+            message: 'Recensione già presente'
+        });
+        return;
+    }
 
-  	// Crea la recensione evento
-  	let eventreview = new EventReview({
-        recensione: req.body.message,
-        risposta: req.body.answer,
-        idEvento: req.body.event,
-        idUtente: req.body.userId,
-        idGestore: req.body.userId,
-
+    // Crea la recensione evento
+  	let eventReview = new EventReview({
+        recensione: req.body.review,
+        idEvento: req.body.idEvento,
+        idUtente: req.loggedUser.id,
+        idGestore:"",
+        risposta:""
     });
 
   	// Aggiunge la recensione creata nel DB
-  	eventreview = await eventreview.save();
-  	res.status(200).json({
+  	eventReview = await eventReview.save();
+  	res.status(201).json({
     		success: true,
     		message: 'Recensione evento creata correttamente!'
   	});
@@ -222,6 +243,15 @@ router.post('/createEventReview', async (req, res) => {
 */
 router.post('/createHousingReview', async (req, res) => {
 
+  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+    if (!req.body.review || !req.body.idAlloggio || !req.body.token  ) {
+    res.status(400).json({
+        success: false,
+        message: 'Parametri mancanti'
+    });
+    return;
+    }
+
   // Verifica se utente loggato
   tokenChecker(req, res, req.body.token);
 
@@ -234,37 +264,33 @@ router.post('/createHousingReview', async (req, res) => {
       });
       return;
   }
+  // Controlla che l'idAlloggio rispetti il formato di MongoDB
+  if (!req.body.idAlloggio.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
 
   // Se user loggato controlla se registrato ad alloggio specifico
-  let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.housingId, idTurista: req.loggedUser.id});
+  let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.idAlloggio, idTurista: req.loggedUser.id});
 
   // Se non prenotato, invia un messaggio di errore
   if (!prenotations) {
-  res.status(404).json({
+  res.status(200).json({
       success: false,
-      message: 'Utente non prenotato per l alloggio scelto'
+      message: 'UserNotSubscribed'
       });
   return;
   }
 
-  // Altrimenti segnala che l'utente è prenotato
-  res.status(200).json({
-      success: true,
-      message: 'UserSubscribed'
-  });
-
-  	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  	if (!req.body.message || !req.body.answer || !req.body.housingId || !req.body.userId || !req.body.userId ) {
-		res.status(400).json({
-  			success: false,
-  			message: 'Inserire tutti i campi'
-		});
-		return;
-  	}
+  let house = await Housing.findOne({_id: req.body.idAlloggio});
 
     // Contollo data soggiorno passata
       var oggi = new Date();
-      let dend = house[0].dataFine;
+      let dend = prenotations.dataFine;
 
       var diff = dend.getTime()  - oggi.getTime();
       //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
@@ -277,18 +303,31 @@ router.post('/createHousingReview', async (req, res) => {
         return;
           };
 
+          // Controllo che l'utente non abbia creato già altre recensioni per l'alloggio
+        let housingreview = await HousingReview.findOne({idUtente: req.loggedUser.id, idAlloggio: req.body.idAlloggio});
+
+        // Se non iscritto
+        if(!housingreview) {
+            // Segnala che l'utente non è iscritto
+            res.status(200).json({
+                success: false,
+                message: 'Recensione già presente'
+            });
+            return;
+        }
+
+
   	// Crea la recensione per l'alloggio
-  	let housingreview = new HousingReview({
+  	let housingReview = new HousingReview({
         recensione: req.body.message,
-        risposta: req.body.answer,
         idAlloggio: req.body.housingId,
         idUtente: req.body.userId,
-        idGestore: req.body.userId,
-
+        idGestore: "",
+        risposta: ""
     });
 
   	// Aggiunge la recensione creata nel DB
-  	housingreview = await housingreview.save();
+  	housingReview = await housingReview.save();
   	res.status(200).json({
     		success: true,
     		message: 'Recensione alloggio creata correttamente!'
