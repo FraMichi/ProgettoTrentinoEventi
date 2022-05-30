@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rispondi alla recensione</title>
+        <script src="script.js"></script>
+    </head>
+    <body onload="checkIfLogged()">
+        <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
+        <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
+        <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
+        <h1>Rispondi alla recensione</h1>
+        <form action="api/v2/review" method="post">
+            <label for="reviewAnswer">Risposta:</label><br>
+            <textarea id ="reviewAnswer" name="reviewAnswer" rows="10" cols="30"></textarea><br/>
+            <button type="button" onclick="createAnswerHousingReview()">Invia risposta</button>
+        </form>
+        <p id="errorMsgHouse"></p>
+
+    </body>
+</html>
