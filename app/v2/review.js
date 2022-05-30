@@ -148,7 +148,20 @@ router.post('/createEventReview', async (req, res) => {
         return;
           };
 
-  	// Crea la recensione evento
+    // Controllo che l'utente non abbia creato già altre recensioni
+    let eventreview = await EventReview.findOne({userId: req.loggedUser.id, idEvento: req.body.event});
+
+    // Se non iscritto
+    if(!iscrizione) {
+        // Segnala che l'utente non è iscritto
+        res.status(200).json({
+            success: true,
+            message: 'UserNotSubscribed'
+        });
+        return;
+    }
+
+    // Crea la recensione evento
   	let eventreview = new EventReview({
         recensione: req.body.message,
         risposta: req.body.answer,
@@ -388,6 +401,25 @@ router.delete('/deleteEventReview', async (req, res) => {
         res.status(401).json({
             success: false,
             message: 'Token non valido'
+        });
+        return;
+    }
+
+    // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+    if (!req.body.message || !req.body.answer || !req.body.event || !req.body.userId || !req.body.userId ) {
+    res.status(400).json({
+        success: false,
+        message: 'Inserire tutti i campi'
+    });
+    return;
+    }
+    
+    // Controlla validita dell'id dell'evento
+    if (!req.body.eventId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
         });
         return;
     }
