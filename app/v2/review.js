@@ -144,19 +144,6 @@ router.post('/createEventReview', async (req, res) => {
         return;
           };
 
-    // Controllo che l'utente non abbia creato già altre recensioni per l'evento
-    let eventreview = await EventReview.findOne({idUtente: req.loggedUser.id, idEvento: req.body.idEvento});
-
-    // Se non iscritto
-    if(!eventreview) {
-        // Segnala che l'utente non è iscritto
-        res.status(200).json({
-            success: false,
-            message: 'Recensione già presente'
-        });
-        return;
-    }
-
     // Crea la recensione evento
   	let eventReview = new EventReview({
         recensione: req.body.review,
@@ -302,19 +289,6 @@ router.post('/createHousingReview', async (req, res) => {
         });
         return;
           };
-
-          // Controllo che l'utente non abbia creato già altre recensioni per l'alloggio
-        let housingreview = await HousingReview.findOne({idUtente: req.loggedUser.id, idAlloggio: req.body.idAlloggio});
-
-        // Se non iscritto
-        if(!housingreview) {
-            // Segnala che l'utente non è iscritto
-            res.status(200).json({
-                success: false,
-                message: 'Recensione già presente'
-            });
-            return;
-        }
 
 
   	// Crea la recensione per l'alloggio
