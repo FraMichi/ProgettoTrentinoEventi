@@ -162,8 +162,8 @@ router.post('/createEventReview', async (req, res) => {
         recensione: req.body.review,
         idEvento: req.body.idEvento,
         idUtente: req.loggedUser.id,
-        idGestore:"",
-        risposta:""
+        idGestore:undefined,
+        risposta:undefined
     });
 
   	// Aggiunge la recensione creata nel DB
@@ -306,9 +306,9 @@ router.post('/createHousingReview', async (req, res) => {
           // Controllo che l'utente non abbia creato già altre recensioni per l'alloggio
         let housingreview = await HousingReview.findOne({idUtente: req.loggedUser.id, idAlloggio: req.body.idAlloggio});
 
-        // Se non iscritto
+        // Se non ci sono altre recensioni
         if(!housingreview) {
-            // Segnala che l'utente non è iscritto
+            // Segnala che l'utente ha già lasciato una recensione
             res.status(200).json({
                 success: false,
                 message: 'Recensione già presente'
@@ -322,13 +322,13 @@ router.post('/createHousingReview', async (req, res) => {
         recensione: req.body.message,
         idAlloggio: req.body.housingId,
         idUtente: req.body.userId,
-        idGestore: "",
-        risposta: ""
+        idGestore: undefined,
+        risposta: undefined
     });
 
   	// Aggiunge la recensione creata nel DB
   	housingReview = await housingReview.save();
-  	res.status(200).json({
+  	res.status(201).json({
     		success: true,
     		message: 'Recensione alloggio creata correttamente!'
   	});

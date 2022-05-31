@@ -13,7 +13,7 @@
 
 
 
-    <body onload="getSpecificEvent(); checkEventSubscription(); setDeleteEventButton(); checkIfLogged()">
+    <body onload="getSpecificEvent(); checkEventSubscription(); setDeleteEventButton(); checkIfLogged(); eventReview()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
@@ -73,19 +73,11 @@
               <textarea id ="eventReview" name="eventReview" rows="10" cols="30"></textarea><br/>
 
               <button type="button" onclick="createEventReview()">Inserisci recensione</button>
-
+            </form>
 
 
               <h2>Lista Recensioni</h2>
-              <table>
-                  <tr>
-                      <td><b>Descrizione</b></td>
-                      <td id="review"></td>
-                  </tr>
-                  <tr>
-                      <td><b>Risposta</b></td>
-                      <td id="answer"></td>
-                  </tr>
+              <table id="tabellaEventReview">
 
               </table>
 

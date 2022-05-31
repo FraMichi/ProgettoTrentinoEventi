@@ -76,19 +76,6 @@ const HousingReview = require ('./../models/housingreview');
 */
 router.get('/eventReview', async (req, res) => {
 
-  // Verifica se utente loggato
-  tokenChecker(req, res, req.body.token);
-
-  // Se utente non loggato (token decoded nella req = undefined)
-  if(req.loggedUser == undefined) {
-      // Ritorna codice 401
-      res.status(401).json({
-          success: false,
-          message: 'UserNotLogged'
-      });
-      return;
-  }
-
    // Controlla che sia effettivamente presente il parametro id
    if (!req.query.id) {
        // Se l'id non è presente nella query
@@ -122,7 +109,7 @@ router.get('/eventReview', async (req, res) => {
    }
 
    // Trova recensioni legate all'evento
-   let eventReview = await EventReview.find({idEvento: eventItem.idEvento});
+   let eventReview = await EventReview.find({idEvento: req.query.id});
 
    // Se la recensione non viene trovata restituisci un errore
    if(!eventReview) {
@@ -134,13 +121,10 @@ router.get('/eventReview', async (req, res) => {
    }
 
    // Risorsa finale
-   let finalResponse = {
-       review: eventReview.review,
-       answer: eventItem.answer,
-   };
+   let reviewList = eventReview.map((review) => {return{recensione: review.recensione, risposta: review.risposta};})
+   console.log(reviewList);
+   res.status(200).json(reviewList);
 
-   // Ritorna la risposta
-   res.status(200).json(finalResponse);
 });
 
 /**
@@ -210,19 +194,6 @@ router.get('/eventReview', async (req, res) => {
 */
 router.get('/housingReview', async (req, res) => {
 
-  // Verifica se utente loggato
-  tokenChecker(req, res, req.body.token);
-
-  // Se utente non loggato (token decoded nella req = undefined)
-  if(req.loggedUser == undefined) {
-      // Ritorna codice 401
-      res.status(401).json({
-          success: false,
-          message: 'UserNotLogged'
-      });
-      return;
-  }
-
    // Controlla che sia effettivamente presente il parametro id
    if (!req.query.id) {
        // Se l'id non è presente nella query
@@ -256,7 +227,7 @@ router.get('/housingReview', async (req, res) => {
    }
 
    // Trova recensioni legate all'alloggio
-   let housingReview = await HousingReview.find({idAlloggio: housingItem.idAlloggio});
+   let housingReview = await HousingReview.find({idAlloggio: req.query.id});
 
    // Se la recensione non viene trovata restituisci un errore
    if(!housingReview) {
@@ -268,13 +239,9 @@ router.get('/housingReview', async (req, res) => {
    }
 
    // Risorsa finale
-   let finalResponse = {
-       review: housingItem.review,
-       answer: housingItem.answer,
-       };
-
-   // Ritorna la risposta
-   res.status(200).json(finalResponse);
+   let reviewList = housingReview.map((review) => {return{recensione: review.recensione, risposta: review.risposta};})
+   console.log(reviewList);
+   res.status(200).json(reviewList);
 });
 
 
