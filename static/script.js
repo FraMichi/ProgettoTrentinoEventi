@@ -1243,12 +1243,12 @@ function deleteEventReview(id) {
         fetch('../api/v2/deletereview/deleteEventReview', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, eventId: id} )
+            body: JSON.stringify( { _id: reviewId , token: token} )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
             alert(data.message);
-            window.location.href = "/visualizzaEvento.html?eventId="+id;
+            window.location.href = "/visualizzaEvento.html?eventId="+_id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
     } else {
@@ -1270,12 +1270,12 @@ function deleteHousingReview(id) {
         fetch('../api/v2/deletereview/deleteHousingReview', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, housingId: id} )
+            body: JSON.stringify( { _id: reviewId, token: token } )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
             alert(data.message);
-            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+            window.location.href = "/visualizzaAlloggio.html?housingId="+_id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
     } else {

@@ -118,7 +118,7 @@ router.delete('/deleteEventReview', async (req, res) => {
     }
 
     // Prova a prendere la recensione dal database
-  	let eventreview = await EventReview.findOne({ recensione: req.body.review, idUtente: req.loggedUser.id, idEvento: req.body.idEvento }).exec();
+  	let eventreview = await EventReview.findOne({ recensione: req.body.review, _id: reviewId }).exec();
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
   	if (!eventreview) {
@@ -130,7 +130,7 @@ router.delete('/deleteEventReview', async (req, res) => {
   	}
 
   	// Elimina la recensione evento dal DB
-  	await EventReview.deleteOne({ recensione: req.body.review, idUtente: req.loggedUser.id, idEvento: req.body.idEvento });
+  	await EventReview.deleteOne({ recensione: req.body.review, _id: reviewId });
 
   	res.status(200).json({
     		success: true,
@@ -242,7 +242,7 @@ return;
     }
 
     // Prova a prendere la recensione dal database
-  	let housingreview = await HousingReview.findOne({ recensione: req.body.review, idUtente: req.loggedUser.id, idAlloggio: req.body.idAlloggio }).exec();
+  	let housingreview = await HousingReview.findOne({ recensione: req.body.review, _id: reviewId }).exec();
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
   	if (!housingreview) {
@@ -254,7 +254,7 @@ return;
   	}
 
   	// Elimina la recensione alloggio dal DB
-  	await HousingReview.deleteOne({ recensione: req.body.review, idUtente: req.loggedUser.id, idAlloggio: req.body.idAlloggio });
+  	await HousingReview.deleteOne({ recensione: req.body.review, _id: reviewId });
 
   	res.status(200).json({
     		success: true,

@@ -121,7 +121,7 @@ router.get('/eventReview', async (req, res) => {
    }
 
    // Risorsa finale
-   let reviewList = eventReview.map((review) => {return{recensione: review.recensione, risposta: review.risposta};})
+   let reviewList = eventReview.map((review) => {return{ reviewId: review._id , recensione: review.recensione, risposta: review.risposta};})
    console.log(reviewList);
    res.status(200).json(reviewList);
 
@@ -239,7 +239,7 @@ router.get('/housingReview', async (req, res) => {
    }
 
    // Risorsa finale
-   let reviewList = housingReview.map((review) => {return{recensione: review.recensione, risposta: review.risposta};})
+   let reviewList = housingReview.map((review) => {return{reviewId: review._id, recensione: review.recensione, risposta: review.risposta};})
    console.log(reviewList);
    res.status(200).json(reviewList);
 });
