@@ -67,14 +67,21 @@
             <a id="deleteEvent"></a>
         </div>
 
-            <h2>Lascia una recensione</h2>
-            <form action="api/v2/review" method="post">
-              <label for="eventReview">Inserisci il messaggio:</label><br>
-              <textarea id ="eventReview" name="eventReview" rows="10" cols="30"></textarea><br/>
-
-              <button type="button" onclick="createEventReview()">Inserisci recensione</button>
-
-
+        <h2>Lista Recensioni</h2>
+          <table>
+              <tr>
+                  <td><b>Descrizione</b></td>
+                  <td id="review"></td>
+              </tr>
+              <tr>
+                  <td><b>Risposta</b></td>
+                  <td id="answer"></td>
+              </tr>
+              </tr>
+                  <td><b>Eliminazione</b></td>
+                  <a id="deleteEventReview"></a>
+              </tr>
+          </table>
 
     </body>
 </html>

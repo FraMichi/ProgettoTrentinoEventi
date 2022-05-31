@@ -61,15 +61,21 @@
             <a id="deleteHousing"></a>
         </div>
 
-        <h2>Lascia una recensione</h2>
-        <form action="api/v2/review" method="post">
-          <label for="housingReview">Inserisci il messaggio:</label><br>
-          <textarea id ="housingReview" name="housingReview" rows="10" cols="30"></textarea><br/>
-
-          <button type="button" onclick="createHousingReview()">Inserisci recensione</button>
-
-        </div>
-
+        <h2>Lista Recensioni</h2>
+          <table>
+              <tr>
+                  <td><b>Descrizione</b></td>
+                  <td id="review"></td>
+              </tr>
+              <tr>
+                  <td><b>Risposta</b></td>
+                  <td id="answer"></td>
+              </tr>
+              </tr>
+                  <td><b>Eliminazione</b></td>
+                  <a id="deleteHousingReview"></a>
+              </tr>
+          </table>
 
     </body>
 </html>
