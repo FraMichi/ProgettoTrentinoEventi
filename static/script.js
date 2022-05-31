@@ -1147,14 +1147,14 @@ function eventReview() {
             data.forEach((review, i) => {
               var trreview = document.createElement("tr");
               var tdreview = document.createElement("td");
-              //var tddelete = doc
+              var tddelete = document.createElement("td");
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-                //tddelete.innerHTML=" pulsante/link"
+              tddelete.innerHTML="Rimuovi la recensione qui <a href=\"javascript:deleteEventReview('"+id+"')\">qui</a>!"
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
-              //trreview.appendChild(tddelete);
+              trreview.appendChild(tddelete);
               table.appendChild(trreview);
 
               var transwer = document.createElement("tr");
@@ -1197,13 +1197,18 @@ function housingReview() {
 
           var table = document.getElementById("tabellaHousingReview");
           data.forEach((review, i) => {
+            var table = document.getElementById("tabellaEventReview");
+            data.forEach((review, i) => {
               var trreview = document.createElement("tr");
               var tdreview = document.createElement("td");
+              var tddelete = document.createElement("td");
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
+              tddelete.innerHTML="Rimuovi la recensione qui <a href=\"javascript:deleteHousingReview('"+id+"')\">qui</a>!"
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
+              trreview.appendChild(tddelete);
               table.appendChild(trreview);
 
               var transwer = document.createElement("tr");
@@ -1225,4 +1230,58 @@ function housingReview() {
 } else {
     console.err("Attenzione: parametro 'housingId' non presente nella query");
 }
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
+ * Manda la richiesta all'API per l'eliminazione della recensione di un evento
+ */
+function deleteEventReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/review/deleteEventReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "//visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione di una recensione di un alloggio
+ */
+function deleteHousingReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/review/deleteHousingReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "//visualizzaAlloggio.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
 };
