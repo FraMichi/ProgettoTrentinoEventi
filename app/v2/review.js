@@ -149,8 +149,8 @@ router.post('/createEventReview', async (req, res) => {
         recensione: req.body.review,
         idEvento: req.body.idEvento,
         idUtente: req.loggedUser.id,
-        idGestore:"",
-        risposta:""
+        idGestore: undefined,
+        risposta: undefined
     });
 
   	// Aggiunge la recensione creata nel DB
@@ -293,11 +293,11 @@ router.post('/createHousingReview', async (req, res) => {
 
   	// Crea la recensione per l'alloggio
   	let housingReview = new HousingReview({
-        recensione: req.body.message,
-        idAlloggio: req.body.housingId,
-        idUtente: req.body.userId,
-        idGestore: "",
-        risposta: ""
+        recensione: req.body.review,
+        idAlloggio: req.body.idAlloggio,
+        idUtente: req.loggedUser.id,
+        idGestore: undefined,
+        risposta: undefined
     });
 
   	// Aggiunge la recensione creata nel DB
