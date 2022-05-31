@@ -1165,7 +1165,7 @@ function eventReview() {
 
 
 
-              if (!review.risposta) {
+              if (review.risposta) {
                 tdanswer.innerHTML = review.risposta;
               }
 
@@ -1212,7 +1212,7 @@ function housingReview() {
               tdrisposta.innerHTML = "Risposta";
               tdanswer.innerHTML = "Risposta non presente";
 
-              if (!review.risposta) {
+              if (review.risposta) {
                               tdanswer.innerHTML = review.risposta;
                             }
 
