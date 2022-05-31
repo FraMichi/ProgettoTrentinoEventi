@@ -228,19 +228,19 @@ router.post('/createEventReview', async (req, res) => {
  *         message:
  *          type: string
  *          description: Messaggio che contiene l'errore
- *     404:
- *     description: Restituisce errore se non è stato trovato l'alloggio
- *     content:
- *      application/json:
- *       schema:
- *        properties:
- *         success:
- *          type: boolean
- *          description: Vale false ed indica che ci sono stati errori
- *         message:
- *          type: string
- *          description: Messaggio che contiene l'errore
-*/
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ */
 router.post('/createHousingReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
