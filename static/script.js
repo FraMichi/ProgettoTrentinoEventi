@@ -1127,3 +1127,105 @@ function createHousingReview(id) {
                    .catch( error => console.error(error) );
       }
   };
+<<<<<<< HEAD
+=======
+
+/*
+    Ottiene id evento da query URL ed esegue chiamata API per ottenere le recensioni dell'evento specifico
+*/
+function eventReview() {
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+        // Id evento
+        var id = urlParams.get('eventId');
+
+        // Chiamata api
+        fetch('../api/v2/visualizzazioneReview/eventReview?id='+id)
+        .then((resp) => resp.json())
+        .then(function(data){
+
+            var table = document.getElementById("tabellaEventReview");
+            data.forEach((review, i) => {
+              var trreview = document.createElement("tr");
+              var tdreview = document.createElement("td");
+              //var tddelete = doc
+              var tddescrizione = document.createElement("td");
+              tddescrizione.innerHTML = "Descrizione";
+              tdreview.innerHTML = review.recensione;
+                //tddelete.innerHTML=" pulsante/link"
+              trreview.appendChild(tddescrizione);
+              trreview.appendChild(tdreview);
+              //trreview.appendChild(tddelete);
+              table.appendChild(trreview);
+
+              var transwer = document.createElement("tr");
+              var tdanswer = document.createElement("td");
+              var tdrisposta = document.createElement("td");
+              tdrisposta.innerHTML = "Risposta";
+              tdanswer.innerHTML = "Risposta non presente";
+
+
+
+              if (review.risposta) {
+                tdanswer.innerHTML = review.risposta;
+              }
+
+              transwer.appendChild(tdrisposta);
+              transwer.appendChild(tdanswer);
+              table.appendChild(transwer);
+        })
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.err("Attenzione: parametro 'eventId' non presente nella query");
+    }
+};
+
+/*
+    Ottiene id alloggi da query URL ed esegue chiamata API per ottenere le recensioni dell'alloggio specifico
+*/
+function housingReview() {
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+        // Id alloggio
+        var id = urlParams.get('housingId');
+
+        // Chiamata api
+        fetch('../api/v2/visualizzazioneReview/housingReview?id='+id)
+        .then((resp) => resp.json())
+        .then(function(data){
+
+          var table = document.getElementById("tabellaHousingReview");
+          data.forEach((review, i) => {
+              var trreview = document.createElement("tr");
+              var tdreview = document.createElement("td");
+              var tddescrizione = document.createElement("td");
+              tddescrizione.innerHTML = "Descrizione";
+              tdreview.innerHTML = review.recensione;
+              trreview.appendChild(tddescrizione);
+              trreview.appendChild(tdreview);
+              table.appendChild(trreview);
+
+              var transwer = document.createElement("tr");
+              var tdanswer = document.createElement("td");
+              var tdrisposta = document.createElement("td");
+              tdrisposta.innerHTML = "Risposta";
+              tdanswer.innerHTML = "Risposta non presente";
+
+              if (review.risposta) {
+                              tdanswer.innerHTML = review.risposta;
+                            }
+
+            transwer.appendChild(tdrisposta);
+            transwer.appendChild(tdanswer);
+            table.appendChild(transwer);
+        })
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+} else {
+    console.err("Attenzione: parametro 'housingId' non presente nella query");
+}
+};
+>>>>>>> FraMichi-visualizzarecensioni
