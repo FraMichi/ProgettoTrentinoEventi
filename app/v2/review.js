@@ -227,7 +227,7 @@ router.post('/createEventReview', async (req, res) => {
  *                   type: string
  *                   description: |
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
- */
+*/
 router.post('/createHousingReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
@@ -293,9 +293,9 @@ router.post('/createHousingReview', async (req, res) => {
 
   	// Crea la recensione per l'alloggio
   	let housingReview = new HousingReview({
-        recensione: req.body.message,
-        idAlloggio: req.body.housingId,
-        idUtente: req.body.userId,
+        recensione: req.body.review,
+        idAlloggio: req.body.idAlloggio,
+        idUtente: req.loggedUser.id,
         idGestore: undefined,
         risposta: undefined
     });
