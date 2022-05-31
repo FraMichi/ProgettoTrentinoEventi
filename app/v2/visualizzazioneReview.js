@@ -13,59 +13,32 @@ const HousingReview = require ('./../models/housingreview');
  * @openapi
  * /api/v2/visualizzazioneReview/eventReview:
  *   get:
- *     description: Gets the details of a specific event
- *     summary: Details of one event
+ *     description: Gets the reviews of a specific event
+ *     summary: Reviews of one event
  *     tags:
- *       - eventVisualization
+ *       - eventReviewVisualization
  *     parameters:
  *       - in: query
  *         name: id
  *         type: string
- *         description: The id of the specific event you want to get the details
+ *         description: The id of the specific event you want to get the review
  *         required: true
  *     responses:
  *       200:
- *         description: Details of an event in JSON format
+ *         description: Review of an event in JSON format
  *         content:
  *           application/json:
  *             schema:
  *               properties:
- *                 title:
+ *                 review:
  *                   type: string
- *                   description: title of the event
- *                 description:
+ *                   description: review of the event
+ *                 answer:
  *                   type: string
- *                   description: description of the event
- *                 initDate:
+ *                   description: answer of IdGestore to the review
+ *                 delete:
  *                   type: string
- *                   description: date of the beginning of the event in ISO8601 format
- *                 finlDate:
- *                   type: string
- *                   description: date of the ending of the event in ISO8601 format
- *                 address:
- *                   type: string
- *                   description: address of the event
- *                 city:
- *                   type: string
- *                   description: city where the event takes place
- *                 seatsAvailable:
- *                   type: integer
- *                   description: seats still available for the event
- *                 seatsOccupied:
- *                   type: number
- *                   description: seats already occupied for the event
- *                 category:
- *                   type: string
- *                   description: the category of the event
- *                 creatorName:
- *                   type: string
- *                   description: the name of the user who created the event
- *                 creatorSurname:
- *                   type: string
- *                   description: the surname of the user who created the event
- *                 creatorEmail:
- *                   type: string
- *                   description: the email of the user who created the event
+ *                   description: delete the review
  *       404:
  *         description: Some data are not found on the DB
  *         content:
@@ -88,7 +61,19 @@ const HousingReview = require ('./../models/housingreview');
  *                 message:
  *                   type: string
  *                   description: specifications regarding the specific error
- */
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+*/
 router.get('/eventReview', async (req, res) => {
 
   // Verifica se utente loggato
@@ -160,52 +145,34 @@ router.get('/eventReview', async (req, res) => {
 
 /**
  * @openapi
- * /api/v1/visualizzazione/housing:
+ * /api/v2/visualizzazioneReview/housingReview:
  *   get:
- *     description: Gets the details of a specific housing
- *     summary: Details of one housing
+ *     description: Gets the reviews of a specific housing
+ *     summary: Reviews of one housing
  *     tags:
- *       - housingVisualization
+ *       - housingReviewVisualization
  *     parameters:
  *       - in: query
  *         name: id
  *         type: string
- *         description: The id of the specific housing you want to get the details
+ *         description: The id of the specific housing you want to get the review
  *         required: true
  *     responses:
  *       200:
- *         description: Details of a housing in JSON format
+ *         description: Review of a housing in JSON format
  *         content:
  *           application/json:
  *             schema:
  *               properties:
- *                 title:
+ *                 review:
  *                   type: string
- *                   description: title of the housing
- *                 description:
+ *                   description: review of the housing
+ *                 answer:
  *                   type: string
- *                   description: description of the housing
- *                 initDate:
+ *                   description: the aswer of the IdGestore to the review
+ *                 delete:
  *                   type: string
- *                   description: date of the beginning of the housing availability slot in ISO8601 format
- *                 finlDate:
- *                   type: string
- *                   description: date of the ending of the housing availability slot in ISO8601 format
- *                 address:
- *                   type: string
- *                   description: address of the housing
- *                 city:
- *                   type: string
- *                   description: city where the housing is located
- *                 creatorName:
- *                   type: string
- *                   description: the name of the user who created the housing
- *                 creatorSurname:
- *                   type: string
- *                   description: the surname of the user who created the housing
- *                 creatorEmail:
- *                   type: string
- *                   description: the email of the user who created the housing
+ *                   description: delete the review
  *       404:
  *         description: Some data are not found on the DB
  *         content:
@@ -228,7 +195,19 @@ router.get('/eventReview', async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: specifications regarding the specific error
- */
+ *       401:
+ *         description: The user is not logged
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+*/
 router.get('/housingReview', async (req, res) => {
 
   // Verifica se utente loggato
