@@ -1151,7 +1151,7 @@ function eventReview() {
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tddelete.innerHTML="Rimuovi la recensione qui <a href=\"javascript:deleteEventReview('"+id+"')\">qui</a>!"
+              tddelete.innerHTML="Rimuovi la recensione <a href=\"javascript:deleteEventReview('"+id+"')\">qui</a>!"
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
               trreview.appendChild(tddelete);
@@ -1197,15 +1197,13 @@ function housingReview() {
 
           var table = document.getElementById("tabellaHousingReview");
           data.forEach((review, i) => {
-            var table = document.getElementById("tabellaEventReview");
-            data.forEach((review, i) => {
               var trreview = document.createElement("tr");
               var tdreview = document.createElement("td");
               var tddelete = document.createElement("td");
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tddelete.innerHTML="Rimuovi la recensione qui <a href=\"javascript:deleteHousingReview('"+id+"')\">qui</a>!"
+              tddelete.innerHTML="Rimuovi la recensione <a href=\"javascript:deleteHousingReview('"+id+"')\">qui</a>!"
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
               trreview.appendChild(tddelete);
@@ -1242,7 +1240,7 @@ function deleteEventReview(id) {
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
 
-        fetch('../api/v2/review/deleteEventReview', {
+        fetch('../api/v2/deletereview/deleteEventReview', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( { token: token, eventId: id} )
@@ -1250,7 +1248,7 @@ function deleteEventReview(id) {
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
             alert(data.message);
-            window.location.href = "//visualizzaEvento.html?eventId="+id;
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
     } else {
@@ -1269,7 +1267,7 @@ function deleteHousingReview(id) {
     if(getCookie("user")) {
         token = JSON.parse(getCookie("user")).token;
 
-        fetch('../api/v2/review/deleteHousingReview', {
+        fetch('../api/v2/deletereview/deleteHousingReview', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( { token: token, housingId: id} )
@@ -1277,7 +1275,7 @@ function deleteHousingReview(id) {
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
             alert(data.message);
-            window.location.href = "//visualizzaAlloggio.html?eventId="+id;
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
     } else {
