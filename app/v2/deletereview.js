@@ -109,6 +109,7 @@ router.delete('/deleteEventReview', async (req, res) => {
 
     // Prova a prendere la recensione dal database
   	let eventreview = await EventReview.findOne({ _id: req.body.reviewId }).exec();
+    console.log(eventreview);
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
   	if (!eventreview) {
