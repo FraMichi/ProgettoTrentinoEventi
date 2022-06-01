@@ -30,7 +30,7 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
                   idEvento: "62838c1f3ba701dd200682e9",
                   idTurista: "627fdb1d95b0619bf9e97711"
                 }
-            } else {return {}}
+            } else {return undefined}
         });
 
         eventSubSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
@@ -49,11 +49,27 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
                     idCategoria: "627fd7ef95b0619bf9e9770f",
                     idGestore: "62829e5e6c2ce7457eda4f12"
                 };
+            } else if (crit["_id"] == "62838c1f3ba701dd200682e8")
+            {
+                return {
+                    _id: "62838c1f3ba701dd200682e8",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2022-01-18T00:00:00.000+00:00",
+                    dataFine: "2022-02-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 994,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
             } else {return []}
         });
     });
     afterAll(() => {});
 
+    // token non valido
     test('POST /api/v1/eventSubscription/eventSubcribable con token non valido', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenNoV, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
@@ -63,6 +79,14 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
         });
     });
 
+    // token ok, id evento non conforme
+    test('POST /api/v1/eventSubscription/eventSubcribable con token valido ma id evento non esistente', () => {
+        return request(app).post('/api/v1/eventSubscription/eventSubcribable')
+        .send({token: tokenVal, event:"62838c1fljfnsdlkfòksamlsd3ba701dd200672e9"}).set('Accept', 'application/json')
+        .expect(400, {success: false, message: "MongoDBFormatException"});
+    });
+
+    // token ok, id evento non esistente
     test('POST /api/v1/eventSubscription/eventSubcribable con token valido ma id evento non esistente', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenVal, event:"62838c1f3ba701dd200672e9"}).set('Accept', 'application/json')
@@ -72,6 +96,7 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
         });
     });
 
+    // token ok, utente iscritto
     test('POST /api/v1/eventSubscription/eventSubcribable con token valido e utente iscritto', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
@@ -80,15 +105,20 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
             message: 'UserSubscribed'
         });
     });
+
+    // token ok, utente non iscritto
+    test('POST /api/v1/eventSubscription/eventSubcribable con token valido e utente non iscritto', () => {
+        return request(app).post('/api/v1/eventSubscription/eventSubcribable')
+        .send({token: tokenVal, event:"62838c1f3ba701dd200682e8"}).set('Accept', 'application/json')
+        .expect(200, {
+            success: true,
+            message: 'UserNotSubscribed'
+        });
+    });
 });
 
-describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
-    // token
-    // event
-    // 200 UserNotSubscribed
-    // 200 UserSubscribed
-    // 401 UserNotLogged
 
+describe('POST /api/v1/eventSubscription/createSubscription', () => {
     beforeAll(() => {
         jest.setTimeout(8000);
         eventSubSpy = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
@@ -123,8 +153,9 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
     });
     afterAll(() => {});
 
-    test('POST /api/v1/eventSubscription/eventSubcribable con token non valido', () => {
-        return request(app).post('/api/v1/eventSubscription/eventSubcribable')
+    // token non valido
+    test('POST /api/v1/eventSubscription/createSubscription con token non valido', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenNoV, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
         .expect(401, {
             success: false,
@@ -132,21 +163,20 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
         });
     });
 
-    test('POST /api/v1/eventSubscription/eventSubcribable con token valido ma id evento non esistente', () => {
-        return request(app).post('/api/v1/eventSubscription/eventSubcribable')
+    // token ok, id evento non conforme
+    test('POST /api/v1/eventSubscription/createSubscription con token valido ma id evento non esistente', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
+        .send({token: tokenVal, event:"62838c1fljfnsdlkfòksamlsd3ba701dd200672e9"}).set('Accept', 'application/json')
+        .expect(400, {success: false, message: "MongoDBFormatException"});
+    });
+
+    // token ok, id evento non esistente
+    test('POST /api/v1/eventSubscription/createSubscription con token valido ma id evento non esistente', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200672e9"}).set('Accept', 'application/json')
         .expect(404, {
             success: false,
             message: "EventNotFound"
-        });
-    });
-
-    test('POST /api/v1/eventSubscription/eventSubcribable con token valido e utente iscritto', () => {
-        return request(app).post('/api/v1/eventSubscription/eventSubcribable')
-        .send({token: tokenVal, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
-        .expect(200, {
-            success: true,
-            message: 'UserSubscribed'
         });
     });
 });
