@@ -87,7 +87,7 @@ const HousingSubscription = require('./../models/housingsubscription');
 router.delete('/deleteEventReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  if (!req.body.eventId || !req.body.token || !req.body.reviewId ) {
+  if ( !req.body.token || !req.body.reviewId ) {
   res.status(400).json({
       success: false,
       message: 'Parametri mancanti'
@@ -107,18 +107,8 @@ router.delete('/deleteEventReview', async (req, res) => {
         return;
     }
 
-    // Controlla validita dell'id dell'evento
-    if (!req.body.eventId.match(/^[0-9a-fA-F]{24}$/)) {
-        // Se non lo rispetta ritorna un errore
-        res.status(400).json({
-            success: false,
-            message: "MongoDBFormatException"
-        });
-        return;
-    }
-
     // Prova a prendere la recensione dal database
-  	let eventreview = await EventReview.findOne({ _id: reviewId }).exec();
+  	let eventreview = await EventReview.findOne({ _id: req.body.reviewId }).exec();
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
   	if (!eventreview) {
@@ -130,7 +120,7 @@ router.delete('/deleteEventReview', async (req, res) => {
   	}
 
   	// Elimina la recensione evento dal DB
-  	await EventReview.deleteOne({ _id: reviewId });
+  	await EventReview.deleteOne({ _id: req.body.reviewId });
 
   	res.status(200).json({
     		success: true,
@@ -211,7 +201,7 @@ router.delete('/deleteEventReview', async (req, res) => {
 router.delete('/deleteHousingReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-if (!req.body.reviewId || !req.body.token || !req.body.housingId) {
+if (!req.body.reviewId || !req.body.token ) {
 res.status(400).json({
     success: false,
     message: 'Parametri mancanti'
@@ -231,18 +221,8 @@ return;
         return;
     }
 
-    // Controlla validita dell'id dell'alloggio
-    if (!req.body.housingId.match(/^[0-9a-fA-F]{24}$/)) {
-        // Se non lo rispetta ritorna un errore
-        res.status(400).json({
-            success: false,
-            message: "MongoDBFormatException"
-        });
-        return;
-    }
-
     // Prova a prendere la recensione dal database
-  	let housingreview = await HousingReview.findOne({ _id: reviewId }).exec();
+  	let housingreview = await HousingReview.findOne({ _id: req.body.reviewId }).exec();
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
   	if (!housingreview) {
@@ -254,7 +234,7 @@ return;
   	}
 
   	// Elimina la recensione alloggio dal DB
-  	await HousingReview.deleteOne({ _id: reviewId });
+  	await HousingReview.deleteOne({ _id: req.body.reviewId });
 
   	res.status(200).json({
     		success: true,

@@ -1248,7 +1248,7 @@ function deleteEventReview(id) {
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
             alert(data.message);
-            window.location.href = "/visualizzaEvento.html?eventId="+id;
+            window.location.href = "/index.html";
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
     } else {
@@ -1275,7 +1275,7 @@ function deleteHousingReview(id) {
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
         .then( function(data) {
             alert(data.message);
-            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+            window.location.href = "/index.html";
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
     } else {
