@@ -129,10 +129,10 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                   idEvento: "62838c1f3ba701dd200682e9",
                   idTurista: "627fdb1d95b0619bf9e97711"
                 }
-            } else {return {}}
+            } else {return undefined}
         });
 
-        eventSubSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
+        eventSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
             if(crit["_id"] == "62838c1f3ba701dd200682e9")
             {
                 return {
@@ -148,8 +148,123 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                     idCategoria: "627fd7ef95b0619bf9e9770f",
                     idGestore: "62829e5e6c2ce7457eda4f12"
                 };
+            } else if (crit["_id"] == "62838c1f3ba701dd200682e8")
+            {
+                return {
+                    _id: "62838c1f3ba701dd200682e8",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2022-01-18T00:00:00.000+00:00",
+                    dataFine: "2022-02-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 994,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
+            } else if (crit["_id"] == "62838c1f3ba701dd200682e0")
+            {
+                return {
+                    _id: "62838c1f3ba701dd200682e0",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2022-01-18T00:00:00.000+00:00",
+                    dataFine: "2022-02-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 0,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
+            }  else if (crit["_id"] == "62838c1f3ba701dd200682e2") {     // evento vecchio
+                return {
+                    _id: "62838c1f3ba701dd200682e0",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2000-11-18T00:00:00.000+00:00",
+                    dataFine: "2000-12-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 0,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
             } else {return []}
         });
+
+        eventOneSpy = jest.spyOn(Event, 'findOne').mockImplementation((crit) => {
+            if(crit["_id"] == "62838c1f3ba701dd200682e9") {     // si iscritto
+                return {
+                    _id: "62838c1f3ba701dd200682e9",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2022-11-18T00:00:00.000+00:00",
+                    dataFine: "2022-12-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 994,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
+            } else if (crit["_id"] == "62838c1f3ba701dd200682e8") {     // no iscritto
+                return {
+                    _id: "62838c1f3ba701dd200682e8",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2022-11-18T00:00:00.000+00:00",
+                    dataFine: "2022-12-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 994,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
+            } else if (crit["_id"] == "62838c1f3ba701dd200682e0") {     // no posti
+                return {
+                    _id: "62838c1f3ba701dd200682e0",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2022-11-18T00:00:00.000+00:00",
+                    dataFine: "2022-12-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 0,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
+            } else if (crit["_id"] == "62838c1f3ba701dd200682e2") {     // evento vecchio
+                return {
+                    _id: "62838c1f3ba701dd200682e0",
+                    titolo: "Mostra studenti",
+                    descrizione: "Mostra fotografica di un fotografo tedesco",
+                    dataInizio: "2000-11-18T00:00:00.000+00:00",
+                    dataFine: "2000-12-02T00:00:00.000+00:00",
+                    indirizzo: "Via Roma n.16, Trento, TN, Italia",
+                    citta: "Strigno",
+                    postiDisponibili: 0,
+                    postiTotali: 1000,
+                    idCategoria: "627fd7ef95b0619bf9e9770f",
+                    idGestore: "62829e5e6c2ce7457eda4f12"
+                };
+            } else {return []}
+        });
+
+        // Empty stub
+        eventSubCreationSpy = jest.spyOn(EventSubscription, 'create').mockImplementation((crit) => {
+            return {}
+        });
+
+        eventUpdateSpy = jest.spyOn(Event, 'findOneAndUpdate').mockImplementation((crit) => {
+            return {}
+        });
+
+
     });
     afterAll(() => {});
 
@@ -164,7 +279,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
     });
 
     // token ok, id evento non conforme
-    test('POST /api/v1/eventSubscription/createSubscription con token valido ma id evento non esistente', () => {
+    test('POST /api/v1/eventSubscription/createSubscription con token valido ma id evento non conforme', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1fljfnsdlkfòksamlsd3ba701dd200672e9"}).set('Accept', 'application/json')
         .expect(400, {success: false, message: "MongoDBFormatException"});
@@ -177,6 +292,46 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
         .expect(404, {
             success: false,
             message: "EventNotFound"
+        });
+    });
+
+    // token ok, utente già iscritto a evento
+    test('POST /api/v1/eventSubscription/createSubscription iscrizione ad evento già iscritto', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
+        .send({token: tokenVal, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
+        .expect(200, {
+            success: true,
+            message: 'UserAlreadySubscribed'
+        });
+    });
+
+    // token ok, evento senza posti
+    test('POST /api/v1/eventSubscription/createSubscription iscrizione ad evento senza posti disponibili', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
+        .send({token: tokenVal, event:"62838c1f3ba701dd200682e0"}).set('Accept', 'application/json')
+        .expect(200, {
+            success: false,
+            message: 'NoFreeSeats'
+        });
+    });
+
+    // evento già finito
+    test('POST /api/v1/eventSubscription/createSubscription iscrizione ad evento finito', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
+        .send({token: tokenVal, event:"62838c1f3ba701dd200682e2"}).set('Accept', 'application/json')
+        .expect(200, {
+            success: false,
+            message: 'TimeExceeded'
+        });
+    });
+
+    // token ok, utente non iscritto a evento
+    test('POST /api/v1/eventSubscription/createSubscription nuova iscrizione effettuata con successo', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
+        .send({token: tokenVal, event:"62838c1f3ba701dd200682e8"}).set('Accept', 'application/json')
+        .expect(201, {
+            success: true,
+            message: 'UserSubscribed'
         });
     });
 });
