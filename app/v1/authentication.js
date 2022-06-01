@@ -120,6 +120,8 @@ router.post('/login', async (req, res) => {
       	id: user._id
   	}
 
+    console.log(payload)
+
     // Scadenza dopo 2 minuti
     expire = 120;
   	var options = {
