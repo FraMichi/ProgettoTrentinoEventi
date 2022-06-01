@@ -1153,7 +1153,7 @@ function eventReview() {
 
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tdformanswer.innerHTML="Inserisci <a href=\"javascript:createAnswerEventReview\">qui</a> la risposta!"
+              tdformanswer.innerHTML="Inserisci <a href=\"createAnswerEventReview.html\">qui</a> la risposta!"
               //tddelete.innerHTML=" pulsante/link"
 
               trreview.appendChild(tddescrizione);

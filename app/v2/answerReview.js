@@ -127,9 +127,9 @@ router.post('/createAnswerEventReview', async (req, res) => {
 
     // Crea la risposta alla recensione evento
   	let eventReview = new EventReview({
-        recensione: req.body.review,
-        idEvento: req.body.idEvento,
-        idUtente: req.loggedUser.id,
+        recensione: undefined,
+        idEvento: undefined,
+        idUtente: undefined,
         idGestore: req.loggedUser.id,
         risposta: req.body.answer
     });
@@ -138,7 +138,7 @@ router.post('/createAnswerEventReview', async (req, res) => {
   	eventReview = await eventReview.save();
   	res.status(201).json({
     		success: true,
-    		message: 'Recensione evento creata correttamente!'
+    		message: 'Risposta recensione evento creata correttamente!'
   	});
 });
 
@@ -209,7 +209,7 @@ router.post('/createAnswerEventReview', async (req, res) => {
  *                   description: |
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
 */
-router.post('/createHousingReview', async (req, res) => {
+router.post('/createAnswerHousingReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
     if (!req.body.review || !req.body.idAlloggio || !req.body.token  ) {
@@ -242,50 +242,31 @@ router.post('/createHousingReview', async (req, res) => {
       return;
   }
 
-  // Se user loggato controlla se registrato ad alloggio specifico
-  let prenotations = await HousingSubscription.findOne({idAlloggio: req.body.idAlloggio, idTurista: req.loggedUser.id});
-
-  // Se non prenotato, invia un messaggio di errore
-  if (!prenotations) {
-  res.status(200).json({
+  // Controlla se l'utente è il creatore dell'alloggio, se no invia un messaggio di errore
+  if(alloggio.idGestore != req.loggedUser.id) {
+      res.status(403).json({
       success: false,
-      message: 'UserNotSubscribed'
+      message: "Non sei il proprietario dell'alloggio"
       });
   return;
   }
 
   let house = await Housing.findOne({_id: req.body.idAlloggio});
 
-    // Contollo data soggiorno passata
-      var oggi = new Date();
-      let dend = prenotations.dataFine;
-
-      var diff = dend.getTime()  - oggi.getTime();
-      //la data di fine evento è maggiore della data di oggi, evento deve ancora avvenire
-      if (diff >= 0) {
-        // Ritorna codice 401
-        res.status(401).json({
-            success: false,
-            message: 'Soggiorno ancora non avvenuto'
-        });
-        return;
-          };
-
-
-  	// Crea la recensione per l'alloggio
+  	// Crea risposta alla recensione per l'alloggio
   	let housingReview = new HousingReview({
-        recensione: req.body.review,
-        idAlloggio: req.body.idAlloggio,
-        idUtente: req.loggedUser.id,
-        idGestore: undefined,
-        risposta: undefined
+        recensione: undefined,
+        idAlloggio: undefined,
+        idUtente: undefined,
+        idGestore: req.loggedUser.id,
+        risposta: req.body.answer
     });
 
-  	// Aggiunge la recensione creata nel DB
+  	// Aggiunge la risposta alla recensione nel DB
   	housingReview = await housingReview.save();
   	res.status(200).json({
     		success: true,
-    		message: 'Recensione alloggio creata correttamente!'
+    		message: 'Risposta recensione alloggio creata correttamente!'
   	});
 });
 
