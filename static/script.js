@@ -1245,7 +1245,7 @@ function createAnswerEventReview(id) {
   }
 
   // Prendo la Recensione
-  var review = document.getElementById("eventReview").value;
+  var review = document.getElementById("answerReview").value;
 
   if(getCookie("user")) {
       token = JSON.parse(getCookie("user")).token;
@@ -1255,7 +1255,7 @@ function createAnswerEventReview(id) {
                       fetch('../api/v2/answerReview/createAnswerEventReview', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { idEvento: eventId, review: review,token: token } )
+                         body: JSON.stringify( { idEvento: eventId, review: review,token: token, answer: answer } )
                       })
                       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                       .then( function(data) {

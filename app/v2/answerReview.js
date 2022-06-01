@@ -19,10 +19,10 @@ const HousingSubscription = require('./../models/housingsubscription');
  * @openapi
  * /api/v2/answerReview/createAnswerEventReview:
  *  post:
- *   description: Controlla se le informazioni inserite nel form sono corrette e crea una recensione ad un evento caricandola nel DB
- *   summary: Crea una recensione evento
+ *   description: Controlla se le informazioni inserite nel form sono corrette e crea una risposta alla recensione ad un evento caricandola nel DB
+ *   summary: Crea una risposta ad una recensione evento
  *   tags:
- *    - eventReviewCreation
+ *    - eventAnswerReviewCreation
  *   requestBody:
  *    content:
  *     application/json:
@@ -84,7 +84,7 @@ const HousingSubscription = require('./../models/housingsubscription');
 router.post('/createAnswerEventReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  if (!req.body.review || !req.body.idEvento || !req.body.token  ) {
+  if (!req.body.review || !req.body.answer || !req.body.token  ) {
   res.status(400).json({
       success: false,
       message: 'Parametri mancanti'
@@ -134,7 +134,7 @@ router.post('/createAnswerEventReview', async (req, res) => {
         risposta: req.body.answer
     });
 
-  	// Aggiunge la recensione creata nel DB
+  	// Aggiunge la risposta alla recensione nel DB
   	eventReview = await eventReview.save();
   	res.status(201).json({
     		success: true,
@@ -142,15 +142,15 @@ router.post('/createAnswerEventReview', async (req, res) => {
   	});
 });
 
-// Route per creazione recensione alloggio
+// Route per creazione risposta recensione alloggio
 /**
  * @openapi
- * /api/v2/review/createHousingReview:
+ * /api/v2/answerReview/createAnswerHousingReview:
  *  post:
- *   description: Controlla se le informazioni inserite nel form sono corrette e crea una recensione ad un alloggio caricandola nel DB
- *   summary: Crea una recensione alloggio
+ *   description: Controlla se le informazioni inserite nel form sono corrette e crea risposta ad una recensione ad un alloggio caricandola nel DB
+ *   summary: Crea una risposta ad una recensione alloggio
  *   tags:
- *    - housingReviewCreation
+ *    - housingAnswerReviewCreation
  *   requestBody:
  *    content:
  *     application/json:
