@@ -67,13 +67,25 @@ const router = express.Router();
  *                   type: string
  *                   description: |
  *                     EventNotFound => l'evento specifico non esiste nel DB
+ *       400:
+ *         description: L'id specificato non rispetta il formato mongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
  */
 router.post('/eventSubcribable', async (req, res) => {
 
     // Verifica se utente loggato
     tokenChecker(req, res, req.body.token);
 
-    // RESPO 400 MongoDBFormatException
+    // RESPO_DONE 400 MongoDBFormatException
     // Verifica che id rispetti formato MongoDB
     if (!req.body.event.match(/^[0-9a-fA-F]{24}$/)) {
       // Se non lo rispetta dichiara l'errore
@@ -199,13 +211,25 @@ router.post('/eventSubcribable', async (req, res) => {
  *                   type: string
  *                   description: |
  *                     EventNotFound => l'evento specifico non esiste nel DB
+ *       400:
+ *         description: L'id specificato non rispetta il formato mongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
  */
 router.post('/createSubscription', async (req, res) =>{
 
     // Verifica se l'utente è loggato
     tokenChecker(req, res, req.body.token);
 
-    // RESPO 400 MongoDBFormatException
+    // RESPO_DONE 400 MongoDBFormatException
     // Verifica che id rispetti formato MongoDB
     if (!req.body.event.match(/^[0-9a-fA-F]{24}$/)) {
       // Se non lo rispetta dichiara l'errore
@@ -235,6 +259,17 @@ router.post('/createSubscription', async (req, res) =>{
         } else {
             // Se non iscritto, controlla se l'evento specifico ha posti disponibili
             let eventItem = await Event.findOne({_id: req.body.event});
+
+            if(!(new Date(eventItem.dataFine).getTime() > new Date().getTime()))
+            {
+                // RESPO 200 TimeExceeded
+                res.status(200).json({
+                    success: false,
+                    message: 'TimeExceeded'
+                });
+                return;
+            }
+
             if(eventItem.postiDisponibili > 0) {
                 // Se ha posti disponibili, togline uno
                 let tmp = eventItem.postiDisponibili - 1;
