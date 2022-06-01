@@ -287,13 +287,9 @@ router.post('/createSubscription', async (req, res) =>{
                     idTurista: req.loggedUser.id
                 });
 
-                console.log("qui")
-
-                newSubscription = await EventSubscription.create(newSubscription);
-
                 // Salva l'iscrizione
                 //newSubscription = await newSubscription.save();
-                console.log("li")
+                newSubscription = await EventSubscription.create(newSubscription);
                 res.status(201).json({
                     success: true,
                     message: 'UserSubscribed'
