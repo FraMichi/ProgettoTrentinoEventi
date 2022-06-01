@@ -165,12 +165,16 @@ router.post('/eventSubcribable', async (req, res) => {
  *                     NoFreeSeats => false
  *
  *                     UserAlreadySubscribed => true
+ *
+ *                     TimeExceeded => true
  *                 message:
  *                   type: string
  *                   description: |
  *                     NoFreeSeats => l'evento non ha posti liberi, iscrizione annullata
  *
  *                     UserAlreadySubscribed => l'utente è già iscritto all'evento
+ *
+ *                     TimeExceeded => l'evento a cui vuoi iscriverti è già finito
  *       201:
  *         description: Richiesta completata con successo, nuova entry creata nel DB
  *         content:
@@ -262,7 +266,7 @@ router.post('/createSubscription', async (req, res) =>{
 
             if(!(new Date(eventItem.dataFine).getTime() > new Date().getTime()))
             {
-                // RESPO 200 TimeExceeded
+                // RESPO_DONE 200 TimeExceeded
                 res.status(200).json({
                     success: false,
                     message: 'TimeExceeded'
