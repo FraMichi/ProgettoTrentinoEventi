@@ -119,8 +119,6 @@ router.post('/getHousingSlots', async (req, res) =>{
     prenotations.sort((a, b) =>{
         let tmpA = a.dataInizio.getTime();
         let tmpB = b.dataInizio.getTime();
-
-        console.log(tmpA + " --- " + tmpB)
         if(tmpA < tmpB) {
             return -1;
         }

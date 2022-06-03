@@ -64,6 +64,10 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
 
     afterAll(() => {});
 
+    /*
+        UTENTE NON LOGGATO
+    */
+
     // id non conforme
     test('POST /api/v1/housingSubscription/getHousingSlots con id non conforme', () => {
         return request(app).post('/api/v1/housingSubscription/getHousingSlots')
@@ -85,13 +89,104 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
     });
 
     // alloggio non esistentenp
-
     test('POST /api/v1/housingSubscription/getHousingSlots', () => {
         return request(app).post('/api/v1/housingSubscription/getHousingSlots')
         .send({token: tokenNoV, id:"627fdec095b0619bf9e97717"}).set('Accept', 'application/json')
+        .expect(200, [
+        {
+          init: "2022-05-18T00:00:00.000Z",
+          finl: "2022-06-20T00:00:00.000Z",
+          free: true,
+          ofUser: false
+
+        },
+        {
+          init: "2022-06-20T00:00:00.000Z",
+          finl: "2022-07-10T00:00:00.000Z",
+          free: false,
+          ofUser: false
+        },
+        {
+          init: "2022-07-10T00:00:00.000Z",
+          finl: "2022-07-11T00:00:00.000Z",
+          free: true,
+          ofUser: false
+        },
+        {
+          init: "2022-07-11T00:00:00.000Z",
+          finl: "2022-07-17T00:00:00.000Z",
+          free: false,
+          ofUser: false
+        },
+        {
+          init: "2022-07-17T00:00:00.000Z",
+          finl: "2022-08-02T00:00:00.000Z",
+          free: true,
+          ofUser: false
+        }
+      ]);
+    });
+
+    /*
+        UTENTE LOGGATO
+    */
+
+    // id non conforme
+    test('POST /api/v1/housingSubscription/getHousingSlots con id non conforme', () => {
+        return request(app).post('/api/v1/housingSubscription/getHousingSlots')
+        .send({token: tokenVal, id:"62838c1f3sdfsdfsdgsdgsdba701dd200682e9"}).set('Accept', 'application/json')
+        .expect(400, {
+            success: false,
+            message: "MongoDBFormatException"
+        });
+    });
+
+    // alloggio non esistente
+    test('POST /api/v1/housingSubscription/getHousingSlots con alloggio non esistente', () => {
+        return request(app).post('/api/v1/housingSubscription/getHousingSlots')
+        .send({token: tokenVal, id:"627fdec095b0619bf9e00000"}).set('Accept', 'application/json')
         .expect(404, {
             success: false,
             message: "HousingNotFound"
         });
+    });
+
+    // alloggio non esistentenp
+    test('POST /api/v1/housingSubscription/getHousingSlots', () => {
+        return request(app).post('/api/v1/housingSubscription/getHousingSlots')
+        .send({token: tokenVal, id:"627fdec095b0619bf9e97717"}).set('Accept', 'application/json')
+        .expect(200, [
+        {
+          init: "2022-05-18T00:00:00.000Z",
+          finl: "2022-06-20T00:00:00.000Z",
+          free: true,
+          ofUser: false
+
+        },
+        {
+          init: "2022-06-20T00:00:00.000Z",
+          finl: "2022-07-10T00:00:00.000Z",
+          free: false,
+          ofUser: false
+        },
+        {
+          init: "2022-07-10T00:00:00.000Z",
+          finl: "2022-07-11T00:00:00.000Z",
+          free: true,
+          ofUser: false
+        },
+        {
+          init: "2022-07-11T00:00:00.000Z",
+          finl: "2022-07-17T00:00:00.000Z",
+          free: false,
+          ofUser: false
+        },
+        {
+          init: "2022-07-17T00:00:00.000Z",
+          finl: "2022-08-02T00:00:00.000Z",
+          free: true,
+          ofUser: false
+        }
+      ]);
     });
 });
