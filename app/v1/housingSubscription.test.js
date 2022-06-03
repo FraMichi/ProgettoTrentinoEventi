@@ -48,20 +48,19 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
                             {
                                 idAlloggio: '627fdec095b0619bf9e97717',
                                 idTurista: '62820677b7b4b123550367b8',
-                                dataInizio: new Date("2022-06-20T00:00:00.000Z"),
-                                dataFine: new Date("2022-07-10T00:00:00.000Z")
+                                dataInizio: new Date("2022-07-11T00:00:00.000Z"),
+                                dataFine: new Date("2022-07-17T00:00:00.000Z")
                             },
                             {
                                 idAlloggio: '627fdec095b0619bf9e97717',
                                 idTurista: '62820677b7b4b123550367b8',
-                                dataInizio: new Date("2022-07-11T00:00:00.000Z"),
-                                dataFine: new Date("2022-07-17T00:00:00.000Z")
+                                dataInizio: new Date("2022-06-20T00:00:00.000Z"),
+                                dataFine: new Date("2022-07-10T00:00:00.000Z")
                             }
                         ]
             } else {return []}
         });
     });
-
 
     afterAll(() => {});
 
@@ -86,7 +85,7 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
     });
 
     // alloggio non esistentenp
-    
+
     test('POST /api/v1/housingSubscription/getHousingSlots', () => {
         return request(app).post('/api/v1/housingSubscription/getHousingSlots')
         .send({token: tokenNoV, id:"627fdec095b0619bf9e97717"}).set('Accept', 'application/json')

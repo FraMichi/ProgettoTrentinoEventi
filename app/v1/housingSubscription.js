@@ -114,7 +114,24 @@ router.post('/getHousingSlots', async (req, res) =>{
     slotList.push("###-MARK-###");
 
     // Ottieni la lista di prenotazioni per l'alloggio specifico
-    let prenotations = await HousingSubscription.find({idAlloggio:housId}).sort({dataInizio:1});
+    let prenotations = await HousingSubscription.find({idAlloggio:housId})
+
+    prenotations.sort((a, b) =>{
+        let tmpA = a.dataInizio.getTime();
+        let tmpB = b.dataInizio.getTime();
+
+        console.log(tmpA + " --- " + tmpB)
+        if(tmpA < tmpB) {
+            return -1;
+        }
+        else if (tmpA > tmpB) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    });
+
     let dateMap = new Map(Object.entries(prenotations));
 
     // Per ogni entry di prenotazione
