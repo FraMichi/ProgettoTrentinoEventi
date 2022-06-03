@@ -105,7 +105,6 @@ router.post('/getHousingSlots', async (req, res) =>{
     }
 
     let tmpInitDate = house[0].dataInizio;   // Data iniziale
-
     let tmpFinlDate = house[0].dataFine;     // Data finale
 
     // Inizializza lista degli slot
