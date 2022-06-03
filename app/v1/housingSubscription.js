@@ -345,7 +345,8 @@ router.post('/subscribeHousing', async (req, res) =>{
     	dataFine: finlDate.toISOString()
     });
 
-    newSubscription = await newSubscription.save();
+    //newSubscription = await newSubscription.save();
+    newSubscription = await HousingSubscription.create(newSubscription);
     res.status(201).json({success:true, message:'UserSubscribed'});
 });
 
