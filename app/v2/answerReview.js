@@ -81,7 +81,7 @@ const HousingSubscription = require('./../models/housingsubscription');
  *                   description: |
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
-router.post('/createAnswerEventReview', async (req, res) => {
+router.post('/createAnswerEvReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
   if (!req.body.review || !req.body.answer || !req.body.token  ) {
@@ -124,22 +124,18 @@ router.post('/createAnswerEventReview', async (req, res) => {
   }
 
  let evento = await Event.findOne({_id: req.body.idEvento});
+ let risposta = await Event.updateOne({_id: req.body.idEvento}, {answer: req.body.answer});
 
-    // Crea la risposta alla recensione evento
-  	let eventReview = new EventReview({
-        recensione: undefined,
-        idEvento: undefined,
-        idUtente: undefined,
-        idGestore: req.loggedUser.id,
-        risposta: req.body.answer
-    });
+ // Se non ggiornato
+ if(!risposta) {
+     // Segnala che l'utente non è iscritto
+     res.status(400).json({
+         success: false,
+         message: 'Risposta non creata'
+     });
+     return;
+ }
 
-  	// Aggiunge la risposta alla recensione nel DB
-  	eventReview = await eventReview.save();
-  	res.status(201).json({
-    		success: true,
-    		message: 'Risposta recensione evento creata correttamente!'
-  	});
 });
 
 // Route per creazione risposta recensione alloggio

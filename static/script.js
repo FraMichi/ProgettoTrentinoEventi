@@ -1063,7 +1063,7 @@ function createEventReview(id) {
                       fetch('../api/v2/review/createEventReview', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { idEvento: eventId, review: review,token: token } )
+                         body: JSON.stringify( { idEvento: eventId, review: review, token: token } )
                       })
                       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                       .then( function(data) {
@@ -1083,6 +1083,46 @@ function createEventReview(id) {
     }
   };
 
+  // Funzione che imposta l'attributo 'href' del bottone per scrivere una risposta della recensione di un evento
+  function setAnswerEventReviewButton() {
+
+      // Prende l'id dell'evento dall'URL
+      var urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.has('eventId')){
+
+          var id = urlParams.get('eventId');
+      }
+
+      // Prende l'id della recensione dall'URL
+      var urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.has('reviewId')){
+
+          var id = urlParams.get('reviewId');
+      }
+
+      // Modifica il contenuto dell'elemento
+      document.getElementById('createAnswerEvReview').innerHTML = 'Rispondi alla recensione evento';
+
+      // Imposta l'attributo 'href' dell'elemento
+      document.getElementById('createAnswerEvReview').setAttribute('href', 'javascript:createAnswerEvReview("' +id +'")');
+  };
+
+  // Funzione che imposta l'attributo 'href' del bottone per scrivere una risposta della recensione dell'alloggio
+  function setAnswerHousingReviewButton() {
+
+      // Prende l'id dell'alloggio dall'URL
+      var urlParams = new URLSearchParams(window.location.search);
+      if(urlParams.has('housingId')){
+
+          var id = urlParams.get('housingId');
+      }
+
+      // Modifica il contenuto dell'elemento
+      document.getElementById('answerHousingReview').innerHTML = 'Rispondi alla recensione alloggio';
+
+      // Imposta l'attributo 'href' dell'elemento
+      document.getElementById('answerHousingReview').setAttribute('href', 'javascript:answerHousingReview("' + id +'")');
+  };
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
@@ -1153,7 +1193,7 @@ function eventReview() {
 
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tdformanswer.innerHTML="Inserisci <a href=\"createAnswerEventReview.html\">qui</a> la risposta!"
+              tdformanswer.innerHTML = "Inserisci <a href=\"createAnswerEventReview.html\">qui</a> la risposta!";
               //tddelete.innerHTML=" pulsante/link"
 
               trreview.appendChild(tddescrizione);
@@ -1207,6 +1247,7 @@ function housingReview() {
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
+              tdanswer.innerHTML = "Rispondi <a href=\"javascript:createAnswerEventReview('"+id+"')\">qui</a> alla recensione";
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
               table.appendChild(trreview);
@@ -1232,6 +1273,7 @@ function housingReview() {
 }
 };
 
+
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
 * Crea una risposta alla recensione per un evento e la salva nel database
@@ -1244,18 +1286,25 @@ function createAnswerEventReview(id) {
       var eventId = urlParams.get('eventId');
   }
 
+  // Prende l'id della recensione dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('reviewId')){
+
+      var eventId = urlParams.get('reviewId');
+  }
+
   // Prendo la Recensione
-  var review = document.getElementById("answerReview").value;
+  var review = document.getElementById("eventReview").value;
 
   if(getCookie("user")) {
       token = JSON.parse(getCookie("user")).token;
       userId = JSON.parse(getCookie("user")).id;
 
   // Se l'utente loggato è un gestore allora procede con la creazione della risposta alla recensione all'evento
-                      fetch('../api/v2/answerReview/createAnswerEventReview', {
+                      fetch('../api/v2/answerReview/createAnswerEvReview', {
                          method: 'POST',
                          headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { idEvento: eventId, review: review,token: token, answer: answer } )
+                         body: JSON.stringify( { idEvento: eventId, review: reviewId, token: token, answer: answer } )
                       })
                       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                       .then( function(data) {
@@ -1278,9 +1327,9 @@ function createAnswerEventReview(id) {
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
-* Crea una recensione per un alloggio e la salva nel database
+* Crea una risposta per una recensione di un alloggio e la salva nel database
 */
-function createHousingReview(id) {
+function createAnswerHousingReview(id) {
 
   // Prende l'id dell'alloggio dall'URL
   var urlParams = new URLSearchParams(window.location.search);
@@ -1297,10 +1346,10 @@ function createHousingReview(id) {
         userId = JSON.parse(getCookie("user")).id;
 
         // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
-                        fetch('../api/v2/review/createHousingReview', {
+                        fetch('../api/v2/answerReview/createAnswerHousReview', {
                            method: 'POST',
                            headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { idAlloggio: housingId, review: review,token: token } )
+                           body: JSON.stringify( { idAlloggio: housingId, answer: answer, review: review,token: token } )
                         })
                         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
                         .then( function(data) {
