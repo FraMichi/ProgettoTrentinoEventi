@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const tokenChecker = require("./../tokenChecker.js");
 const Housing = require('./../models/housing');
 const User = require('./../models/user');
 const Event = require ('./../models/event');
@@ -9,7 +10,7 @@ const Category = require ('./../models/category');
 // Route per creazione evento
 /**
  * @openapi
- * /api/v1/event/create:
+ * /api/v2/event/create:
  *  post:
  *   description: Controlla se le informazioni inserite nel form sono corrette e crea il nuovo evento caricandolo nel DB
  *   summary: Crea un nuovo evento
@@ -72,8 +73,33 @@ const Category = require ('./../models/category');
  *         message:
  *          type: string
  *          description: Messaggio che contiene l'errore
+ *    401:
+ *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale sempre false
+ *         message:
+ *          type: string
+ *          description: Il token non è valido, l'utente non è loggato
  */
 router.post('/create', async (req, res) => {
+
+    // Verifica se utente loggato
+    tokenChecker(req, res, req.body.token);
+
+    // Se utente non loggato
+    if(req.loggedUser == undefined) {
+        // Ritorna codice 401
+        res.status(401).json({
+            success: false,
+            message: 'Utente non loggato'
+        });
+        return;
+    }
 
   	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
   	if (!req.body.name || !req.body.description || !req.body.dstart || !req.body.dend || !req.body.address || !req.body.city || !req.body.total || !req.body.idCategoria) {
@@ -105,7 +131,27 @@ router.post('/create', async (req, res) => {
   	if (req.body.dend < req.body.dstart) {
 		res.status(400).json({
   			success: false,
-  			message: 'La data di fine disponibilità è precedente alla data di inizio'
+  			message: 'La data di fine disponibilità e precedente alla data di inizio'
+		});
+		return;
+  	}
+
+    // Controlla se la categoria esiste nel Database
+    let categoria = req.body.idCategoria;
+    if ( !(await Category.findOne({_id: categoria}).exec()) ) {
+		res.status(400).json({
+  			success: false,
+  			message: 'La categoria non è presente nel DB'
+		});
+		return;
+  	}
+
+    // Controlla se l'utente è un gestore
+    let utente = await User.findOne({_id: req.body.userId})
+    if(utente.tipoDiUtente != 'gestore') {
+		res.status(400).json({
+  			success: false,
+  			message: 'L\'utente non è un gestore'
 		});
 		return;
   	}
@@ -131,36 +177,5 @@ router.post('/create', async (req, res) => {
     		message: 'Evento creato correttamente!'
   	});
 });
-
-// Route per accesso alla lista di categoria
-/**
- * @openapi
- * /api/v1/event/category:
- *  post:
- *   description: Ottieni lista di categorie degli eventi
- *   summary: Lista categorie eventi
- *   tags:
- *    - eventCategory
- *   responses:
- *    200:
- *     description: Collezione di categorie in formato JSON
- *     content:
- *      application/json:
- *       schema:
- *        properties:
- *         id:
- *          type: string
- *          description: id della categoria
- *         title:
- *          type: string
- *          description: nome della categoria
- */
-router.get('/category', async (req, res) => {
-
-    let categories = await Category.find().exec();
-    let categoriesList = categories.map((category) => {return{id: category._id, title: category.tipoCategoria};})
-    res.status(200).json(categoriesList);
-});
-
 
 module.exports = router;
