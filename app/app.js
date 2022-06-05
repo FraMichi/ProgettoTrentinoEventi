@@ -14,12 +14,8 @@ const visualizzazioneV2 = require('./v2/visualizzazione.js');
 
 const elimination = require("./v2/elimination.js");
 const visualizzazioneFiltrata = require("./v2/visualizzazioneFiltrata.js");
-<<<<<<< HEAD
-const review = require("./v2/review.js");
-=======
 const review = require('./v2/review.js');
 const visualizzazioneReview = require('./v2/visualizzazioneReview.js');
->>>>>>> FraMichi-visualizzarecensioni
 
 var fs = require('fs');
 const app = express();
@@ -40,11 +36,9 @@ const swaggerOptions = {
       }
     }
   },
-<<<<<<< HEAD
-  apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js', './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/elimination.js', './app/v2/visualizzazioneFiltrata.js', './app/v2/review.js'] // files containing annotations as above
-=======
+
   apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js', './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/elimination.js', './app/v2/visualizzazioneFiltrata.js', './app/v2/visualizzazioneReview.js', './app/v2/review.js'] // files containing annotations as above
->>>>>>> FraMichi-visualizzarecensioni
+
 };
 
 // Si crea il documento della documentazione
@@ -74,10 +68,8 @@ app.use('/api/v2/getCreatedEntries', getCreatedEntries);
 app.use('/api/v2/visualizzazione', visualizzazioneV2);
 app.use('/api/v2/elimination', elimination);
 app.use('/api/v2/review', review);
-<<<<<<< HEAD
-=======
 app.use('/api/v2/visualizzazioneReview', visualizzazioneReview);
->>>>>>> FraMichi-visualizzarecensioni
+
 
 app.use('/', express.static('static'));
 
