@@ -1151,7 +1151,7 @@ function eventReview() {
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tddelete.innerHTML="Rimuovi la recensione <a href=\"javascript:deleteEventReview('"+id+"')\">qui</a>!"
+              tddelete.innerHTML="Rimuovi la recensione <a href=\"javascript:deleteEventReview('"+review._id+"')\">qui</a>!"
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
               trreview.appendChild(tddelete);
