@@ -1104,7 +1104,7 @@ function createEventReview(id) {
       document.getElementById('createAnswerEvReview').innerHTML = 'Rispondi alla recensione evento';
 
       // Imposta l'attributo 'href' dell'elemento
-      document.getElementById('createAnswerEvReview').setAttribute('href', 'javascript:createAnswerEvReview("' +id +'")');
+      document.getElementById('createAnswerEvReview').setAttribute('href', 'javascript:createAnswerEvReview("' +eventId +'")("'+reviewId+'")');
   };
 
   // Funzione che imposta l'attributo 'href' del bottone per scrivere una risposta della recensione dell'alloggio
@@ -1279,6 +1279,9 @@ function housingReview() {
 * Crea una risposta alla recensione per un evento e la salva nel database
 */
 function createAnswerEventReview(id) {
+
+  var answer = document.getElementById("answer").value;
+
   // Prende l'id dell'evento dall'URL
   var urlParams = new URLSearchParams(window.location.search);
   if(urlParams.has('eventId')){
@@ -1293,21 +1296,48 @@ function createAnswerEventReview(id) {
       var eventId = urlParams.get('reviewId');
   }
 
-  // Prendo la Recensione
-  var review = document.getElementById("eventReview").value;
-
   if(getCookie("user")) {
-      token = JSON.parse(getCookie("user")).token;
-      userId = JSON.parse(getCookie("user")).id;
+       token = JSON.parse(getCookie("user")).token;
+       userId = JSON.parse(getCookie("user")).id;
 
-  // Se l'utente loggato è un gestore allora procede con la creazione della risposta alla recensione all'evento
-                      fetch('../api/v2/answerReview/createAnswerEvReview', {
-                         method: 'POST',
-                         headers: { 'Content-Type': 'application/json' },
-                         body: JSON.stringify( { idEvento: eventId, review: reviewId, token: token, answer: answer } )
-                      })
-                      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-                      .then( function(data) {
+       fetch('../api/v1/authentication/checkIfLogged', {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify( { token: token } )
+       })
+       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+       .then( function(data) {
+
+           // Se l'utente non è loggato manda alla pagina di login
+           if(data.success == false) {
+               // In caso affermativo mostra il messaggio
+               document.getElementById("errorMsgEvent").innerHTML = data.message;
+               window.location.href = "/login.html";
+           } else {
+             // Se l'utente loggato è un gestore allora procede con la creazione della risposta alla recenzione dell'Evento
+                       fetch('../api/v1/authentication/checkIfGestore', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' },
+                           body: JSON.stringify( { userId: userId } )
+                       })
+                       .then((resp) => resp.json())
+                       .then(function(data){
+
+                           if(data.success == false) {
+                               document.getElementById("errorMsgEvent").innerHTML = data.message;
+                               window.location.href = "/index.html";
+                           } else {
+                               var tipoDiUser = data.category;
+                           }
+
+                           if(tipoDiUser == 'gestore') {
+                               fetch('../api/v2/answerReview/createAnswerEvReview', {
+                                   method: 'POST',
+                                   headers: { 'Content-Type': 'application/json' },
+                                   body: JSON.stringify( { idEvento: eventId, review: reviewId, token: token, answer: answer} )
+                               })
+                               .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                               .then( function(data) {
 
                           // Controlla se sono stati resituiti messaggi di errore
                           if(data.success == false) {
@@ -1320,9 +1350,18 @@ function createAnswerEventReview(id) {
                             alert("Risposta recensione evento inviata");
                         }
                     })
+                  } else {
+                    window.location.href = '/index.html';
+                  }
+                })
                  .catch( error => console.error(error) );
-    }
-  };
+       }
+      })
+       .catch( error => console.error(error) );
+   } else {
+       window.location.href = "/login.html";
+}
+};
 
 
 /*
