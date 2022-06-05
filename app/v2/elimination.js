@@ -304,7 +304,7 @@ router.delete('/deleteHousing', async (req, res) => {
  *         type: string
  *         description: Contiene il token dell'utente loggato
  *         requied: true
-         event:
+ *        event:
  *         type: string
  *         description: Contiene l'id dell'evento
  *   responses:
@@ -319,8 +319,8 @@ router.delete('/deleteHousing', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
-              UserNotSubscribed => l'utente non è iscritto all'evento specifico
-              UserSubscribed => l'utente è già iscritto all'evento specifico
+ *             UserNotSubscribed => l'utente non è iscritto all'evento specifico
+ *             UserSubscribed => l'utente è già iscritto all'evento specifico
  *    401:
  *     description: l'utente non è iscritto
  *     content:
@@ -333,7 +333,7 @@ router.delete('/deleteHousing', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
-               UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+ *             UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
  */
 
 router.delete('/deleteSubscriptionEvent', async (req, res) => {
@@ -386,7 +386,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
 
   	// Elimina l'iscrizione dell'utente dall'evento
   	await EventSubscription.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
-	
+
 	// aggiorna posti disponibili per l'Evento
         postiDisponibili=evento.postiDisponibili;
         let Evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
