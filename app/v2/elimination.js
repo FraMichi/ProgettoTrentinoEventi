@@ -304,7 +304,7 @@ router.delete('/deleteHousing', async (req, res) => {
  *         type: string
  *         description: Contiene il token dell'utente loggato
  *         requied: true
- *         event:
+ *       event:
  *         type: string
  *         description: Contiene l'id dell'evento
  *   responses:
@@ -319,8 +319,8 @@ router.delete('/deleteHousing', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
- *              UserNotSubscribed => l'utente non è iscritto all'evento specifico
- *              UserSubscribed => l'utente è già iscritto all'evento specifico
+ *            UserNotSubscribed => l'utente non è iscritto all'evento specifico
+ *            UserSubscribed => l'utente è già iscritto all'evento specifico
  *    401:
  *     description: l'utente non è iscritto
  *     content:
@@ -416,7 +416,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         type: string
  *         description: Contiene il token dell'utente loggato
  *         requied: true
-         event:
+ *       event:
  *         type: string
  *         description: Contiene l'id dell'alloggio
  *   responses:
