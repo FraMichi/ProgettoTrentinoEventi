@@ -86,15 +86,6 @@ const HousingSubscription = require('./../models/housingsubscription');
  */
 router.delete('/deleteEventReview', async (req, res) => {
 
-  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  if ( !req.body.token || !req.body.reviewId ) {
-  res.status(400).json({
-      success: false,
-      message: 'Parametri mancanti'
-  });
-  return;
-  }
-
     // Controlla se il token è valido
     tokenChecker(req, res, req.body.token);
 
@@ -107,9 +98,31 @@ router.delete('/deleteEventReview', async (req, res) => {
         return;
     }
 
+    // Controlla validita dell'id dell'evento
+    if (!req.body.eventId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
+        });
+        return;
+    }
+
+    // Prova a prendere l'evento dal database
+    let evento = await Event.findOne({ _id: req.body.eventId }).exec();
+
+  	// Controlla se l'evento esiste, se no invia un messaggio di errore
+  	if (!evento) {
+		res.status(401).json({
+        success: false,
+        message: 'Evento non trovato'
+        });
+		return;
+  	}
+
     // Prova a prendere la recensione dal database
-  	let eventReview = await EventReview.findOne({ _id: req.body.reviewId }).exec();
-    console.log(eventreview);
+  	let eventReview = await EventReview.findOne({idTurista: req.loggedUser.id, idEvento: req.body.eventId }).exec();
+
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
   	if (!eventReview) {
@@ -121,7 +134,7 @@ router.delete('/deleteEventReview', async (req, res) => {
   	}
 
   	// Elimina la recensione evento dal DB
-  	await EventReview.deleteOne({ _id: req.body.reviewId });
+  	await EventReview.deleteOne({ idTurista: req.loggedUser.id, idEvento: req.body.eventId });
 
   	res.status(200).json({
     		success: true,

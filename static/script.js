@@ -1151,7 +1151,7 @@ function eventReview() {
               var tddescrizione = document.createElement("td");
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tddelete.innerHTML="Rimuovi la recensione <a href=\"javascript:deleteEventReview('"+review._id+"')\">qui</a>!"
+              tddelete.innerHTML="Rimuovi la recensione <a href=\"javascript:deleteEventReview('"+id+"')\">qui</a>!"
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
               trreview.appendChild(tddelete);
@@ -1243,16 +1243,13 @@ function deleteEventReview(id) {
         fetch('../api/v2/deletereview/deleteEventReview', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { reviewId: id , token: token} )
+            body: JSON.stringify( { eventId: id , token: token} )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-            alert(data.message);
-            window.location.href = "/index.html";
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
-    } else {
-        alert("Effettua il login");
     }
 
 };
