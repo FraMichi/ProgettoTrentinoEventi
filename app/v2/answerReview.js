@@ -84,7 +84,7 @@ const HousingSubscription = require('./../models/housingsubscription');
 router.post('/createAnswerEvReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  if (!req.body.review || !req.body.answer || !req.body.token  ) {
+  if ( !req.body.answer || !req.body.token  ) {
   res.status(400).json({
       success: false,
       message: 'Parametri mancanti'
