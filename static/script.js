@@ -1267,16 +1267,14 @@ function deleteHousingReview(id) {
         fetch('../api/v2/deletereview/deleteHousingReview', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { reviewId: id, token: token } )
+            body: JSON.stringify( { housingId: id, token: token } )
         })
         .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function(data) {
-            alert(data.message);
-            window.location.href = "/index.html";
+        .then( function() {
+
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
         })
         .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
-    } else {
-        alert("Effettua il login");
-    }
+    } 
 
 };

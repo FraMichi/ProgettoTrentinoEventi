@@ -33,10 +33,10 @@ const HousingSubscription = require('./../models/housingsubscription');
  *         description: Contiene il token dell'utente loggato
  *        eventId:
  *         type: string
- *         description: Contiene l'id dell'evento a cui lasciare una recensione
+ *         description: Contiene l'id dell'evento a cui è associata una recensione da eliminare
  *   responses:
  *    200:
- *     description: non ci sono errori e la recensione è stata eliminata correttamente
+ *     description: non ci sono errori e l'eliminazione della recensione è stata eseguita correttamente
  *     content:
  *      application/json:
  *       schema:
@@ -161,7 +161,7 @@ router.delete('/deleteEventReview', async (req, res) => {
  *         description: Contiene il token dell'utente loggato
  *        housingId:
  *         type: string
- *         description: Contiene l'id dell'alloggio a cui lasciare una recensione
+ *         description: Contiene l'id dell'alloggio che ha una recensione da eliminare
  *   responses:
  *    200:
  *     description: non ci sono errori e la recensione è stata eliminata correttamente
@@ -214,15 +214,6 @@ router.delete('/deleteEventReview', async (req, res) => {
  */
 router.delete('/deleteHousingReview', async (req, res) => {
 
-  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-if (!req.body.reviewId || !req.body.token ) {
-res.status(400).json({
-    success: false,
-    message: 'Parametri mancanti'
-});
-return;
-}
-
   	// Controlla se il token è valido
     tokenChecker(req, res, req.body.token);
 
@@ -235,11 +226,33 @@ return;
         return;
     }
 
+    // Controlla validita dell'id dell'alloggio
+    if (!req.body.housingId.match(/^[0-9a-fA-F]{24}$/)) {
+        // Se non lo rispetta ritorna un errore
+        res.status(400).json({
+            success: false,
+            message: "MongoDBFormatException"
+        });
+        return;
+    }
+
+    // Prova a prendere l'alloggio dal database
+    let alloggio = await Housing.findOne({ _id: req.body.housingId }).exec();
+
+    // Controlla se l'alloggio esiste, se no invia un messaggio di errore
+    if (!alloggio) {
+    res.status(404).json({
+        success: false,
+        message: 'Alloggio non trovato'
+        });
+    return;
+    }
+
     // Prova a prendere la recensione dal database
-  	let housingreview = await HousingReview.findOne({ _id: req.body.reviewId }).exec();
+  	let housingReview = await HousingReview.findOne({ idAlloggio: req.body.housingId, idTurista: req.loggedUser.id }).exec();
 
   	// Controlla se la recensione esiste, se no invia un messaggio di errore
-  	if (!housingreview) {
+  	if (!housingReview) {
 		res.status(404).json({
         success: false,
         message: 'Recensione alloggio non trovata'
@@ -247,8 +260,9 @@ return;
 		return;
   	}
 
+
   	// Elimina la recensione alloggio dal DB
-  	await HousingReview.deleteOne({ _id: req.body.reviewId });
+  	await HousingReview.deleteOne({ idAlloggio: req.body.housingId, idTurista: req.loggedUser.id });
 
   	res.status(200).json({
     		success: true,
