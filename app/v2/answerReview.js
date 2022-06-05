@@ -81,16 +81,8 @@ const HousingSubscription = require('./../models/housingsubscription');
  *                   description: |
  *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
  */
-router.post('/createAnswerEvReview', async (req, res) => {
+router.post('/createAnswerEventReview', async (req, res) => {
 
-  // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-  if ( !req.body.answer || !req.body.token  ) {
-  res.status(400).json({
-      success: false,
-      message: 'Parametri mancanti'
-  });
-  return;
-  }
   // Verifica se utente loggato
   tokenChecker(req, res, req.body.token);
 
@@ -123,18 +115,25 @@ router.post('/createAnswerEvReview', async (req, res) => {
   return;
   }
 
- let evento = await Event.findOne({_id: req.body.idEvento});
- let risposta = await Event.updateOne({_id: req.body.idEvento}, {answer: req.body.answer});
+ let evento = await Event.findOne({_id: req.body.eventId}).exec();
 
- // Se non ggiornato
- if(!risposta) {
-     // Segnala che l'utente non è iscritto
-     res.status(400).json({
-         success: false,
-         message: 'Risposta non creata'
-     });
-     return;
- }
+ // Controlla se l'evento esiste, se no invia un messaggio di errore
+  	if (!evento) {
+		res.status(401).json({
+        success: false,
+        message: 'Evento non trovato'
+        });
+		return;
+  	}
+
+
+
+ await EventAnswerSubscription.updateOne(eventId, tdanswer);
+
+ res.status(200).json({
+    		success: true,
+    		message: 'Risposta recensione inviata!'
+  	});
 
 });
 

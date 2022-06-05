@@ -1280,7 +1280,7 @@ function housingReview() {
 */
 function createAnswerEventReview(id) {
 
-  var answer = document.getElementById("answer").value;
+  var answer = document.getElementById("tdanswer").value;
 
   // Prende l'id dell'evento dall'URL
   var urlParams = new URLSearchParams(window.location.search);
@@ -1300,110 +1300,17 @@ function createAnswerEventReview(id) {
        token = JSON.parse(getCookie("user")).token;
        userId = JSON.parse(getCookie("user")).id;
 
-       fetch('../api/v1/authentication/checkIfLogged', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify( { token: token } )
-       })
-       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-       .then( function(data) {
-
-           // Se l'utente non è loggato manda alla pagina di login
-           if(data.success == false) {
-               // In caso affermativo mostra il messaggio
-               document.getElementById("errorMsgEvent").innerHTML = data.message;
-               window.location.href = "/login.html";
-           } else {
-             // Se l'utente loggato è un gestore allora procede con la creazione della risposta alla recenzione dell'Evento
-                       fetch('../api/v1/authentication/checkIfGestore', {
-                           method: 'POST',
-                           headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { userId: userId } )
-                       })
-                       .then((resp) => resp.json())
-                       .then(function(data){
-
-                           if(data.success == false) {
-                               document.getElementById("errorMsgEvent").innerHTML = data.message;
-                               window.location.href = "/index.html";
-                           } else {
-                               var tipoDiUser = data.category;
-                           }
-
                            if(tipoDiUser == 'gestore') {
-                               fetch('../api/v2/answerReview/createAnswerEvReview', {
+                               fetch('../api/v2/answerReview/createAnswerEventReview', {
                                    method: 'POST',
                                    headers: { 'Content-Type': 'application/json' },
-                                   body: JSON.stringify( { idEvento: eventId, review: reviewId, token: token, answer: answer} )
+                                   body: JSON.stringify( { eventId: id, token: token, answer: answer} )
                                })
                                .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-                               .then( function(data) {
-
-                          // Controlla se sono stati resituiti messaggi di errore
-                          if(data.success == false) {
-                              // In caso affermativo mostra il messaggio
-                              alert(data.message);
-                              window.location.href = "/index.html";
-                          } else {
-                            //In caso negativo torna alla pagina di visualizzazione
-                            window.location.href = "/index.html";
-                            alert("Risposta recensione evento inviata");
-                        }
-                    })
-                  } else {
-                    window.location.href = '/index.html';
-                  }
-                })
-                 .catch( error => console.error(error) );
-       }
-      })
+                               .then( function() {
+                              window.location.href = "/visualizzaEvento.html?eventId="+id;
+                             })
        .catch( error => console.error(error) );
-   } else {
-       window.location.href = "/login.html";
+   }
 }
 };
-
-
-/*
-* Funzione che viene chiamata premendo il bottone dalla schermata ?.
-* Crea una risposta per una recensione di un alloggio e la salva nel database
-*/
-function createAnswerHousingReview(id) {
-
-  // Prende l'id dell'alloggio dall'URL
-  var urlParams = new URLSearchParams(window.location.search);
-  if(urlParams.has('housingId')){
-
-      var housingId = urlParams.get('housingId');
-  }
-
-  // Prendo la Recensione
-  var review = document.getElementById("housingReview").value;
-
-    if(getCookie("user")) {
-        token = JSON.parse(getCookie("user")).token;
-        userId = JSON.parse(getCookie("user")).id;
-
-        // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
-                        fetch('../api/v2/answerReview/createAnswerHousReview', {
-                           method: 'POST',
-                           headers: { 'Content-Type': 'application/json' },
-                           body: JSON.stringify( { idAlloggio: housingId, answer: answer, review: review,token: token } )
-                        })
-                        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-                        .then( function(data) {
-
-                            // Controlla se sono stati resituiti messaggi di errore
-                            if(data.success == false) {
-                                // In caso affermativo mostra il messaggio
-                                alert(data.message);
-                                window.location.href = "/index.html";
-                            } else {
-                              //In caso negativo torna alla pagina di visualizzazione
-                              window.location.href = "/index.html";
-                              alert("Recensione alloggio inviata");
-                          }
-                      })
-                   .catch( error => console.error(error) );
-      }
-  };
