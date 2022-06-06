@@ -80,40 +80,31 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
     });
 
     // token ok, id evento non conforme
-    test('POST /api/v1/eventSubscription/eventSubcribable con token valido ma id evento non esistente', () => {
+    test('POST /api/v1/eventSubscription/eventSubcribable con id evento non conforme allo standard MongoDB', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenVal, event:"62838c1fljfnsdlkfòksamlsd3ba701dd200672e9"}).set('Accept', 'application/json')
         .expect(400, {success: false, message: "MongoDBFormatException"});
     });
 
     // token ok, id evento non esistente
-    test('POST /api/v1/eventSubscription/eventSubcribable con token valido ma id evento non esistente', () => {
+    test('POST /api/v1/eventSubscription/eventSubcribable con id evento non esistente', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenVal, event:"62838c1f3ba701dd200672e9"}).set('Accept', 'application/json')
-        .expect(404, {
-            success: false,
-            message: "EventNotFound"
-        });
+        .expect(404, {success: false, message: "EventNotFound"});
     });
 
     // token ok, utente iscritto
-    test('POST /api/v1/eventSubscription/eventSubcribable con token valido e utente iscritto', () => {
+    test('POST /api/v1/eventSubscription/eventSubcribable con utente iscritto', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
-        .expect(200, {
-            success: true,
-            message: 'UserSubscribed'
-        });
+        .expect(200, {success: true, message: 'UserSubscribed'});
     });
 
     // token ok, utente non iscritto
-    test('POST /api/v1/eventSubscription/eventSubcribable con token valido e utente non iscritto', () => {
+    test('POST /api/v1/eventSubscription/eventSubcribable con utente non iscritto', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e8"}).set('Accept', 'application/json')
-        .expect(200, {
-            success: true,
-            message: 'UserNotSubscribed'
-        });
+        .expect(200, {success: true, message: 'UserNotSubscribed'});
     });
 });
 
