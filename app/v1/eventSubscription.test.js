@@ -22,7 +22,7 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
 
     beforeAll(() => {
         jest.setTimeout(8000);
-        eventSubSpy = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
+        eventFindOne = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
             if(crit["idTurista"] == "627fdb1d95b0619bf9e97711" && crit["idEvento"] == "62838c1f3ba701dd200682e9")
             {
                 return {
@@ -32,7 +32,6 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
                 }
             } else {return undefined}
         });
-
         eventSubSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
             if(crit["_id"] == "62838c1f3ba701dd200682e9")
             {
@@ -67,7 +66,10 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
             } else {return []}
         });
     });
-    afterAll(() => {});
+    afterAll(() => {
+        eventFindOne.mockRestore();
+        eventSubSpy.mockRestore();
+    });
 
     // token non valido
     test('POST /api/v1/eventSubscription/eventSubcribable con token non valido', () => {
@@ -113,7 +115,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
     beforeAll(() => {
         jest.setTimeout(8000);
 
-        var eventSubSpy = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
+        eventSubSpy = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
             if(crit["idTurista"] == "627fdb1d95b0619bf9e97711" && crit["idEvento"] == "62838c1f3ba701dd200682e9")
             {
                 return {
@@ -123,7 +125,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                 }
             } else {return undefined}
         });
-        var eventSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
+        eventSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
             if(crit["_id"] == "62838c1f3ba701dd200682e9")
             {
                 return {
@@ -185,7 +187,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                 };
             } else {return []}
         });
-        var eventOneSpy = jest.spyOn(Event, 'findOne').mockImplementation((crit) => {
+        eventOneSpy = jest.spyOn(Event, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "62838c1f3ba701dd200682e9") {     // si iscritto
                 return {
                     _id: "62838c1f3ba701dd200682e9",
@@ -244,10 +246,10 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                 };
             } else {return []}
         });
-        var eventSubCreationSpy = jest.spyOn(EventSubscription, 'create').mockImplementation((crit) => {
+        eventSubCreationSpy = jest.spyOn(EventSubscription, 'create').mockImplementation((crit) => {
             return(crit);
         });
-        var eventUpdateSpy = jest.spyOn(Event, 'findOneAndUpdate').mockImplementation((crit) => {
+        eventUpdateSpy = jest.spyOn(Event, 'findOneAndUpdate').mockImplementation((crit) => {
             return {crit}
         });
     });
@@ -271,14 +273,14 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
     });
 
     // token ok, id evento non conforme
-    test('POST /api/v1/eventSubscription/createSubscription con token valido ma id evento non conforme', () => {
+    test('POST /api/v1/eventSubscription/createSubscription con id evento non conforme', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1fljfnsdlkfòksamlsd3ba701dd200672e9"}).set('Accept', 'application/json')
         .expect(400, {success: false, message: "MongoDBFormatException"});
     });
 
     // token ok, id evento non esistente
-    test('POST /api/v1/eventSubscription/createSubscription con token valido ma id evento non esistente', () => {
+    test('POST /api/v1/eventSubscription/createSubscription con id evento non esistente', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200672e9"}).set('Accept', 'application/json')
         .expect(404, {
