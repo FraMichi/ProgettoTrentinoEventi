@@ -117,7 +117,7 @@ router.delete('/deleteEvent', async (req, res) => {
     }
 
     // Prova a prendere l'evento dal database
-  	let evento = await Event.findOne({ _id: req.body.eventId }).exec();
+  	let evento = await Event.findOne({ _id: req.body.eventId });
 
   	// Controlla se l'evento esiste, se no invia un messaggio di errore
   	if (!evento) {
@@ -259,7 +259,7 @@ router.delete('/deleteHousing', async (req, res) => {
     }
 
     // Prova a prendere l'alloggio dal database
-  	let alloggio = await Housing.findOne({ _id: req.body.housingId }).exec();
+  	let alloggio = await Housing.findOne({ _id: req.body.housingId });
 
   	// Controlla se l'alloggio esiste, se no invia un messaggio di errore
   	if (!alloggio) {
@@ -369,7 +369,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
     }
 
     // Prova a prendere l'evento dal database
-    let evento = await Event.findOne({ _id: req.body.eventId }).exec();
+    let evento = await Event.findOne({ _id: req.body.eventId });
 
   	// Controlla se l'evento esiste, se no invia un messaggio di errore
   	if (!evento) {
@@ -397,7 +397,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
 
 	// aggiorna posti disponibili per l'Evento
         postiDisponibili=evento.postiDisponibili;
-        let Evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1}).exec();
+        let Evento = await Event.update({ _id: req.body.eventId },{postiDisponibili:postiDisponibili+1});
 
 
   	res.status(200).json({
@@ -492,7 +492,7 @@ router.delete('/deleteHousingSubscription', async (req, res) => {
     }
 
     // Prova a prendere l'alloggio dal database
-    let alloggio = await Housing.findOne({ _id: req.body.housingId }).exec();
+    let alloggio = await Housing.findOne({ _id: req.body.housingId });
 
     // Controlla se l'alloggio esiste, se no invia un messaggio di errore
     if (!alloggio) {

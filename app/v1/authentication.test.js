@@ -18,6 +18,17 @@ describe('POST /api/v1/authentication/login', () => {
                     tipoDiUtente: "turista"
                 };
             }
+            if(criterias['email'] == "alessandro.rossi@gmail.com") {
+                return {
+                    _id: "62829e5e6c2ce7457eda4f12",
+                    nome: "Alessandro",
+                    cognome: "Rossi",
+                    dataDiNascita: "1964-02-20T00:00:00Z",
+                    email: "alessandro.rossi@gmail.com",
+                    password: "123",
+                    tipoDiUtente: "gestore"
+                };
+            }
             return undefined;
         });
     });
