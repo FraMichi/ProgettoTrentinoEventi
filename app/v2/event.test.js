@@ -33,32 +33,27 @@ describe('POST /api/v2/event/create', () => {
             if(crit["_id"] == "627fd7ef95b0619bf9e1110f") {
                 return false;
             } else if (crit["_id"] == "627fd7ef95b0619bf9e9770f") {
-                return
-                    {
-                        _id: "627fd7ef95b0619bf9e9770f",
-                        tipoCategoria: "evento sportivo"
-                    }
+                return {
+                    _id: "627fd7ef95b0619bf9e9770f",
+                    tipoCategoria: "evento sportivo"
+                };
             }
         });
 
         //Crea mock-function per finOne in category
         var userFind = jest.spyOn(User, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "627fdb1d95b0619bf9e97711") {
-                console.log("turista");
-                return
-                    {
-                        _id: "627fdb1d95b0619bf9e97711",
-                        nome: "Mario",
-                        cognome: "Rossi",
-                        dataDiNascita: "1990-05-18T00:00:00.000+00:00",
-                        email: "mario.rossi@gmail.com",
-                        password: "123",
-                        tipoDiUtente: "turista"
-                    };
+                return {
+                    _id: "627fdb1d95b0619bf9e97711",
+                    nome: "Mario",
+                    cognome: "Rossi",
+                    dataDiNascita: "1990-05-18T00:00:00.000+00:00",
+                    email: "mario.rossi@gmail.com",
+                    password: "123",
+                    tipoDiUtente: "turista"
+                };
             } else if (crit["_id"] == "62897b4e22fb362b808d3910") {
-                console.log("gestore");
-                return
-                    {
+                    return {
                         _id: "62897b4e22fb362b808d3910",
                         nome: "Alice",
                         cognome: "Debbia",
