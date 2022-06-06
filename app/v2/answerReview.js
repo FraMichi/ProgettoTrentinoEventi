@@ -28,9 +28,6 @@ const HousingSubscription = require('./../models/housingsubscription');
  *     application/json:
  *      schema:
  *       properties:
- *        message:
- *         type: string
- *         description: Contiene la recensione dell'evento
  *        answer:
  *         type: string
  *         description: Contiene la risposta del gestore evento alla recensione
@@ -58,6 +55,18 @@ const HousingSubscription = require('./../models/housingsubscription');
  *          description: Messaggio che contiene un messaggio di successo
  *    400:
  *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *    403:
+ *     description: Restituisce errore se l'utente non è proprietario dell'evento
  *     content:
  *      application/json:
  *       schema:
@@ -167,9 +176,6 @@ router.post('/createAnswerEventReview', async (req, res) => {
  *     application/json:
  *      schema:
  *       properties:
- *        message:
- *         type: string
- *         description: Contiene la recensione dell'alloggio
  *        answer:
  *         type: string
  *         description: Contiene la risposta del gestore dell'alloggio alla recensione
@@ -197,6 +203,18 @@ router.post('/createAnswerEventReview', async (req, res) => {
  *          description: Messaggio che contiene un messaggio di successo
  *    400:
  *     description: Restituisce errore se non sono stati inseriti tutti i campi o se non sono corretti!
+ *     content:
+ *      application/json:
+ *       schema:
+ *        properties:
+ *         success:
+ *          type: boolean
+ *          description: Vale false ed indica che ci sono stati errori
+ *         message:
+ *          type: string
+ *          description: Messaggio che contiene l'errore
+ *    403:
+ *     description: Restituisce errore se l'utente non è proprietario dell'alloggio
  *     content:
  *      application/json:
  *       schema:
@@ -253,14 +271,6 @@ router.post('/createAnswerHousingReview', async (req, res) => {
       return;
   }
 
-  // Controlla se l'utente è il creatore dell'alloggio, se no invia un messaggio di errore
-  if(alloggio.idGestore != req.loggedUser.id) {
-      res.status(403).json({
-      success: false,
-      message: "Non sei il proprietario dell'alloggio"
-      });
-  return;
-  }
 
   let house = await Housing.findOne({_id: req.body.housingId}).exec();
 

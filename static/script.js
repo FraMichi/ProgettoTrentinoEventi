@@ -1288,7 +1288,7 @@ function createAnswerHousingReview(id) {
   var urlParams = new URLSearchParams(window.location.search);
   if(urlParams.has('housingId')){
 
-      var eventId = urlParams.get('housingId');
+      var housingId = urlParams.get('housingId');
   }
 
   if(getCookie("user")) {
