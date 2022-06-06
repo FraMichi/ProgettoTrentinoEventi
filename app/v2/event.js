@@ -149,7 +149,6 @@ router.post('/create', async (req, res) => {
 
     // Controlla se l'utente è un gestore
     let utente = await User.findOne({_id: req.body.userId})
-    console.log(utente);
     if(utente.tipoDiUtente != 'gestore') {
 		res.status(400).json({
   			success: false,

@@ -70,16 +70,6 @@ router.post('/houseListSubscribed', async (req, res) => {
     // Se utente loggato, prende la lista di tutti gli alloggi ai quali è scritto
     let houses = await HousingSubscription.find({idTurista: req.loggedUser.id}).exec();
 
-    // // Se non è iscritto a nessun alloggio scrive un messaggio sulla pagina
-    // if (Object.keys(houses).length == 0) {
-    //     res.status(200).json({
-    //         success: false,
-    //         message: 'Non hai prenotato nessun alloggio'
-    //     });
-    //     return;
-    // }
-    // let housesList = houses.map((houseItem) => {return{idAlloggio: houseItem.idAlloggio};});
-    // res.status(200).json(housesList);
     //Crea un array che andrò a riempire con gli eventi
     var houseList = [];
     // Per ogni evento preso dalle prenotazioni controllo se effettivamente esiste nella lista degli eventi
@@ -152,21 +142,22 @@ router.post('/eventListSubscribed', async (req, res) => {
         // Ritorna codice 401
         res.status(401).json({
             success: false,
-            message: 'UserNotLogged'
+            message: 'Utente non loggato'
         });
         return;
     }
 
     // Se utente loggato, prende la lista di tutti gli eventi ai quali è scritto
-    let events = await EventSubscription.find({idTurista: req.loggedUser.id}).exec();
+    let events = await EventSubscription.find({idTurista: req.loggedUser._id});
 
     //Crea un array che andrò a riempire con gli eventi
     var eventList = [];
     // Per ogni evento preso dalle prenotazioni controllo se effettivamente esiste nella lista degli eventi
     for(var i in events){
-        eventItem = await Event.findOne({_id: events[i].idEvento}).exec();
-        if (eventItem != null)
+        eventItem = await Event.findOne({_id: events[i].idEvento});
+        if (eventItem != null) {
             eventList.push({idEvento: events[i].idEvento});
+        }
     }
     // Se non è iscritto a nessun evento presente nel db scrive un messaggio sulla pagina
     if (eventList.length == 0) {
