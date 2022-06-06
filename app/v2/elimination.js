@@ -30,7 +30,7 @@ const HousingSubscription = require ('./../models/housingsubscription');
  *         description: Contiene l'id dell'evento
  *   responses:
  *    200:
- *     description: non ci sono errori e l'evento è stato eliminato correttamente
+ *     description: sono stati controllati tutti i campi e non sono stati trovati errori, si procede con il caricamento dell'evento sul DB
  *     content:
  *      application/json:
  *       schema:
@@ -309,18 +309,17 @@ router.delete('/deleteHousing', async (req, res) => {
  *         description: Contiene l'id dell'evento
  *   responses:
  *    200:
- *     description: non ci sono errori e l'iscrizione è stata eliminata correttamente
+ *     description: sono stati controllati tutti i campi e non sono stati trovati errori, si procede con il caricamento dell'evento sul DB
  *     content:
  *      application/json:
  *       schema:
  *        properties:
  *         success:
  *          type: boolean
+ *          description: Vale true dato che tutti i campi sono corretti
  *         message:
  *          type: string
- *          description: |
- *            UserNotSubscribed => l'utente non è iscritto all'evento specifico
- *            UserSubscribed => l'utente è già iscritto all'evento specifico
+ *          description: Messaggio che contiene un messaggio di successo
  *    401:
  *     description: l'utente non è iscritto
  *     content:
@@ -421,18 +420,17 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         description: Contiene l'id dell'alloggio
  *   responses:
  *    200:
- *     description: non ci sono errori e la prenotazione è stata eliminata correttamente
+ *     description: sono stati controllati tutti i campi e non sono stati trovati errori, si procede con il caricamento dell'evento sul DB
  *     content:
  *      application/json:
  *       schema:
  *        properties:
  *         success:
  *          type: boolean
+ *          description: Vale true dato che tutti i campi sono corretti
  *         message:
  *          type: string
- *          description: |
- *            UserNotSubscribed => l'utente non è prenotato all'alloggio specifico
- *            UserSubscribed => l'utente è già prenotato all'allogggio specifico
+ *          description: Messaggio che contiene un messaggio di successo
  *    401:
  *     description: l'utente non è iscritto
  *     content:
