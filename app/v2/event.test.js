@@ -6,7 +6,8 @@ const Category = require('./../models/category');
 const User = require('./../models/user');
 const Event = require('./../models/event');
 
-var payload = {
+// Crea token valido per un gestore
+var payloadG = {
     _id: '62897b4e22fb362b808d3910',
     nome: 'Alice',
     cognome: 'Debbia',
@@ -15,10 +16,24 @@ var payload = {
     password: '12345',
     tipoDiUtente: 'gestore'
 }
+var tokenG = jwt.sign(
+    payloadG,
+    process.env.TOKEN_SECRET,
+    {expiresIn: 1800}
+);
 
-// Crea un token valido
-var token = jwt.sign(
-    payload,
+// Crea token valido per un turista
+var payloadT = {
+    _id: '627fdb1d95b0619bf9e97711',
+    nome: 'Mario',
+    cognome: 'Rossi',
+    dataDiNascita: '1998-03-24T00:00:00.000+00:00',
+    email: 'mario.rossi@gmail.com',
+    password: '123',
+    tipoDiUtente: 'turista'
+}
+var tokenT = jwt.sign(
+    payloadT,
     process.env.TOKEN_SECRET,
     {expiresIn: 1800}
 );
@@ -87,7 +102,7 @@ describe('POST /api/v2/event/create', () => {
       return request(app)
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
-        .send({token: token})
+        .send({token: tokenG})
         .expect(400, {success: false, message: 'Inserire tutti i campi'});
     });
 
@@ -96,7 +111,7 @@ describe('POST /api/v2/event/create', () => {
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
         .send({
-            token: token,
+            token: tokenG,
             name: 'EventoTest',
             city: 'Trento',
             total: '120'
@@ -109,7 +124,7 @@ describe('POST /api/v2/event/create', () => {
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
         .send({
-            token: token,
+            token: tokenG,
             name: 'Casa Test',
             description: 'Descrizione del Test',
             dstart: '2022-02-3',
@@ -128,7 +143,7 @@ describe('POST /api/v2/event/create', () => {
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
         .send({
-            token: token,
+            token: tokenG,
             name: 'NomeTest',
             description: 'DescrizioneTest',
             dstart: '2022-02-18',
@@ -147,7 +162,7 @@ describe('POST /api/v2/event/create', () => {
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
         .send({
-            token: token,
+            token: tokenG,
             name: 'NomeTest',
             description: 'DescrizioneTest',
             dstart: '2022-01-18',
@@ -166,7 +181,7 @@ describe('POST /api/v2/event/create', () => {
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
         .send({
-            token: token,
+            token: tokenT,
             name: 'NomeTest',
             description: 'DescrizioneTest',
             dstart: '2022-01-18',
@@ -185,7 +200,7 @@ describe('POST /api/v2/event/create', () => {
         .post('/api/v2/event/create')
         .set('Accept', 'application/json')
         .send({
-            token: token,
+            token: tokenG,
             name: 'NomeTest',
             description: 'DescrizioneTest',
             dstart: '2022-01-18',
