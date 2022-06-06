@@ -87,8 +87,8 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
         });
     });
 
-    // alloggio non esistentenp
-    test('POST /api/v1/housingSubscription/getHousingSlots', () => {
+    // alloggio esistente
+    test('POST /api/v1/housingSubscription/getHousingSlots con alloggio esistente', () => {
         return request(app).post('/api/v1/housingSubscription/getHousingSlots')
         .send({token: tokenNoV, id:"627fdec095b0619bf9e97717"}).set('Accept', 'application/json')
         .expect(200, [
@@ -237,10 +237,6 @@ describe('POST /api/v1/housingSubscription/subscribeHousing', () => {
         housingSubFind.mockRestore();
         housingSubCreationSpy.mockRestore();
     });
-
-    /*
-        UTENTE NON LOGGATO
-    */
 
     // ordine data inizio/finale scorretto
     test('POST /api/v1/housingSubscription/subscribeHousing con ordine data inizio/finale scorretto', () => {
