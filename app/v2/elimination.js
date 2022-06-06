@@ -7,6 +7,8 @@ const Event = require ('./../models/event');
 const Housing = require ('./../models/housing');
 const EventSubscription = require ('./../models/eventsubscription');
 const HousingSubscription = require ('./../models/housingsubscription');
+const EventReview = require ('./../models/eventreview');
+const HousingReview = require ('./../models/housingreview');
 
 // Route per eliminazione evento
 /**
@@ -140,6 +142,9 @@ router.delete('/deleteEvent', async (req, res) => {
 
     // Elimino tutte le iscrizioni relative a quell'evento
     await EventSubscription.deleteMany({ idEvento: req.body.eventId });
+
+    // Elimino tutte le recensioni relative a quell'evento
+    await EventReview.deleteMany({ idEvento: req.body.eventId });
 
   	res.status(200).json({
     		success: true,
@@ -279,6 +284,9 @@ router.delete('/deleteHousing', async (req, res) => {
 
     // Elimino tutte le iscrizioni relative a quell'alloggio
     await HousingSubscription.deleteMany({ idAlloggio: req.body.housingId });
+
+    // Elimino tutte le recensioni relative a quell'alloggio
+    await HousingReview.deleteMany({ idAlloggio: req.body.housingId });
 
   	res.status(200).json({
     		success: true,

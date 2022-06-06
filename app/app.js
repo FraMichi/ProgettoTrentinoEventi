@@ -15,6 +15,7 @@ const visualizzazioneV2 = require('./v2/visualizzazione.js');
 const elimination = require("./v2/elimination.js");
 const visualizzazioneFiltrata = require("./v2/visualizzazioneFiltrata.js");
 const review = require("./v2/review.js");
+const visualizzazioneReview = require("./v2/visualizzazioneReview.js");
 const deletereview = require('./v2/deletereview.js');
 
 

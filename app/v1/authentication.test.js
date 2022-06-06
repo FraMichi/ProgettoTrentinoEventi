@@ -1,6 +1,3 @@
-/**
- * https://www.npmjs.com/package/supertest
- */
 const request  = require('supertest');
 const app      = require('./../app.js');
 const jwt      = require('jsonwebtoken');
