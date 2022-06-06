@@ -102,7 +102,10 @@ describe('POST /api/v2/visualizzazione/eventListSubscribed', () => {
 
     });
 
-    afterAll(() => {});
+    afterAll(() => {
+    eventsFind.mockRestore();
+    eventItemFind.mockRestore();
+});
 
     test('POST /api/v2/visualizzazione/eventListSubscribed con token assente o invalido', () => {
         return request(app)

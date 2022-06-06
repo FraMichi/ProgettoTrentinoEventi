@@ -71,7 +71,11 @@ describe('POST /api/v2/event/create', () => {
 
     });
 
-    afterAll(() => {});
+    afterAll(() => {
+        categoryFind.mockRestore();
+        userFind.mockRestore();
+        eventoCreaSpy.mockRestore();
+    });
 
     test('POST /api/v2/event/create con token assente o invalido', () => {
         return request(app)
