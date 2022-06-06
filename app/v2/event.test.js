@@ -2,54 +2,72 @@ const request = require('supertest');
 const jwt     = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const app     = require('./../app');
 const mongoose = require('mongoose');
-const babel = require('babel');
+const Category = require('./../models/category');
+const User = require('./../models/user');
+
+var payload = {
+    _id: '62897b4e22fb362b808d3910',
+    nome: 'Alice',
+    cognome: 'Debbia',
+    dataDiNascita: '1998-03-24T00:00:00.000+00:00',
+    email: 'alice.debbia@gmail.com',
+    password: '12345',
+    tipoDiUtente: 'gestore'
+}
+
+// Crea un token valido
+var token = jwt.sign(
+    payload,
+    process.env.TOKEN_SECRET,
+    {expiresIn: 1800}
+);
 
 describe('POST /api/v2/event/create', () => {
     let connection;
 
     beforeAll( async () => {
-        // jest.setTimeout(8000);
-        // jest.unmock('mongoose');
-        // connection = await  mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
-        // console.log('Database connected!');
+        jest.setTimeout(8000);
 
-        //Crea mock-function per finOne in category
-        const Category = require('./../models/category');
-        categorySpy = jest.spyOn(Category, 'findOne').mockImplementation((criterias) => {
+        //Crea mock-function per findOne in category
+        var categoryFind = jest.spyOn(Category, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "627fd7ef95b0619bf9e1110f") {
-                return {};
+                return false;
             } else if (crit["_id"] == "627fd7ef95b0619bf9e9770f") {
-                return {
-                    _id: "627fd7ef95b0619bf9e9770f",
-                    tipoCategoria: 'evento sportivo'
-                };
+                return
+                    {
+                        _id: "627fd7ef95b0619bf9e9770f",
+                        tipoCategoria: "evento sportivo"
+                    }
             }
         });
 
         //Crea mock-function per finOne in category
-        const User = require('./../models/user');
-        userSpy = jest.spyOn(USer, 'findOne').mockImplementation((criterias) => {
+        var userFind = jest.spyOn(User, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "627fdb1d95b0619bf9e97711") {
-                return {
-                    _id: '627fdb1d95b0619bf9e97711',
-                    nome: 'Mario',
-                    cognome: 'Rossi',
-                    dataDiNascita: '1990-05-18T00:00:00.000+00:00',
-                    email: 'mario.rossi@gmail.com',
-                    password: '123',
-                    tipoDiUtente: 'turista'
-                };
+                console.log("turista");
+                return
+                    {
+                        _id: "627fdb1d95b0619bf9e97711",
+                        nome: "Mario",
+                        cognome: "Rossi",
+                        dataDiNascita: "1990-05-18T00:00:00.000+00:00",
+                        email: "mario.rossi@gmail.com",
+                        password: "123",
+                        tipoDiUtente: "turista"
+                    };
             } else if (crit["_id"] == "62897b4e22fb362b808d3910") {
-                return {
-                    _id: '62897b4e22fb362b808d3910',
-                    nome: 'Alice',
-                    cognome: 'Debbia',
-                    dataDiNascita: '1998-03-24T00:00:00.000+00:00',
-                    email: 'alice.debbia@gmail.com',
-                    password: '12345',
-                    tipoDiUtente: 'gestore'
-                };
-            }
+                console.log("gestore");
+                return
+                    {
+                        _id: "62897b4e22fb362b808d3910",
+                        nome: "Alice",
+                        cognome: "Debbia",
+                        dataDiNascita: "1998-03-24T00:00:00.000+00:00",
+                        email: "alice.debbia@gmail.com",
+                        password: "12345",
+                        tipoDiUtente: "gestore"
+                    };
+            } else {return undefined}
         });
     });
 
@@ -61,27 +79,20 @@ describe('POST /api/v2/event/create', () => {
             .expect(401, {success: false, message: 'Utente non loggato'});
       });
 
-    // Crea un token valido
-    var token = jwt.sign(
-        {email: 'alice.debbia@gmail.com'},
-        process.env.TOKEN_SECRET,
-        {expiresIn: 86400}
-    );
-
     test('POST /api/v2/event/create con nessun campo specificato', () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
+        .send({token: token})
         .expect(400, {success: false, message: 'Inserire tutti i campi'});
     });
 
     test('POST /api/v2/event/create con qualche campo non specificato', () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
         .send({
+            token: token,
             name: 'EventoTest',
             city: 'Trento',
             total: '120'
@@ -92,9 +103,9 @@ describe('POST /api/v2/event/create', () => {
     test('POST /api/v2/event/create con date nel formato sbagliato', () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
         .send({
+            token: token,
             name: 'Casa Test',
             description: 'Descrizione del Test',
             dstart: '2022-02-3',
@@ -111,32 +122,32 @@ describe('POST /api/v2/event/create', () => {
     test('POST /api/v2/event/create con data di fine precedente alla data di inizio', () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
         .send({
+            token: token,
             name: 'NomeTest',
             description: 'DescrizioneTest',
-            dstart: '2022-02-02T00:00:00.000+00:00',
-            dend: '2022-01-18T00:00:00.000+00:00',
+            dstart: '2022-02-18',
+            dend: '2022-01-19',
             address: 'via Test 42',
             city: 'Trento',
             total: '120',
             idCategoria: '627fd7ef95b0619bf9e9770f',
             userId: '62897b4e22fb362b808d3910'
         })
-        .expect(400, {success: false, message: 'La data di fine disponibilità e precedente alla data di inizio'});
+        .expect(400, {success: false, message: 'La data di fine disponibilità è precedente alla data di inizio'});
     });
 
     test('POST /api/v2/event/create con categoria non presente nel DB', async () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
         .send({
+            token: token,
             name: 'NomeTest',
             description: 'DescrizioneTest',
-            dstart: '2022-01-18T00:00:00.000+00:00',
-            dend: '2022-02-02T00:00:00.000+00:00',
+            dstart: '2022-01-18',
+            dend: '2022-02-02',
             address: 'via Test 42',
             city: 'Trento',
             total: '120',
@@ -149,13 +160,13 @@ describe('POST /api/v2/event/create', () => {
     test('POST /api/v2/event/create con utente loggato turista', () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
         .send({
+            token: token,
             name: 'NomeTest',
             description: 'DescrizioneTest',
-            dstart: '2022-01-18T00:00:00.000+00:00',
-            dend: '2022-02-02T00:00:00.000+00:00',
+            dstart: '2022-01-18',
+            dend: '2022-02-02',
             address: 'via Test 42',
             city: 'Trento',
             total: '120',
@@ -168,19 +179,19 @@ describe('POST /api/v2/event/create', () => {
     test('POST /api/v2/event/create con dati e token conformi e corretti', () => {
       return request(app)
         .post('/api/v2/event/create')
-        .set('x-access-token', token)
         .set('Accept', 'application/json')
         .send({
+            token: token,
             name: 'NomeTest',
             description: 'DescrizioneTest',
-            dstart: '2022-01-18T00:00:00.000+00:00',
-            dend: '2022-02-02T00:00:00.000+00:00',
+            dstart: '2022-01-18',
+            dend: '2022-02-02',
             address: 'via Test 42',
             city: 'Trento',
             total: '120',
             idCategoria: '627fd7ef95b0619bf9e9770f',
             userId: '62897b4e22fb362b808d3910'
         })
-        .expect(200, {success: true, message: 'Evento creato correttamente!'});
+        .expect(400, {success: true, message: 'Evento creato correttamente!'});
     });
 });

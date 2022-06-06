@@ -131,14 +131,15 @@ router.post('/create', async (req, res) => {
   	if (req.body.dend < req.body.dstart) {
 		res.status(400).json({
   			success: false,
-  			message: 'La data di fine disponibilità e precedente alla data di inizio'
+  			message: 'La data di fine disponibilità è precedente alla data di inizio'
 		});
 		return;
   	}
 
     // Controlla se la categoria esiste nel Database
     let categoria = req.body.idCategoria;
-    if ( !(await Category.findOne({_id: categoria}).exec()) ) {
+    let categoriaFind = await Category.findOne({_id: categoria});
+    if ( !categoriaFind ) {
 		res.status(400).json({
   			success: false,
   			message: 'La categoria non è presente nel DB'
