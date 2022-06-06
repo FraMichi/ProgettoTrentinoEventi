@@ -68,7 +68,7 @@ const router = express.Router();
  *                   description: |
  *                     EventNotFound => l'evento specifico non esiste nel DB
  *       400:
- *         description: L'id specificato non rispetta il formato mongoDB
+ *         description: La richiesta presenta problemi, controlla il codice ritornato
  *         content:
  *           application/json:
  *             schema:
@@ -84,8 +84,6 @@ const router = express.Router();
  */
 router.post('/eventSubcribable', async (req, res) => {
 
-    console.log(req.body.event);
-    console.log(req.body.token);
     // Controlla se id evento presente
     if(req.body.event == undefined)
     {

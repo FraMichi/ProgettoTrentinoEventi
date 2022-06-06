@@ -11,8 +11,8 @@ const router = express.Router();
  * @openapi
  * /api/v1/housingSubscription/getHousingSlots:
  *   post:
- *     description: List all the subscription slots of a given housing
- *     summary: List housing subscription slots
+ *     description: Ottieni la lista delle iscrizioni ad un alloggio specifico
+ *     summary: Lista iscrizione alloggi
  *     tags:
  *       - housingSubscription
  *     requestBody:
@@ -22,37 +22,37 @@ const router = express.Router();
  *             properties:
  *               token:
  *                 type: string
- *                 description: The token that rapresent the logged user
+ *                 description: Token che rappresenta l'utente
  *               id:
  *                 type: string
- *                 description: The id of the specific housing
+ *                 description: L'id dell'alloggio specifico
  *     responses:
  *       200:
- *         description: Request successful, the response contains a collection of subscription slot in the following JSON format
+ *         description: Richiesta completata con successo, la risposta contiene una lista di iscrizioni che rispettano il seguente formato
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 init:
  *                   type: Date
- *                   description: Initial date of the specific prenotation slot in ISO8601 format
+ *                   description: Data iniziale dello slot nel formato ISO8601
  *                 finl:
  *                   type: Date
- *                   description: Final date of the spacific prenotation slot in ISO8601 format
+ *                   description: Data finale dello slot nel formato ISO8601
  *                 free:
  *                   type: boolean
  *                   description: |
- *                     true => the specific slot is free
+ *                     true => slot libero
  *
- *                     false => the specific slot is already occupied, therefore is not subscribable
+ *                     false => slot occupato
  *                 ofUser:
  *                   type: boolean
  *                   description: |
- *                     true => the specific slot is already taken by the user identified by the token provided
+ *                     true => lo slot è prenotato dall'utente identificato dal token fornito
  *
- *                     false => the specific slot is already occupied, but not by the user identified by the token provided
+ *                     false => slot occupato ad un altro utente (ignora se "free = true")
  *       400:
- *         description: The format of the housing id do not respect the standard format of MongoDB's id
+ *         description: La richiesta presenta problemi, controlla il codice ritornato
  *         content:
  *           application/json:
  *             schema:
@@ -62,16 +62,19 @@ const router = express.Router();
  *                   description: the value is always false
  *                 message:
  *                   type: string
- *                   description: MongoDBFormatException
+ *                   description: |
+ *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
+ *
+ *                     MissingHousing => nella richiesta non è stato specificato l'ID di un evento
  *       404:
- *         description: The specific housing was not found in the DB
+ *         description: Alloggio specificato non presente nel DB
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: always false
+ *                   description: sempre false
  *                 message:
  *                   type: string
  *                   description: HousingNotFound
@@ -81,6 +84,13 @@ router.post('/getHousingSlots', async (req, res) =>{
         Data inizio INCLUSA
         Data fine ESCLUSA
      */
+
+     // Controlla se id evento presente
+     if(req.body.id == undefined)
+     {
+         res.status(400).json({success: false, message: "MissingHousing"});
+         return;
+     }
 
     // Id alloggio
     let housId = req.body.id;
@@ -189,8 +199,8 @@ router.post('/getHousingSlots', async (req, res) =>{
  * @openapi
  * /api/v1/housingSubscription/subscribeHousing:
  *   post:
- *     description: Require to create a subscription of a given user to a given housing
- *     summary: Subscribe user to housing
+ *     description: Richiedi di creare un iscizione ad un alloggio specifico
+ *     summary: Iscrivi utente ad alloggio
  *     tags:
  *       - housingSubscription
  *     requestBody:
@@ -200,30 +210,36 @@ router.post('/getHousingSlots', async (req, res) =>{
  *             properties:
  *               token:
  *                 type: string
- *                 description: The token that rapresent the logged user
+ *                 description: Token che rappresenta l'utente
  *               id:
  *                 type: string
- *                 description: The id of the specific housing
+ *                 description: Id alloggio
+ *               initDate:
+ *                 type: string
+ *                 description: Data iniziale slot (inclusa)
+ *               finlDate:
+ *                 type: string
+ *                 description: Data finale slot (esclusa)
  *     responses:
  *       200:
- *         description: Request successful was successful, but the new subscription has not been created. Check the message for more info
+ *         description: Richiesta completata con successo, ma la nuova risorsa non è stata creata. Controlla il codice ritornato per ulteriori informazioni
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 succes:
  *                   type: boolean
- *                   description: Always false
+ *                   description: sempre false
  *                 message:
  *                   type: string
  *                   description: |
- *                     BadDateOrder => the initial date is greater than the final date
+ *                     BadDateOrder => la data iniziale supera quella finale
  *
- *                     BadDateOffset => the slot required exits from the availability slot of the housing
+ *                     BadDateOffset => lo slot richiesto esce dalla disponibilita dell'alloggio
  *
- *                     DateSlotOverlap => the slot required overlaps another slot already occupied
+ *                     DateSlotOverlap => lo slot richiesto si sovrappone con uno già esistente
  *       400:
- *         description: The format of the housing id do not respect the standard format of MongoDB's id
+ *         description: La richiesta presenta problemi, controlla il codice ritornato
  *         content:
  *           application/json:
  *             schema:
@@ -233,40 +249,43 @@ router.post('/getHousingSlots', async (req, res) =>{
  *                   description: always false
  *                 message:
  *                   type: string
- *                   description: MongoDBFormatException
+ *                   description: |
+ *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
+ *
+ *                     MissingParameters => nella richiesta mancano dei parametri fondamentali
  *       404:
- *         description: The specific housing was not found in the DB
+ *         description: L'alloggio specifico non è stato trovato nel DB
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: always false
+ *                   description: sempre false
  *                 message:
  *                   type: string
  *                   description: HousingNotFound
  *       401:
- *         description: The token provided is not valid (login again to get a new one)
+ *         description: Il token fornito non è valido
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: always false
+ *                   description: sempre false
  *                 message:
  *                   type: string
  *                   description: TokenNotValid
  *       201:
- *         description: The subscription to the housing has been correctly created
+ *         description: La prenotazione è stata creata correttamente
  *         content:
  *           application/json:
  *             schema:
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: always true
+ *                   description: sempre true
  *                 message:
  *                   type: string
  *                   description: UserSubscribed
@@ -276,6 +295,13 @@ router.post('/subscribeHousing', async (req, res) =>{
         Data inizio INCLUSA
         Data fine ESCLUSA
      */
+
+     // Controlla se id evento presente
+     if(req.body.housingId == undefined || req.body.initDate == undefined || req.body.finlDate == undefined)
+     {
+         res.status(400).json({success: false, message: "MissingParameters"});
+         return;
+     }
 
     let initDate = new Date(req.body.initDate);
     let finlDate = new Date(req.body.finlDate);

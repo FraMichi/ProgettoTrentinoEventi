@@ -77,6 +77,13 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
         });
     });
 
+    // id non presente
+    test('POST /api/v1/housingSubscription/getHousingSlots con id alloggio assente', () => {
+        return request(app).post('/api/v1/housingSubscription/getHousingSlots')
+        .send({token: tokenNoV}).set('Accept', 'application/json')
+        .expect(400, {success: false, message:'MissingHousing' });
+    });
+
     // alloggio non esistente
     test('POST /api/v1/housingSubscription/getHousingSlots con alloggio non esistente', () => {
         return request(app).post('/api/v1/housingSubscription/getHousingSlots')
@@ -266,6 +273,27 @@ describe('POST /api/v1/housingSubscription/subscribeHousing', () => {
             success: false,
             message: "MongoDBFormatException"
         });
+    });
+
+    // id assente
+    test('POST /api/v1/housingSubscription/subscribeHousing con id assente', () => {
+        return request(app).post('/api/v1/housingSubscription/subscribeHousing')
+        .send({
+            token: tokenNoV,
+            initDate: "2022-06-20T00:00:00.000Z",
+            finlDate: "2022-07-17T00:00:00.000Z"
+        }).set('Accept', 'application/json')
+        .expect(400, {success: false, message:"MissingParameters"});
+    });
+
+    // date assenti
+    test('POST /api/v1/housingSubscription/subscribeHousing con id assente', () => {
+        return request(app).post('/api/v1/housingSubscription/subscribeHousing')
+        .send({
+            token: tokenNoV,
+            housingId:"627fdec095b0619bf9e97717"
+        }).set('Accept', 'application/json')
+        .expect(400, {success: false, message:"MissingParameters"});
     });
 
     // token non valido
