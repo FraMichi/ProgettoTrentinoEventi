@@ -121,7 +121,8 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
 describe('POST /api/v1/eventSubscription/createSubscription', () => {
     beforeAll(() => {
         jest.setTimeout(8000);
-        eventSubSpy = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
+
+        var eventSubSpy = jest.spyOn(EventSubscription, 'findOne').mockImplementation((crit) => {
             if(crit["idTurista"] == "627fdb1d95b0619bf9e97711" && crit["idEvento"] == "62838c1f3ba701dd200682e9")
             {
                 return {
@@ -131,8 +132,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                 }
             } else {return undefined}
         });
-
-        eventSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
+        var eventSpy = jest.spyOn(Event, 'find').mockImplementation((crit) => {
             if(crit["_id"] == "62838c1f3ba701dd200682e9")
             {
                 return {
@@ -194,8 +194,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                 };
             } else {return []}
         });
-
-        eventOneSpy = jest.spyOn(Event, 'findOne').mockImplementation((crit) => {
+        var eventOneSpy = jest.spyOn(Event, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "62838c1f3ba701dd200682e9") {     // si iscritto
                 return {
                     _id: "62838c1f3ba701dd200682e9",
@@ -254,19 +253,21 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
                 };
             } else {return []}
         });
-
-        // Empty stub
-        eventSubCreationSpy = jest.spyOn(EventSubscription, 'create').mockImplementation((crit) => {
-            return {}
+        var eventSubCreationSpy = jest.spyOn(EventSubscription, 'create').mockImplementation((crit) => {
+            return(crit);
         });
-
-        eventUpdateSpy = jest.spyOn(Event, 'findOneAndUpdate').mockImplementation((crit) => {
-            return {}
+        var eventUpdateSpy = jest.spyOn(Event, 'findOneAndUpdate').mockImplementation((crit) => {
+            return {crit}
         });
-
-
     });
-    afterAll(() => {});
+
+    afterAll(() => {
+        eventSubSpy.mockRestore();
+        eventSpy.mockRestore();
+        eventOneSpy.mockRestore();
+        eventSubCreationSpy.mockRestore();
+        eventUpdateSpy.mockRestore();
+    });
 
     // token non valido
     test('POST /api/v1/eventSubscription/createSubscription con token non valido', () => {
