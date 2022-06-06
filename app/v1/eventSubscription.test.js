@@ -280,10 +280,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
     test('POST /api/v1/eventSubscription/createSubscription con token non valido', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenNoV, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
-        .expect(401, {
-            success: false,
-            message: 'UserNotLogged'
-        });
+        .expect(401, {success: false, message: 'UserNotLogged'});
     });
 
     // token ok, id evento non conforme
@@ -297,49 +294,34 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
     test('POST /api/v1/eventSubscription/createSubscription con id evento non esistente', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200672e9"}).set('Accept', 'application/json')
-        .expect(404, {
-            success: false,
-            message: "EventNotFound"
-        });
+        .expect(404, {success: false, message: "EventNotFound"});
     });
 
     // token ok, utente già iscritto a evento
     test('POST /api/v1/eventSubscription/createSubscription iscrizione ad evento già iscritto', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
-        .expect(200, {
-            success: true,
-            message: 'UserAlreadySubscribed'
-        });
+        .expect(200, {success: true, message: 'UserAlreadySubscribed'});
     });
 
     // token ok, evento senza posti
     test('POST /api/v1/eventSubscription/createSubscription iscrizione ad evento senza posti disponibili', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e0"}).set('Accept', 'application/json')
-        .expect(200, {
-            success: false,
-            message: 'NoFreeSeats'
-        });
+        .expect(200, {success: false, message: 'NoFreeSeats'});
     });
 
     // evento già finito
     test('POST /api/v1/eventSubscription/createSubscription iscrizione ad evento finito', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e2"}).set('Accept', 'application/json')
-        .expect(200, {
-            success: false,
-            message: 'TimeExceeded'
-        });
+        .expect(200, {success: false, message: 'TimeExceeded'});
     });
 
     // token ok, utente non iscritto a evento
     test('POST /api/v1/eventSubscription/createSubscription nuova iscrizione effettuata con successo', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenVal, event:"62838c1f3ba701dd200682e8"}).set('Accept', 'application/json')
-        .expect(201, {
-            success: true,
-            message: 'UserSubscribed'
-        });
+        .expect(201, {success: true, message: 'UserSubscribed'});
     });
 });
