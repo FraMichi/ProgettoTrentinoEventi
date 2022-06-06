@@ -22,7 +22,7 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
     beforeAll(() => {
         jest.setTimeout(8000);
 
-        var housingFind = jest.spyOn(Housing, 'find').mockImplementation((crit) => {
+        housingFind = jest.spyOn(Housing, 'find').mockImplementation((crit) => {
             if(crit["_id"] == "627fdec095b0619bf9e97717")
             {
                 return  [
@@ -38,7 +38,7 @@ describe('POST /api/v1/housingSubscription/getHousingSlots', () => {
                         ]
             } else {return []}
         });
-        var housingSubFind = jest.spyOn(HousingSubscription, 'find').mockImplementation((crit) => {
+        housingSubFind = jest.spyOn(HousingSubscription, 'find').mockImplementation((crit) => {
             if(crit["idAlloggio"] == "627fdec095b0619bf9e97717")
             {
                 return  [
@@ -193,7 +193,7 @@ describe('POST /api/v1/housingSubscription/subscribeHousing', () => {
     beforeAll(() => {
         jest.setTimeout(8000);
 
-        var housingFind = jest.spyOn(Housing, 'findOne').mockImplementation((crit) => {
+        housingFind = jest.spyOn(Housing, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "627fdec095b0619bf9e97717")
             {
                 return  {
@@ -208,8 +208,7 @@ describe('POST /api/v1/housingSubscription/subscribeHousing', () => {
 
             } else {return []}
         });
-
-        var housingSubFind = jest.spyOn(HousingSubscription, 'find').mockImplementation((crit) => {
+        housingSubFind = jest.spyOn(HousingSubscription, 'find').mockImplementation((crit) => {
             if(crit["idAlloggio"] == "627fdec095b0619bf9e97717")
             {
                 return  [
@@ -233,7 +232,11 @@ describe('POST /api/v1/housingSubscription/subscribeHousing', () => {
         });
     });
 
-    afterAll(() => {});
+    afterAll(() => {
+        housingFind.mockRestore();
+        housingSubFind.mockRestore();
+        housingSubCreationSpy.mockRestore();
+    });
 
     /*
         UTENTE NON LOGGATO
