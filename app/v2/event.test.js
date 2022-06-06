@@ -53,15 +53,15 @@ describe('POST /api/v2/event/create', () => {
                     tipoDiUtente: "turista"
                 };
             } else if (crit["_id"] == "62897b4e22fb362b808d3910") {
-                    return {
-                        _id: "62897b4e22fb362b808d3910",
-                        nome: "Alice",
-                        cognome: "Debbia",
-                        dataDiNascita: "1998-03-24T00:00:00.000+00:00",
-                        email: "alice.debbia@gmail.com",
-                        password: "12345",
-                        tipoDiUtente: "gestore"
-                    };
+                return {
+                    _id: "62897b4e22fb362b808d3910",
+                    nome: "Alice",
+                    cognome: "Debbia",
+                    dataDiNascita: "1998-03-24T00:00:00.000+00:00",
+                    email: "alice.debbia@gmail.com",
+                    password: "12345",
+                    tipoDiUtente: "gestore"
+                };
             } else {return undefined}
         });
     });
