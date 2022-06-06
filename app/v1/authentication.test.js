@@ -4,29 +4,46 @@
 const request  = require('supertest');
 const app      = require('./../app.js');
 const jwt      = require('jsonwebtoken');
-const mongoose = require('mongoose');
 
 describe('POST /api/v1/authentication/login', () => {
 
-    let connection;
-
     beforeAll( async () => {
-        jest.setTimeout(8000);
-        jest.unmock('mongoose');
-        connection = await  mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
-        console.log('Database connected!');
+        const User = require('./../models/user');
+        newUserSpy = jest.spyOn(User, 'findOne').mockImplementation((criterias) => {
+            if(criterias['email'] == "mario.rossi@gmail.com") {
+                return {
+                    _id: "627fdb1d95b0619bf9e97711",
+                    nome: "Mario",
+                    cognome: "Rossi",
+                    dataDiNascita: "1990-05-18T00:00:00Z",
+                    email: "mario.rossi@gmail.com",
+                    password: "123",
+                    tipoDiUtente: "turista"
+                };
+            }
+            return undefined;
+        });
     });
 
     afterAll( () => {
-        mongoose.connection.close(true);
-        console.log("Database connection closed");
+        newUserSpy.mockRestore();
     });
 
+    var payload = {
+    		name: "Mario",
+    		surname: "Rossi",
+    		birthdate: "1990-05-18T00:00:00Z",
+    		email: "mario.rossi@gmail.com",
+    		userType: "turista",
+            id: "627fdb1d95b0619bf9e97711"
+  	}
+
+    var expire = 1800;
 
     var token = jwt.sign(
-        {email: 'mario.rossi@gmail.com'},
+        payload,
         process.env.TOKEN_SECRET,
-        {expiresIn: 86400}
+        {expiresIn: expire}
     );
 
     test('POST /api/v1/authentication/login con utente non registrato', () => {
@@ -66,7 +83,14 @@ describe('POST /api/v1/authentication/login', () => {
             .post('/api/v1/authentication/login')
             .set('Accept', 'application/json')
             .send({ email: 'mario.rossi@gmail.com', password: "12345" })
-            .expect(200, { success: false, message: 'Password sbagliata', token: null, name: null, id: null, expireTime: null });
+            .expect(200, {
+                success: false,
+                message: 'Password sbagliata',
+                token: null,
+                name: null,
+                id: null,
+                expireTime: null
+            });
     });
 
     test('POST /api/v1/authentication/login con credenziali corrette', () => {
@@ -74,7 +98,85 @@ describe('POST /api/v1/authentication/login', () => {
             .post('/api/v1/authentication/login')
             .set('Accept', 'application/json')
             .send({ email: 'mario.rossi@gmail.com', password: "123" })
-            .expect(200, { success: true, message: 'Login effettuato', token: token, name: 'Mario', id: user._id, expireTime: expire });
+            .expect(200, {
+                success: true,
+                message: 'Login effettuato',
+                token: token,
+                name: 'Mario',
+                id: "627fdb1d95b0619bf9e97711",
+                expireTime: expire
+            });
     });
 
+});
+
+
+describe('POST /api/v1/authentication/subscribe con credenziali corrette', () => {
+
+    beforeAll( async () => {
+        const User = require('./../models/user');
+        newUserFindOneSpy = jest.spyOn(User, 'findOne').mockImplementation((criterias) => {
+            if(criterias['email'] == "mario.rossi@gmail.com") {
+                return {
+                    _id: "627fdb1d95b0619bf9e97711",
+                    nome: "Mario",
+                    cognome: "Rossi",
+                    dataDiNascita: "1990-05-18T00:00:00Z",
+                    email: "mario.rossi@gmail.com",
+                    password: "123",
+                    tipoDiUtente: "turista"
+                };
+            }
+            return undefined;
+        });
+        newUserCreateSpy = jest.spyOn(User, 'create').mockImplementation((criterias) => {
+          return {
+              _id: "627fdb1d95b0619bf9e97711",
+              nome: "gigi",
+              cognome: "rossi",
+              dataDiNascita: "1990-02-13",
+              email: "gigi.rossi@gmail.com",
+              password: "123",
+              tipoDiUtente: "turista"
+          };
+        });
+    });
+
+    afterAll( () => {
+        newUserSpy.mockRestore();
+    });
+
+    var payload = {
+    		name: "gigi",
+    		surname: "rossi",
+    		birthdate: "1990-02-13",
+    		email: "gigi.rossi@gmail.com",
+    		userType: "turista",
+            id: "627fdb1d95b0619bf9e97711"
+  	}
+
+    var expire = 1800;
+
+    var token = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: expire});
+
+    test('POST /api/v1/authentication/subscribe con credenziali corrette', () => {
+        return request(app)
+        .post('/api/v1/authentication/subscribe')
+        .set('Accept', 'application/json')
+        .send({
+            name: "gigi",
+            surname: "rossi",
+            birthdate: "1990-02-13",
+            email: "gigi.rossi@gmail.com",
+            password: "123",
+            userType: "turista"
+        })
+        .expect(201, {
+            success: true,
+            token: token,
+            name: "gigi",
+            id: "627fdb1d95b0619bf9e97711",
+            expireTime: expire
+        });
+    });
 });
