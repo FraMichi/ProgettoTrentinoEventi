@@ -4,6 +4,7 @@ const app     = require('./../app');
 const mongoose = require('mongoose');
 const Category = require('./../models/category');
 const User = require('./../models/user');
+const Event = require('./../models/event');
 
 var payload = {
     _id: '62897b4e22fb362b808d3910',
@@ -23,13 +24,12 @@ var token = jwt.sign(
 );
 
 describe('POST /api/v2/event/create', () => {
-    let connection;
 
     beforeAll( async () => {
         jest.setTimeout(8000);
 
         //Crea mock-function per findOne in category
-        var categoryFind = jest.spyOn(Category, 'findOne').mockImplementation((crit) => {
+        categoryFind = jest.spyOn(Category, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "627fd7ef95b0619bf9e1110f") {
                 return false;
             } else if (crit["_id"] == "627fd7ef95b0619bf9e9770f") {
@@ -41,7 +41,7 @@ describe('POST /api/v2/event/create', () => {
         });
 
         //Crea mock-function per finOne in category
-        var userFind = jest.spyOn(User, 'findOne').mockImplementation((crit) => {
+        userFind = jest.spyOn(User, 'findOne').mockImplementation((crit) => {
             if(crit["_id"] == "627fdb1d95b0619bf9e97711") {
                 return {
                     _id: "627fdb1d95b0619bf9e97711",
@@ -64,6 +64,11 @@ describe('POST /api/v2/event/create', () => {
                 };
             } else {return undefined}
         });
+
+        eventoCreaSpy = jest.spyOn(Event, 'create').mockImplementation((crit) => {
+            return {}
+        });
+
     });
 
     afterAll(() => {});
@@ -187,6 +192,6 @@ describe('POST /api/v2/event/create', () => {
             idCategoria: '627fd7ef95b0619bf9e9770f',
             userId: '62897b4e22fb362b808d3910'
         })
-        .expect(400, {success: true, message: 'Evento creato correttamente!'});
+        .expect(200, {success: true, message: 'Evento creato correttamente!'});
     });
 });

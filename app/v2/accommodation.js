@@ -151,7 +151,7 @@ router.post('/create', async (req, res) => {
     });
 
   	// Aggiunge l'alloggio creato nel DB e restituisce un messaggio di conferma
-  	housing = await housing.save();
+    housing = await Housing.create(housing);
   	res.status(200).json({
     		success: true,
     		message: 'Alloggio creato correttamente!'
