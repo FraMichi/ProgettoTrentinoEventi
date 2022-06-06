@@ -83,6 +83,15 @@ const HousingSubscription = require('./../models/housingsubscription');
  */
 router.post('/createAnswerEventReview', async (req, res) => {
 
+	// Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
+	if (!req.body.token || !req.body.answer || !req.body.reviewId || !req.body.eventId) {
+	res.status(400).json({
+    	success: false,
+    	message: 'Inserire tutti i campi'
+	});
+  return;
+	}
+
   // Verifica se utente loggato
   tokenChecker(req, res, req.body.token);
 
@@ -96,8 +105,8 @@ router.post('/createAnswerEventReview', async (req, res) => {
       return;
   }
 
-  // Controlla che l'id rispetti il formato di MongoDB
-  if (!req.body.idEvento.match(/^[0-9a-fA-F]{24}$/)) {
+  // Controlla che l'idEvento rispetti il formato di MongoDB
+  if (!req.body.eventId.match(/^[0-9a-fA-F]{24}$/)) {
       // Se non lo rispetta dichiara l'errore
       res.status(400).json({
           success: false,
@@ -105,6 +114,17 @@ router.post('/createAnswerEventReview', async (req, res) => {
       });
       return;
   }
+
+  let evento = await Event.findOne({_id: req.body.eventId}).exec();
+
+  // Controlla se l'evento esiste, se no invia un messaggio di errore
+     if (!evento) {
+     res.status(401).json({
+         success: false,
+         message: 'Evento non trovato'
+         });
+     return;
+     }
 
   // Controlla se l'utente è il creatore dell'evento, se no invia un messaggio di errore
   if(evento.idGestore != req.loggedUser.id) {
@@ -115,20 +135,16 @@ router.post('/createAnswerEventReview', async (req, res) => {
   return;
   }
 
- let evento = await Event.findOne({_id: req.body.eventId}).exec();
+  if (!req.body.reviewId.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
 
- // Controlla se l'evento esiste, se no invia un messaggio di errore
-  	if (!evento) {
-		res.status(401).json({
-        success: false,
-        message: 'Evento non trovato'
-        });
-		return;
-  	}
-
-
-
- await EventAnswerSubscription.updateOne(eventId, tdanswer);
+ await EventReview.update({ _id: req.body.reviewId},{risposta: req.body.answer, idGestore: req.loggedUser.id}).exec();
 
  res.status(200).json({
     		success: true,
@@ -207,7 +223,7 @@ router.post('/createAnswerEventReview', async (req, res) => {
 router.post('/createAnswerHousingReview', async (req, res) => {
 
   // Controlla se sono stati inseriti tutti i campi nel form, se no invia risposta con messaggio d'errore
-    if (!req.body.review || !req.body.idAlloggio || !req.body.token  ) {
+    if (!req.body.reviewId || !req.body.housingId || !req.body.token || !req.body.answer ) {
     res.status(400).json({
         success: false,
         message: 'Parametri mancanti'
@@ -228,7 +244,7 @@ router.post('/createAnswerHousingReview', async (req, res) => {
       return;
   }
   // Controlla che l'idAlloggio rispetti il formato di MongoDB
-  if (!req.body.idAlloggio.match(/^[0-9a-fA-F]{24}$/)) {
+  if (!req.body.housingId.match(/^[0-9a-fA-F]{24}$/)) {
       // Se non lo rispetta dichiara l'errore
       res.status(400).json({
           success: false,
@@ -246,22 +262,40 @@ router.post('/createAnswerHousingReview', async (req, res) => {
   return;
   }
 
-  let house = await Housing.findOne({_id: req.body.idAlloggio});
+  let house = await Housing.findOne({_id: req.body.housingId}).exec();
 
-  	// Crea risposta alla recensione per l'alloggio
-  	let housingReview = new HousingReview({
-        recensione: undefined,
-        idAlloggio: undefined,
-        idUtente: undefined,
-        idGestore: req.loggedUser.id,
-        risposta: req.body.answer
+  // Controlla se l'alloggio esiste, se no invia un messaggio di errore
+   if (!house) {
+   res.status(401).json({
+       success: false,
+       message: 'Alloggio non trovato'
+       });
+   return;
+   }
+
+// Controlla se l'utente è il proprietario dell'alloggio, se no invia un messaggio di errore
+if(house.idGestore != req.loggedUser.id) {
+    res.status(403).json({
+    success: false,
+    message: "Non sei il proprietario dell'alloggio"
     });
+return;
+}
 
-  	// Aggiunge la risposta alla recensione nel DB
-  	housingReview = await housingReview.save();
-  	res.status(200).json({
+if (!req.body.reviewId.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({
+          success: false,
+          message: "Id non conforme al formato MongoDB"
+      });
+      return;
+  }
+
+  await HousingReview.update({ _id: req.body.reviewId},{risposta: req.body.answer, idGestore: req.loggedUser.id}).exec();
+
+ res.status(200).json({
     		success: true,
-    		message: 'Risposta recensione alloggio creata correttamente!'
+    		message: 'Risposta recensione inviata!'
   	});
 });
 

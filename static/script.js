@@ -1083,46 +1083,6 @@ function createEventReview(id) {
     }
   };
 
-  // Funzione che imposta l'attributo 'href' del bottone per scrivere una risposta della recensione di un evento
-  function setAnswerEventReviewButton() {
-
-      // Prende l'id dell'evento dall'URL
-      var urlParams = new URLSearchParams(window.location.search);
-      if(urlParams.has('eventId')){
-
-          var id = urlParams.get('eventId');
-      }
-
-      // Prende l'id della recensione dall'URL
-      var urlParams = new URLSearchParams(window.location.search);
-      if(urlParams.has('reviewId')){
-
-          var id = urlParams.get('reviewId');
-      }
-
-      // Modifica il contenuto dell'elemento
-      document.getElementById('createAnswerEvReview').innerHTML = 'Rispondi alla recensione evento';
-
-      // Imposta l'attributo 'href' dell'elemento
-      document.getElementById('createAnswerEvReview').setAttribute('href', 'javascript:createAnswerEvReview("' +eventId +'")("'+reviewId+'")');
-  };
-
-  // Funzione che imposta l'attributo 'href' del bottone per scrivere una risposta della recensione dell'alloggio
-  function setAnswerHousingReviewButton() {
-
-      // Prende l'id dell'alloggio dall'URL
-      var urlParams = new URLSearchParams(window.location.search);
-      if(urlParams.has('housingId')){
-
-          var id = urlParams.get('housingId');
-      }
-
-      // Modifica il contenuto dell'elemento
-      document.getElementById('answerHousingReview').innerHTML = 'Rispondi alla recensione alloggio';
-
-      // Imposta l'attributo 'href' dell'elemento
-      document.getElementById('answerHousingReview').setAttribute('href', 'javascript:answerHousingReview("' + id +'")');
-  };
 
 /*
 * Funzione che viene chiamata premendo il bottone dalla schermata ?.
@@ -1187,18 +1147,15 @@ function eventReview() {
             data.forEach((review, i) => {
               var trreview = document.createElement("tr");
               var tdreview = document.createElement("td");
-              var tdformanswer = document.createElement("td");
+
               var tddelete = document.createElement("td");
               var tddescrizione = document.createElement("td");
 
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tdformanswer.innerHTML = "Inserisci <a href=\"createAnswerEventReview.html\">qui</a> la risposta!";
-              //tddelete.innerHTML=" pulsante/link"
 
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
-              trreview.appendChild(tdformanswer);
               trreview.appendChild(tddelete);
               table.appendChild(trreview);
 
@@ -1206,9 +1163,7 @@ function eventReview() {
               var tdanswer = document.createElement("td");
               var tdrisposta = document.createElement("td");
               tdrisposta.innerHTML = "Risposta";
-              tdanswer.innerHTML = "Risposta non presente";
-
-
+              tdanswer.innerHTML = "Inserisci <a href=\"createAnswerEventReview.html?reviewId="+review.id+"&eventId="+id+"\">qui</a> la risposta!";
 
               if (review.risposta) {
                 tdanswer.innerHTML = review.risposta;
@@ -1245,9 +1200,10 @@ function housingReview() {
               var trreview = document.createElement("tr");
               var tdreview = document.createElement("td");
               var tddescrizione = document.createElement("td");
+
               tddescrizione.innerHTML = "Descrizione";
               tdreview.innerHTML = review.recensione;
-              tdanswer.innerHTML = "Rispondi <a href=\"javascript:createAnswerEventReview('"+id+"')\">qui</a> alla recensione";
+
               trreview.appendChild(tddescrizione);
               trreview.appendChild(tdreview);
               table.appendChild(trreview);
@@ -1256,7 +1212,7 @@ function housingReview() {
               var tdanswer = document.createElement("td");
               var tdrisposta = document.createElement("td");
               tdrisposta.innerHTML = "Risposta";
-              tdanswer.innerHTML = "Risposta non presente";
+              tdanswer.innerHTML = "Inserisci <a href=\"createAnswerHousingReview.html?reviewId="+review.id+"&housingId="+id+"\">qui</a> la risposta!";
 
               if (review.risposta) {
                               tdanswer.innerHTML = review.risposta;
@@ -1280,7 +1236,7 @@ function housingReview() {
 */
 function createAnswerEventReview(id) {
 
-  var answer = document.getElementById("tdanswer").value;
+  var answer = document.getElementById("answerReview").value;
 
   // Prende l'id dell'evento dall'URL
   var urlParams = new URLSearchParams(window.location.search);
@@ -1289,28 +1245,79 @@ function createAnswerEventReview(id) {
       var eventId = urlParams.get('eventId');
   }
 
+  if(getCookie("user")) {
+       token = JSON.parse(getCookie("user")).token;
+       userId = JSON.parse(getCookie("user")).id;
+       fetch('../api/v2/answerReview/createAnswerEventReview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify( { reviewId: id, token: token, answer: answer, eventId: eventId} )
+       })
+       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+       .then( function(data) {
+         alert(data.message);
+         window.location.href = "/index.html";
+      })
+      .catch( error => console.error(error) );
+   }
+};
+
+function setAnswerEventButton(){
   // Prende l'id della recensione dall'URL
   var urlParams = new URLSearchParams(window.location.search);
   if(urlParams.has('reviewId')){
 
-      var eventId = urlParams.get('reviewId');
+      var reviewId = urlParams.get('reviewId');
+  }
+
+  var button = document.getElementById("answerButton");
+  button.setAttribute("onclick", "createAnswerEventReview('"+reviewId+"')");
+  button.innerHTML = "Inserisci risposta";
+
+}
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
+* Crea una risposta alla recensione per un evento e la salva nel database
+*/
+function createAnswerHousingReview(id) {
+
+  var answer = document.getElementById("answerReview").value;
+
+  // Prende l'id dell'evento dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('housingId')){
+
+      var eventId = urlParams.get('housingId');
   }
 
   if(getCookie("user")) {
        token = JSON.parse(getCookie("user")).token;
        userId = JSON.parse(getCookie("user")).id;
-
-                           if(tipoDiUser == 'gestore') {
-                               fetch('../api/v2/answerReview/createAnswerEventReview', {
-                                   method: 'POST',
-                                   headers: { 'Content-Type': 'application/json' },
-                                   body: JSON.stringify( { eventId: id, token: token, answer: answer} )
-                               })
-                               .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-                               .then( function() {
-                              window.location.href = "/visualizzaEvento.html?eventId="+id;
-                             })
-       .catch( error => console.error(error) );
+       fetch('../api/v2/answerReview/createAnswerHousingReview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify( { reviewId: id, token: token, answer: answer, housingId: housingId} )
+       })
+       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+       .then( function(data) {
+         alert(data.message);
+         window.location.href = "/index.html";
+      })
+      .catch( error => console.error(error) );
    }
-}
 };
+
+function setAnswerHousingButton(){
+  // Prende l'id della recensione dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('reviewId')){
+
+      var reviewId = urlParams.get('reviewId');
+  }
+
+  var button = document.getElementById("answerButton");
+  button.setAttribute("onclick", "createAnswerHousingReview('"+reviewId+"')");
+  button.innerHTML = "Inserisci risposta";
+
+}

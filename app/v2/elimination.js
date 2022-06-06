@@ -304,7 +304,7 @@ router.delete('/deleteHousing', async (req, res) => {
  *         type: string
  *         description: Contiene il token dell'utente loggato
  *         requied: true
-         event:
+ *       event:
  *         type: string
  *         description: Contiene l'id dell'evento
  *   responses:
@@ -319,8 +319,8 @@ router.delete('/deleteHousing', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
-              UserNotSubscribed => l'utente non è iscritto all'evento specifico
-              UserSubscribed => l'utente è già iscritto all'evento specifico
+ *            UserNotSubscribed => l'utente non è iscritto all'evento specifico
+ *            UserSubscribed => l'utente è già iscritto all'evento specifico
  *    401:
  *     description: l'utente non è iscritto
  *     content:
@@ -333,7 +333,7 @@ router.delete('/deleteHousing', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
-               UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+ *             UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
  */
 
 router.delete('/deleteSubscriptionEvent', async (req, res) => {
@@ -416,7 +416,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         type: string
  *         description: Contiene il token dell'utente loggato
  *         requied: true
-         event:
+ *       event:
  *         type: string
  *         description: Contiene l'id dell'alloggio
  *   responses:
@@ -431,8 +431,8 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
-              UserNotSubscribed => l'utente non è prenotato all'alloggio specifico
-              UserSubscribed => l'utente è già prenotato all'allogggio specifico
+ *            UserNotSubscribed => l'utente non è prenotato all'alloggio specifico
+ *            UserSubscribed => l'utente è già prenotato all'allogggio specifico
  *    401:
  *     description: l'utente non è iscritto
  *     content:
@@ -445,7 +445,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         message:
  *          type: string
  *          description: |
-               UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+ *             UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
  *     404:
  *     description: Restituisce errore se non è stato trovato l'alloggio
  *     content:

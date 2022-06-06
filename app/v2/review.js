@@ -302,7 +302,7 @@ router.post('/createHousingReview', async (req, res) => {
 
   	// Aggiunge la recensione creata nel DB
   	housingReview = await housingReview.save();
-  	res.status(200).json({
+  	res.status(201).json({
     		success: true,
     		message: 'Recensione alloggio creata correttamente!'
   	});
