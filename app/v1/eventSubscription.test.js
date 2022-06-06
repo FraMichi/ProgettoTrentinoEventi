@@ -88,6 +88,13 @@ describe('POST /api/v1/eventSubscription/eventSubcribable', () => {
         .expect(400, {success: false, message: "MongoDBFormatException"});
     });
 
+    // richiesta senza id evento
+    test('POST /api/v1/eventSubscription/eventSubcribable senza id evento', () => {
+        return request(app).post('/api/v1/eventSubscription/eventSubcribable')
+        .send({token: tokenNoV}).set('Accept', 'application/json')
+        .expect(400, {success: false, message: 'MissingEvent'});
+    });
+
     // token ok, id evento non esistente
     test('POST /api/v1/eventSubscription/eventSubcribable con id evento non esistente', () => {
         return request(app).post('/api/v1/eventSubscription/eventSubcribable')
@@ -266,7 +273,7 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
     test('POST /api/v1/eventSubscription/createSubscription senza id evento', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
         .send({token: tokenNoV}).set('Accept', 'application/json')
-        .expect(401, {success: false, message: 'MissingEvent'});
+        .expect(400, {success: false, message: 'MissingEvent'});
     });
 
     // token non valido
