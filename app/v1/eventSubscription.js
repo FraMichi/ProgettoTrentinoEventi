@@ -79,8 +79,19 @@ const router = express.Router();
  *                   type: string
  *                   description: |
  *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
+ *
+ *                     MissingEvent => nella richiesta non è stato specificato l'ID di un evento
  */
 router.post('/eventSubcribable', async (req, res) => {
+
+    console.log(req.body.event);
+    console.log(req.body.token);
+    // Controlla se id evento presente
+    if(req.body.event == undefined)
+    {
+        res.status(400).json({success: false, message: "MissingEvent"});
+        return;
+    }
 
     // Verifica se utente loggato
     tokenChecker(req, res, req.body.token);

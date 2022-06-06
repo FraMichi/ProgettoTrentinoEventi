@@ -260,6 +260,13 @@ describe('POST /api/v1/eventSubscription/createSubscription', () => {
         eventUpdateSpy.mockRestore();
     });
 
+    // richiesta senza id evento
+    test('POST /api/v1/eventSubscription/createSubscription senza id evento', () => {
+        return request(app).post('/api/v1/eventSubscription/createSubscription')
+        .send({token: tokenNoV}).set('Accept', 'application/json')
+        .expect(401, {success: false, message: 'MissingEvent'});
+    });
+
     // token non valido
     test('POST /api/v1/eventSubscription/createSubscription con token non valido', () => {
         return request(app).post('/api/v1/eventSubscription/createSubscription')
