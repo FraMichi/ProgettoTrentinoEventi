@@ -138,7 +138,7 @@ function checkEventSubscription(){
         .then(function(data){
 
             if(data.message == "UserSubscribed") {
-                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento! Vuoi disiscriverti? Premi <a href=\"javascript:deleteSubscriptionEvent('"+id+"')\">qui</a>!";
+                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
             }
             else if(data.message == "UserNotSubscribed") {
                 document.getElementById("prenotationText").innerHTML = "Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
@@ -607,9 +607,9 @@ function checkHousingPrenotation() {
 
                 } else {
                     if(item.ofUser) {
-                        cell3.innerHTML = "Hai gia prenotato questo slot. Annulla <a href=\"javascript:deleteHousingSubscription('"+urlParams.get('housingId')+"')\">qui</a>!";
+                        cell3.innerHTML = "Hai gia prenotato questo slot";
                     } else {
-                        cell3.innerHTML = "Questo slot è già prenotato!";
+                        cell3.innerHTML = "Questo slot è già prenotato";
                     }
                 }
 
@@ -710,7 +710,7 @@ function createHousingSubscription(){
 }
 
 /*
-    Richiede lista eventi esistenti
+    Richiede lista eventi ai quali l'utente si è iscritto
 */
 function getSubEvents() {
 
@@ -723,7 +723,7 @@ function getSubEvents() {
         token = biscuit.token;
 
         // Esegue la richiesta degli eventi all'api specifica
-        fetch('../api/v2/visualizzazione/eventList', {
+        fetch('../api/v2/visualizzazione/eventListSubscribed', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( {token: token} )
@@ -774,7 +774,7 @@ function getSubEvents() {
 };
 
 /*
-    Richiede lista eventi esistenti
+    Richiede lista alloggi che l'utente ha prenotato
 */
 function getSubHousings() {
 
@@ -787,7 +787,7 @@ function getSubHousings() {
         token = biscuit.token;
 
         // Esegue la richiesta degli eventi all'api specifica
-        fetch('../api/v2/visualizzazione/houseList', {
+        fetch('../api/v2/visualizzazione/houseListSubscribed', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify( {token: token} )
@@ -833,8 +833,6 @@ function getSubHousings() {
         })
         .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     }
-
-
 };
 
 /*
@@ -868,9 +866,19 @@ function getCreatedEvents() {
             return data.map(function(item){
                 var li = document.createElement("li");
                 var a = document.createElement("a");
-                a.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
-                a.innerHTML = item.title
+                var a2 = document.createElement("a");
+                var a3 = document.createElement("a");
+                var a4 = document.createElement("a");
+                a.innerHTML = item.title + ": visualizza ";
+                a2.setAttribute("href", "/visualizzaEvento.html?eventId=" + item.id);
+                a2.innerHTML = "  evento ";
+                a3.innerHTML = ", visualizza ";
+                a4.setAttribute("href", "/visualizzaIscrittiEvento.html?eventId=" + item.id);
+                a4.innerHTML = "iscritti";
                 li.appendChild(a);
+                li.appendChild(a2);
+                li.appendChild(a3);
+                li.appendChild(a4);
                 ul.appendChild(li);
             });
         }
@@ -910,9 +918,19 @@ function getCreatedHousings() {
             return data.map(function(item){
                 var li = document.createElement("li");
                 var a = document.createElement("a");
-                a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
-                a.innerHTML = item.title
+                var a2 = document.createElement("a");
+                var a3 = document.createElement("a");
+                var a4 = document.createElement("a");
+                a.innerHTML = item.title + ": visualizza ";
+                a2.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + item.id);
+                a2.innerHTML = " dettagli";
+                a3.innerHTML = ", visualizza ";
+                a4.setAttribute("href", "/visualizzaIscrittiAlloggio.html?housingId=" + item.id);
+                a4.innerHTML = "iscritti";
                 li.appendChild(a);
+                li.appendChild(a2);
+                li.appendChild(a3);
+                li.appendChild(a4);
                 ul.appendChild(li);
             });
         }
@@ -1009,53 +1027,260 @@ function deleteHousing(id) {
 
 };
 
-
 /*
- * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico, di annullamento iscrizione.
- * Manda la richiesta all'API per l'eliminazione dell'iscrizione all'evento
- */
-function deleteSubscriptionEvent(id) {
+    Richiede lista iscritti all'evento specifico
+*/
+function getIscrittiEvento() {
+    var urlParams = new URLSearchParams(window.location.search);
 
-    // Se c'è il cookie dell'utente prende i suoi elementi
-    if(getCookie("user")) {
-        token = JSON.parse(getCookie("user")).token;
+    // Se eventId presente nella query
+    if(urlParams.has('eventId')){
+        // Id evento
+        var eventId = urlParams.get('eventId');
+        let biscuit = getCookie('user');
+        let token;
+        let userId;
+        if(biscuit != undefined){
+            biscuit = JSON.parse(biscuit);
+            token = biscuit.token;
+            userId = biscuit.id;
+        }
 
-        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
-            method: 'DELETE',
+        // Chiamata api per dettagli evento
+        fetch('../api/v1/visualizzazione/event?id='+eventId)
+        .then((resp) => resp.json())
+        .then(function(data){
+            document.getElementById("title").innerHTML=data.title;
+            document.getElementById("description").innerHTML=data.description;
+            document.getElementById("seats").innerHTML=data.seatsAvailable + "/" + data.seatsOccupied;
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+
+        // Esegue la richiesta delle iscrizioni all'evento all'api specifica
+        fetch('../api/v2/visualizzazione/eventSubscription', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, eventId: id} )
+            body: JSON.stringify( {token: token, userId: userId, eventId: eventId} )
         })
-        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function() {
-            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        .then((resp) => resp.json())
+        .then(function(data){
+            if(data.message != undefined){
+                alert(data.message);
+                // Torna alla home page
+                window.location.href = "/index.html";
+            } else {
+                let table = document.getElementById("list");
+                data.map(function(item){
+                    console.log(item);
+                    let dataN = new Date(item.dataDiNascita);
+                    let row = table.insertRow(-1);
+                    let cell1 = row.insertCell(0);
+                    let cell2 = row.insertCell(1);
+                    let cell3 = row.insertCell(2);
+                    let cell4 = row.insertCell(3);
+                    let newText = document.createTextNode(item.nome);
+                    cell1.appendChild(newText);
+                    newText = document.createTextNode(item.cognome);
+                    cell2.appendChild(newText);
+                    newText = document.createTextNode(dataN.toISOString().split('T')[0]);
+                    cell3.appendChild(newText);
+                    newText = document.createTextNode(item.email);
+                    cell4.appendChild(newText);
+                });
+            }
         })
-        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        console.error("Attenzione: parametro 'eventId' non presente nella query");
     }
-
 };
 
 /*
- * Funzione che viene chiamata premendo sul link nella pagina di prenotazione di un alloggio specifico.
- * Manda la richiesta all'API per l'eliminazione della prenotazione di un alloggio
- */
-function deleteHousingSubscription(id) {
+    Richiede lista prenotati all'alloggio specifico
+*/
+function getIscrittiAlloggio() {
+    var urlParams = new URLSearchParams(window.location.search);
 
-    // Se c'è il cookie dell'utente prende i suoi elementi
-    if(getCookie("user")) {
-        token = JSON.parse(getCookie("user")).token;
+    // Se housingId presente nella query
+    if(urlParams.has('housingId')){
+        // Id alloggio
+        var housingId = urlParams.get('housingId');
+        let biscuit = getCookie('user');
+        let token;
+        let userId;
+        if(biscuit != undefined){
+            biscuit = JSON.parse(biscuit);
+            token = biscuit.token;
+            userId = biscuit.id;
+        }
 
-        fetch('../api/v2/elimination/deleteHousingSubscription', {
-            method: 'DELETE',
+        // Chiamata api per dettagli alloggio
+        fetch('../api/v1/visualizzazione/housing?id='+housingId)
+        .then((resp) => resp.json())
+        .then(function(data){
+            let dataInit = new Date(data.initDate);
+            let dataFinl = new Date(data.finlDate);
+            document.getElementById("title").innerHTML=data.title;
+            document.getElementById("init").innerHTML=dataInit.toISOString().split('T')[0];
+            document.getElementById("finl").innerHTML=dataFinl.toISOString().split('T')[0];
+        })
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+
+        // Esegue la richiesta delle iscrizioni all'evento all'api specifica
+        fetch('../api/v2/visualizzazione/housingSubscription', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( { token: token, housingId: id} )
+            body: JSON.stringify( {token: token, userId: userId, housingId: housingId} )
         })
-        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
-        .then( function() {
-            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+        .then((resp) => resp.json())
+        .then(function(data){
+            if(data.message != undefined){
+                alert(data.message);
+                // Torna alla home page
+                window.location.href = "/index.html";
+            } else {
+                let table = document.getElementById("list");
+                data.map(function(item){
+                    if (item.sub) {
+                        let row = table.insertRow(-1);
+                        let cell1 = row.insertCell(0);
+                        let cell2 = row.insertCell(1);
+                        let cell3 = row.insertCell(2);
+                        let cell4 = row.insertCell(3);
+                        let cell5 = row.insertCell(4);
+                        let cell6 = row.insertCell(5);
+                        let dataN = new Date(item.dataDiNascita);
+                        let dataInit = new Date(item.init);
+                        let dataFinl = new Date(item.finl);
+                        cell1.innerHTML = dataInit.toISOString().split('T')[0];
+                        cell2.innerHTML = dataFinl.toISOString().split('T')[0];
+                        let newText = document.createTextNode(item.nome);
+                        cell3.appendChild(newText);
+                        newText = document.createTextNode(item.cognome);
+                        cell4.appendChild(newText);
+                        newText = document.createTextNode(dataN.toISOString().split('T')[0]);
+                        cell5.appendChild(newText);
+                        newText = document.createTextNode(item.email);
+                        cell6.appendChild(newText);
+                    }
+                    else {
+                        let row = table.insertRow(-1);
+                        let cell1 = row.insertCell(0);
+                        let cell2 = row.insertCell(1);
+                        let cell3 = row.insertCell(2);
+                        let dataInit = new Date(item.init);
+                        let dataFinl = new Date(item.finl);
+                        cell1.innerHTML = dataInit.toISOString().split('T')[0];
+                        cell2.innerHTML = dataFinl.toISOString().split('T')[0];
+                        let newText = document.createTextNode(item.nome);
+                        cell3.innerHTML="Nessuna prenotazione";
+                        cell3.setAttribute("colspan", "4");
+                    }
+                });
+            }
         })
-        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+        .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
     } else {
-        alert("Effettua il login");
+        console.error("Attenzione: parametro 'housingId' non presente nella query");
     }
+};
 
+/*
+ *  Richiede lista eventi filtrati
+*/
+function getEventsFiltered() {
+
+    // Prende i valori inseriti nei filtri
+
+    var city = document.getElementById('filterCitta').value;
+    var startDate = document.getElementById('filterStartDate').value;
+    var endDate = document.getElementById('filterEndDate').value;
+    var filterCategory = document.getElementById('filterList').value;
+
+    // Manda la richiesta all'api
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate + '&filterCategory=' + filterCategory, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json'}
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+
+        // Prende la lista dall'HTML in cui inserire gli eventi
+        var ul = document.getElementById("list");
+
+        // Rimuove tutti gli eventi già nella lista
+        while(ul.hasChildNodes()) {
+            ul.removeChild(ul.childNodes[0]);
+        }
+
+        for (var i in data.eventsList) {
+
+            // Crea gli elementi necessari per la lista
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+
+            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + data.eventsList[i].id);
+            a.innerHTML = data.eventsList[i].title;
+
+            // Li aggiunge alla lista
+            li.appendChild(a);
+            ul.appendChild(li);
+
+        }
+
+        if(data.success == false)
+        {
+            document.getElementById('errorMessage').innerHTML = data.message;
+        }
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
+ *  Richiede lista eventi filtrati
+*/
+function getHousingsFiltered() {
+
+    // Prende i valori inseriti nei filtri
+    var city = document.getElementById('filterCitta').value;
+    var startDate = document.getElementById('filterStartDate').value;
+    var endDate = document.getElementById('filterEndDate').value;
+
+    // Manda la richiesta all'api
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterHousings?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json'}
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+
+        // Prende la lista dall'HTML in cui inserire gli alloggi
+        var ul = document.getElementById("list");
+
+        // Rimuove tutti gli alloggi già nella lista
+        while(ul.hasChildNodes()) {
+            ul.removeChild(ul.childNodes[0]);
+        }
+
+        for (var i in data.housingsList) {
+
+            // Crea gli elementi necessari per la lista
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+
+            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + data.housingsList[i].id);
+            a.innerHTML = data.housingsList[i].title;
+
+            // Li aggiunge alla lista
+            li.appendChild(a);
+            ul.appendChild(li);
+
+        }
+
+        if(data.success == false)
+        {
+            document.getElementById('errorMessage').innerHTML = data.message;
+        }
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
 };
