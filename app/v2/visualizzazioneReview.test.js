@@ -65,7 +65,7 @@ describe('POST /api/v2/visualizzazioneReview/EventReview', () => {
 
             //Crea mock.function per find in Event
                 eventReviewItemSpy = jest.spyOn(EventReview, 'find').mockImplementation((crit) => {
-                   if(crit["idEvento"] == "62838c1f3ba701dd200682e9")
+                   if(crit["idEvento"] == "62897c3d3d0c2508a888588f")
                    {
                        return {
                            recensione:,
