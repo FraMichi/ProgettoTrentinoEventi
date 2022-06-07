@@ -473,6 +473,26 @@ function getCategory() {
 };
 
 /*
+    Richiede lista delle categorie esistenti per i filtri
+*/
+function getCategoryFilter() {
+    // Esegue la richiesta degli eventi all'api specifica
+    fetch('../api/v1/event/category')
+    .then((resp) => resp.json())
+    .then(function(data){
+                var select = document.getElementById("filterList");
+                return data.map(function(item){
+
+                    var option = document.createElement("option");
+                    option.innerHTML = item.title;
+                    option.setAttribute("value", item.id);
+                    select.appendChild(option);
+                })
+            })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
     Controlla le prenotazioni dell'alloggio specifico
 */
 function checkHousingPrenotation() {
@@ -1091,4 +1111,241 @@ function getIscrittiAlloggio() {
     } else {
         console.error("Attenzione: parametro 'housingId' non presente nella query");
     }
+};
+
+/*
+ *  Richiede lista eventi filtrati
+*/
+function getEventsFiltered() {
+
+    // Prende i valori inseriti nei filtri
+
+    var city = document.getElementById('filterCitta').value;
+    var startDate = document.getElementById('filterStartDate').value;
+    var endDate = document.getElementById('filterEndDate').value;
+    var filterCategory = document.getElementById('filterList').value;
+
+    // Manda la richiesta all'api
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterEvents?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate + '&filterCategory=' + filterCategory, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json'}
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+
+        // Prende la lista dall'HTML in cui inserire gli eventi
+        var ul = document.getElementById("list");
+
+        // Rimuove tutti gli eventi già nella lista
+        while(ul.hasChildNodes()) {
+            ul.removeChild(ul.childNodes[0]);
+        }
+
+        for (var i in data.eventsList) {
+
+            // Crea gli elementi necessari per la lista
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+
+            a.setAttribute("href", "/visualizzaEvento.html?eventId=" + data.eventsList[i].id);
+            a.innerHTML = data.eventsList[i].title;
+
+            // Li aggiunge alla lista
+            li.appendChild(a);
+            ul.appendChild(li);
+
+        }
+
+        if(data.success == false)
+        {
+            document.getElementById('errorMessage').innerHTML = data.message;
+        }
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
+ *  Richiede lista eventi filtrati
+*/
+function getHousingsFiltered() {
+
+    // Prende i valori inseriti nei filtri
+    var city = document.getElementById('filterCitta').value;
+    var startDate = document.getElementById('filterStartDate').value;
+    var endDate = document.getElementById('filterEndDate').value;
+
+    // Manda la richiesta all'api
+    fetch('../api/v2/visualizzazioneFiltrata/getFilterHousings?city=' + city + '&startDate=' + startDate + '&endDate=' + endDate, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json'}
+    })
+    .then((resp) => resp.json())
+    .then(function(data){
+
+        // Prende la lista dall'HTML in cui inserire gli alloggi
+        var ul = document.getElementById("list");
+
+        // Rimuove tutti gli alloggi già nella lista
+        while(ul.hasChildNodes()) {
+            ul.removeChild(ul.childNodes[0]);
+        }
+
+        for (var i in data.housingsList) {
+
+            // Crea gli elementi necessari per la lista
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+
+            a.setAttribute("href", "/visualizzaAlloggio.html?housingId=" + data.housingsList[i].id);
+            a.innerHTML = data.housingsList[i].title;
+
+            // Li aggiunge alla lista
+            li.appendChild(a);
+            ul.appendChild(li);
+
+        }
+
+        if(data.success == false)
+        {
+            document.getElementById('errorMessage').innerHTML = data.message;
+        }
+    })
+    .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+};
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
+* Crea una recensione per un evento e la salva nel database
+*/
+function createEventReview(id) {
+  // Prende l'id dell'evento dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('eventId')){
+
+      var eventId = urlParams.get('eventId');
+  }
+
+  // Prendo la Recensione
+  var review = document.getElementById("eventReview").value;
+
+  if(getCookie("user")) {
+      token = JSON.parse(getCookie("user")).token;
+      userId = JSON.parse(getCookie("user")).id;
+
+  // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
+                      fetch('../api/v2/review/createEventReview', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify( { idEvento: eventId, review: review,token: token } )
+                      })
+                      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                      .then( function(data) {
+
+                          // Controlla se sono stati resituiti messaggi di errore
+                          if(data.success == false) {
+                              // In caso affermativo mostra il messaggio
+                              alert(data.message);
+                              window.location.href = "/index.html";
+                          } else {
+                            //In caso negativo torna alla pagina di visualizzazione
+                            window.location.href = "/index.html";
+                            alert("Recensione evento inviata");
+                        }
+                    })
+                 .catch( error => console.error(error) );
+    }
+  };
+
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata ?.
+* Crea una recensione per un alloggio e la salva nel database
+*/
+function createHousingReview(id) {
+
+  // Prende l'id dell'alloggio dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('housingId')){
+
+      var housingId = urlParams.get('housingId');
+  }
+
+  // Prendo la Recensione
+  var review = document.getElementById("housingReview").value;
+
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+        userId = JSON.parse(getCookie("user")).id;
+
+        // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
+                        fetch('../api/v2/review/createHousingReview', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' },
+                           body: JSON.stringify( { idAlloggio: housingId, review: review,token: token } )
+                        })
+                        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                        .then( function(data) {
+
+                            // Controlla se sono stati resituiti messaggi di errore
+                            if(data.success == false) {
+                                // In caso affermativo mostra il messaggio
+                                alert(data.message);
+                                window.location.href = "/index.html";
+                            } else {
+                              //In caso negativo torna alla pagina di visualizzazione
+                              window.location.href = "/index.html";
+                              alert("Recensione alloggio inviata");
+                          }
+                      })
+                   .catch( error => console.error(error) );
+      }
+  };
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
+ * Manda la richiesta all'API per l'eliminazione della recensione di un evento
+ */
+function deleteEventReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/deletereview/deleteEventReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { eventId: id , token: token} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione di una recensione di un alloggio
+ */
+function deleteHousingReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/deletereview/deleteHousingReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { housingId: id, token: token } )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
 };

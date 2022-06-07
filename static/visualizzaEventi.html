@@ -4,10 +4,28 @@
         <title>Visualizzazione eventi</title>
         <script src="script.js"></script>
     </head>
-    <body onload="checkIfLogged()">
+    <body onload="checkIfLogged(); getCategoryFilter()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
+
+        <h1>Filtra gli eventi</h1>
+        <form action="javascript:getEventsFiltered()" method="get" id="filterForm">
+            <label for="filterCitta">Città</label>
+            <input type="text" name="city" id="filterCitta"/>
+            <label for="filterStartDate">Data di inizio</label>
+            <input type="date" name="startDate" id="filterStartDate"/>
+            <label for="filterEndDate">Data di fine</label>
+            <input type="date" name="endDate" id="filterEndDate"/>
+            <label for="filterList">Categoria</label>
+            <select id="filterList" name="filterCategory">
+                <option></option>
+            </select>
+            <button type="button" onclick="getEventsFiltered()">Filtra</button>
+        </form>
+
+        <p id='errorMessage'></p>
+
         <h1>Lista degli eventi</h1>
 
         <ul id="list" name="list">
