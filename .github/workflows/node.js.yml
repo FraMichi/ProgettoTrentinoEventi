@@ -20,7 +20,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci #similar to npm install , except it's meant to be used in automated environments
+    - run: npm install
     - run: npm run build --if-present
     - run: npm test
     
