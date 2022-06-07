@@ -69,7 +69,7 @@ router.get('/getFilterEvents', async (req, res) => {
   	}
 
     // Controlla se la data di inizio è maggiore di quella di fine
-    if(startDate > endDate) {
+    if(startDate && endDate && startDate > endDate) {
         // Se si ritorna un errore
 		res.status(400).json({
             success: false,
@@ -184,7 +184,7 @@ router.get('/getFilterHousings', async (req, res) => {
   	}
 
     // Controlla se la data di inizio è maggiore di quella di fine
-    if(startDate > endDate) {
+    if(startDate && endDate && startDate > endDate ) {
         // Se si ritorna un errore
 		res.status(400).json({
             success: false,
