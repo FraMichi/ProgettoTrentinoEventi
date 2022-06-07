@@ -424,7 +424,7 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         type: string
  *         description: Contiene il token dell'utente loggato
  *         requied: true
- *        event:
+ *        housing:
  *         type: string
  *         description: Contiene l'id dell'alloggio
  *   responses:
