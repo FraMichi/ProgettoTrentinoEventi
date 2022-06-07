@@ -148,7 +148,7 @@ router.post('/eventListSubscribed', async (req, res) => {
     }
 
     // Se utente loggato, prende la lista di tutti gli eventi ai quali è scritto
-    let events = await EventSubscription.find({idTurista: req.loggedUser._id});
+    let events = await EventSubscription.find({idTurista: req.loggedUser.id});
 
     //Crea un array che andrò a riempire con gli eventi
     var eventList = [];
