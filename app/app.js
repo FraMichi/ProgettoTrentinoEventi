@@ -46,7 +46,7 @@ const swaggerOptions = {
   './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js',
   './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/elimination.js',
   './app/v2/visualizzazioneFiltrata.js', './app/v2/visualizzazioneReview.js', './app/v2/review.js',
-  './app/v2/deletereview.js', './app/v2/event.js', './app/v2/accommodation.js'] // files containing annotations as above
+  './app/v2/deletereview.js', './app/v2/event.js', './app/v2/accommodation.js', './app/v2/answerReview.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione

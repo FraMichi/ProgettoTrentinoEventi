@@ -59,7 +59,7 @@ const HousingSubscription = require('./../models/housingsubscription');
  *         message:
  *          type: string
  *          description: Messaggio che contiene l'errore
- *    403:
+ *    400:
  *     description: Restituisce errore se l'utente non è proprietario della recensione
   *     content:
  *      application/json:
@@ -187,7 +187,7 @@ router.delete('/deleteEventReview', async (req, res) => {
  *         message:
  *          type: string
  *          description: Messaggio che contiene l'errore
- *    403:
+ *    400:
  *     description: Restituisce errore se l'utente non è proprietario della recensione
  *     content:
  *      application/json:

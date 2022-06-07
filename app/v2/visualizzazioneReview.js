@@ -30,15 +30,15 @@ const HousingReview = require ('./../models/housingreview');
  *           application/json:
  *             schema:
  *               properties:
- *                 review:
+ *                 reviewId:
  *                   type: string
- *                   description: review of the event
- *                 answer:
+ *                   description: id della review
+ *                 recensione:
  *                   type: string
- *                   description: answer of IdGestore to the review
- *                 delete:
+ *                   description: recensione dell'evento
+ *                 risposta:
  *                   type: string
- *                   description: delete the review
+ *                   description: risposta alla recensione
  *       404:
  *         description: Some data are not found on the DB
  *         content:
@@ -61,18 +61,6 @@ const HousingReview = require ('./../models/housingreview');
  *                 message:
  *                   type: string
  *                   description: specifications regarding the specific error
- *       401:
- *         description: The user is not logged
- *         content:
- *           application/json:
- *             schema:
- *               properties:
- *                 success:
- *                   type: boolean
- *                 message:
- *                   type: string
- *                   description: |
- *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
 */
 router.get('/eventReview', async (req, res) => {
 
@@ -122,7 +110,7 @@ router.get('/eventReview', async (req, res) => {
 
    // Risorsa finale
    let reviewList = eventReview.map((review) => {return{ reviewId: review._id , recensione: review.recensione, risposta: review.risposta};})
-   
+
    res.status(200).json(reviewList);
 
 });
@@ -148,15 +136,15 @@ router.get('/eventReview', async (req, res) => {
  *           application/json:
  *             schema:
  *               properties:
- *                 review:
+ *                 reviewId:
  *                   type: string
- *                   description: review of the housing
- *                 answer:
+ *                   description: id della review
+ *                 recensione:
  *                   type: string
- *                   description: the aswer of the IdGestore to the review
- *                 delete:
+ *                   description: recensione dell'evento
+ *                 risposta:
  *                   type: string
- *                   description: delete the review
+ *                   description: risposta alla recensione
  *       404:
  *         description: Some data are not found on the DB
  *         content:

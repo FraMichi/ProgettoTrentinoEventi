@@ -342,6 +342,28 @@ router.delete('/deleteHousing', async (req, res) => {
  *          type: string
  *          description: |
  *           UserNotLogged => l'utente non ha fornito un token valido, di conseguenza l'utente non è loggato
+ *    404:
+ *      description: L'utente non è iscritto all'evento specifico
+ *      content:
+ *        application/json:
+ *          schema:
+ *            properties:
+ *              success:
+ *                type: boolean
+ *              message:
+ *                type: string
+ *                description: "Utente non iscritto all evento"
+ *    400:
+ *      description: La richiesta presenta problemi, controlla il codice ritornato
+ *      content:
+ *        application/json:
+ *          schema:
+ *            properties:
+ *              success:
+ *                type: boolean
+ *              message:
+ *                type: string
+ *                description: MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
  */
 
 router.delete('/deleteSubscriptionEvent', async (req, res) => {
@@ -466,6 +488,18 @@ router.delete('/deleteSubscriptionEvent', async (req, res) => {
  *         message:
  *          type: string
  *          description: Messaggio che contiene l'errore
+ *    400:
+ *      description: La richiesta presenta problemi, controlla il codice ritornato
+ *      content:
+ *        application/json:
+ *          schema:
+ *            properties:
+ *              success:
+ *                type: boolean
+ *              message:
+ *                type: string
+ *                description: |
+ *                  MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
  */
 router.delete('/deleteHousingSubscription', async (req, res) => {
 

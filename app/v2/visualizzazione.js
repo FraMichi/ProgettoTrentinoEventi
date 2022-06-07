@@ -39,6 +39,9 @@ const router = express.Router();
  *                     true => la lista è piena, ci sono prenotazioni
  *
  *                     false => la lista è vuota, non ci sono prenotazioni
+ *                 message:
+ *                   type: string
+ *                   description: messaggio che identifica eventuali errori
  *       401:
  *         description: L'utente non è autenticato
  *         content:
@@ -119,6 +122,9 @@ router.post('/houseListSubscribed', async (req, res) => {
  *                     true => la lista è piena, ci sono prenotazioni
  *
  *                     false => la lista è vuota, non ci sono prenotazioni
+ *                 message:
+ *                   type: string
+ *                   description: messaggio che identifica eventuali errori
  *       401:
  *         description: L'utente non è autenticato
  *         content:
@@ -206,6 +212,9 @@ router.post('/eventListSubscribed', async (req, res) => {
  *                     true => la lista è piena, ci sono utenti iscritti
  *
  *                     false => la lista è vuota, non ci sono utenti iscritti
+ *                 message:
+ *                   type: string
+ *                   description: messaggio che identifica eventuali errori
  *       401:
  *         description: L'utente non è autenticato
  *         content:
@@ -359,6 +368,9 @@ router.post('/eventSubscription', async (req, res) => {
  *                     true => la lista è piena, ci sono utenti iscritti
  *
  *                     false => la lista è vuota, non ci sono utenti iscritti
+ *                 message:
+ *                   type: string
+ *                   description: messaggio che identifica eventuali errori
  *       401:
  *         description: L'utente non è autenticato
  *         content:
