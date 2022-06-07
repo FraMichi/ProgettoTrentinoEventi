@@ -11,8 +11,8 @@ const router = express.Router();
  * @openapi
  * /api/v1/eventSubscription/eventSubcribable:
  *   post:
- *     description: Check if the user is already subscribed to the specific event
- *     summary: Check user subscription to event
+ *     description: Controlla se l'utente è iscritto ad un evento specifico
+ *     summary: Controlla l'iscrizione di un utente ad un evento
  *     tags:
  *       - eventSubscription
  *     requestBody:
@@ -22,15 +22,15 @@ const router = express.Router();
  *             properties:
  *               token:
  *                 type: string
- *                 description: The token that rapresent the logged user
+ *                 description: Token che rappresenta l'utente loggato
  *                 required: true
  *               event:
  *                 type: string
- *                 description: The id of the event
+ *                 description: Id dell'evento
  *                 required: true
  *     responses:
  *       200:
- *         description: Request successful
+ *         description: Richiesta completata con successo
  *         content:
  *           application/json:
  *             schema:
@@ -40,11 +40,11 @@ const router = express.Router();
  *                 message:
  *                   type: string
  *                   description: |
- *                     UserNotSubscribed => the user is not subscribed to the specific event
+ *                     UserNotSubscribed => l'utente non è iscritto all'evento
  *
- *                     UserSubscribed => the user is already subscribed to the specific event
+ *                     UserSubscribed => l'utente è già iscritto all'evento
  *       401:
- *         description: The user is not logged
+ *         description: L'utente non è loggato
  *         content:
  *           application/json:
  *             schema:
@@ -54,12 +54,53 @@ const router = express.Router();
  *                 message:
  *                   type: string
  *                   description: |
- *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ *                     UserNotLogged => il token fornito non è valido
+ *       404:
+ *         description: L'evento richiesto non è stato trovato nel DB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     EventNotFound => l'evento specifico non esiste nel DB
+ *       400:
+ *         description: La richiesta presenta problemi, controlla il codice ritornato
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
+ *
+ *                     MissingEvent => nella richiesta non è stato specificato l'ID di un evento
  */
 router.post('/eventSubcribable', async (req, res) => {
 
+    // Controlla se id evento presente
+    if(req.body.event == undefined)
+    {
+        res.status(400).json({success: false, message: "MissingEvent"});
+        return;
+    }
+
     // Verifica se utente loggato
     tokenChecker(req, res, req.body.token);
+
+    // RESPO_DONE 400 MongoDBFormatException
+    // Verifica che id rispetti formato MongoDB
+    if (!req.body.event.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "MongoDBFormatException"});
+      return;
+    }
 
     // Se utente non loggato (token decoded nella req = undefined)
     if(req.loggedUser == undefined) {
@@ -71,7 +112,15 @@ router.post('/eventSubcribable', async (req, res) => {
         return;
     }
 
-    // Se user loggato controlla se già registrato ad evento specifico
+    // Se user loggato controlla se l'evento specifico esiste
+    let eventExists = await Event.find({_id:req.body.event});
+    if(eventExists.length == 0){
+        // RESPO_DONE 404 EventNotFound
+        res.status(404).json({success: false, message: "EventNotFound"});
+        return;
+    }
+
+    // Se l'evento esiste
     let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
 
     // Se non iscritto
@@ -95,8 +144,8 @@ router.post('/eventSubcribable', async (req, res) => {
  * @openapi
  * /api/v1/eventSubscription/createSubscription:
  *   post:
- *     description: Require to subscribe the user to the specific event
- *     summary: Subscribe the user to the event
+ *     description: Effettua l'iscrizione dell'utente all'evento specifico
+ *     summary: Iscrizione utente a evento
  *     tags:
  *       - eventSubscription
  *     requestBody:
@@ -106,15 +155,15 @@ router.post('/eventSubcribable', async (req, res) => {
  *             properties:
  *               token:
  *                 type: string
- *                 description: The token that rapresent the logged user
+ *                 description: Token che rappresenta l'utente
  *                 required: true
  *               event:
  *                 type: string
- *                 description: The id of the event
+ *                 description: Id dell'evento
  *                 required: true
  *     responses:
  *       200:
- *         description: The request was successful but it is not guaranteed that the new entry has been created, check the message field
+ *         description: Richiesta completata con successo, ma non è stata creata una nuova entry nel DB
  *         content:
  *           application/json:
  *             schema:
@@ -125,14 +174,18 @@ router.post('/eventSubcribable', async (req, res) => {
  *                     NoFreeSeats => false
  *
  *                     UserAlreadySubscribed => true
+ *
+ *                     TimeExceeded => true
  *                 message:
  *                   type: string
  *                   description: |
- *                     NoFreeSeats => the event has no free seats, the subscription has not been created
+ *                     NoFreeSeats => l'evento non ha posti liberi, iscrizione annullata
  *
- *                     UserAlreadySubscribed => the user is already subscribed to the specific event
+ *                     UserAlreadySubscribed => l'utente è già iscritto all'evento
+ *
+ *                     TimeExceeded => l'evento a cui vuoi iscriverti è già finito
  *       201:
- *         description: The request was successful and the new entry has been created
+ *         description: Richiesta completata con successo, nuova entry creata nel DB
  *         content:
  *           application/json:
  *             schema:
@@ -144,9 +197,9 @@ router.post('/eventSubcribable', async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: |
- *                     UserSubscribed => the user has been subscribed to the event correctly and the new entry has been created
+ *                     UserSubscribed => l'utente è stato iscritto all'evento
  *       401:
- *         description: The user is not logged
+ *         description: L'utente non è loggato
  *         content:
  *           application/json:
  *             schema:
@@ -158,14 +211,65 @@ router.post('/eventSubcribable', async (req, res) => {
  *                 message:
  *                   type: string
  *                   description: |
- *                     UserNotLogged => the user has not provided a valid token, therefore the user is not logged
+ *                     UserNotLogged => il token fornito non è valido
+ *       404:
+ *         description: L'evento richiesto non è stato trovato nel DB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     EventNotFound => l'evento specifico non esiste nel DB
+ *       400:
+ *         description: L'id specificato non rispetta il formato mongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                   description: |
+ *                     MongoDBFormatException => l'id specificato non rispetta il formato mongoDB
+ *
+ *                     MissingEvent => nella richiesta non è stato specificato l'ID di un evento
  */
 router.post('/createSubscription', async (req, res) =>{
 
+    // Controlla se id evento presente
+    if(req.body.event == undefined)
+    {
+        res.status(400).json({success: false, message: "MissingEvent"});
+        return;
+    }
+
     // Verifica se l'utente è loggato
     tokenChecker(req, res, req.body.token);
+
+    // RESPO_DONE 400 MongoDBFormatException
+    // Verifica che id rispetti formato MongoDB
+    if (!req.body.event.match(/^[0-9a-fA-F]{24}$/)) {
+      // Se non lo rispetta dichiara l'errore
+      res.status(400).json({success: false, message: "MongoDBFormatException"});
+      return;
+    }
+
+
     if(req.loggedUser) {
-        // Se loggato controlla se già iscritto
+        // Se user loggato controlla se l'evento specifico esiste
+        let eventExists = await Event.find({_id:req.body.event});
+        if(eventExists.length == 0){
+            // RESPO_DONE 404 EventNotFound
+            res.status(404).json({success: false, message: "EventNotFound"});
+            return;
+        }
+
+        // Se se l'evento esiste, controlla se user già iscritto
         let iscrizione = await EventSubscription.findOne({idTurista: req.loggedUser.id, idEvento: req.body.event});
         if(iscrizione != null) {
             // Segnala che l'utente è già iscritto
@@ -177,6 +281,17 @@ router.post('/createSubscription', async (req, res) =>{
         } else {
             // Se non iscritto, controlla se l'evento specifico ha posti disponibili
             let eventItem = await Event.findOne({_id: req.body.event});
+
+            if(!(new Date(eventItem.dataFine).getTime() > new Date().getTime()))
+            {
+                // RESPO_DONE 200 TimeExceeded
+                res.status(200).json({
+                    success: false,
+                    message: 'TimeExceeded'
+                });
+                return;
+            }
+
             if(eventItem.postiDisponibili > 0) {
                 // Se ha posti disponibili, togline uno
                 let tmp = eventItem.postiDisponibili - 1;
@@ -191,7 +306,8 @@ router.post('/createSubscription', async (req, res) =>{
                 });
 
                 // Salva l'iscrizione
-                newSubscription = await newSubscription.save();
+                //newSubscription = await newSubscription.save();
+                newSubscription = await EventSubscription.create(newSubscription);
                 res.status(201).json({
                     success: true,
                     message: 'UserSubscribed'
