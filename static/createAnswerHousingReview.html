@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Creazione risposta recensione</title>
+        <script src="script.js"></script>
+    </head>
+    <body onload="checkIfLogged(); setAnswerHousingButton()">
+        <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
+        <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
+        <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
+
+        <h1>Risposta recensione</h1>
+        <form action="api/v2/answerReview" method="post">
+          <label for="answerReview">Inserisci il messaggio:</label><br>
+          <textarea id ="answerReview" name="answerReview" rows="10" cols="30"></textarea><br/>
+
+          <button id = "answerButton" type="button"></button>
+        </form>
+
+    </body>
+</html>

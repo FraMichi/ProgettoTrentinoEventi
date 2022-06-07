@@ -138,7 +138,7 @@ function checkEventSubscription(){
         .then(function(data){
 
             if(data.message == "UserSubscribed") {
-                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
+                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento! Vuoi disiscriverti? Premi <a href=\"javascript:deleteSubscriptionEvent('"+id+"')\">qui</a>!";
             }
             else if(data.message == "UserNotSubscribed") {
                 document.getElementById("prenotationText").innerHTML = "Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
@@ -185,6 +185,8 @@ function subscribeToEvent(event){
             document.getElementById("prenotationText").innerHTML = "Ooops! Non sei loggato, oppure il tuo login è scaduto. Riesegui il login!";
         } else if (data.message == 'NoFreeSeats'){
             document.getElementById("prenotationText").innerHTML = "Ooops! Sei arrivato tardi, posti finiti!";
+        } else {
+            alert(data.message);
         }
     })
     .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
@@ -607,7 +609,7 @@ function checkHousingPrenotation() {
 
                 } else {
                     if(item.ofUser) {
-                        cell3.innerHTML = "Hai gia prenotato questo slot";
+                        cell3.innerHTML = "Hai gia prenotato questo slot. Annulla <a href=\"javascript:deleteHousingSubscription('"+urlParams.get('housingId')+"')\">qui</a>!";
                     } else {
                         cell3.innerHTML = "Questo slot è già prenotato";
                     }
@@ -1457,7 +1459,7 @@ function eventReview() {
               var tdanswer = document.createElement("td");
               var tdrisposta = document.createElement("td");
               tdrisposta.innerHTML = "Risposta";
-              tdanswer.innerHTML = "Inserisci <a href=\"createAnswerEventReview.html?reviewId="+review.id+"&eventId="+id+"\">qui</a> la risposta!";
+              tdanswer.innerHTML = "Inserisci <a href=\"createAnswerEventReview.html?reviewId="+review.reviewId+"&eventId="+id+"\">qui</a> la risposta!";
 
               if (review.risposta) {
                 tdanswer.innerHTML = review.risposta;
@@ -1506,7 +1508,7 @@ function housingReview() {
               var tdanswer = document.createElement("td");
               var tdrisposta = document.createElement("td");
               tdrisposta.innerHTML = "Risposta";
-              tdanswer.innerHTML = "Inserisci <a href=\"createAnswerHousingReview.html?reviewId="+review.id+"&housingId="+id+"\">qui</a> la risposta!";
+              tdanswer.innerHTML = "Inserisci <a href=\"createAnswerHousingReview.html?reviewId="+review.reviewId+"&housingId="+id+"\">qui</a> la risposta!";
 
               if (review.risposta) {
                               tdanswer.innerHTML = review.risposta;
@@ -1521,4 +1523,146 @@ function housingReview() {
 } else {
     console.err("Attenzione: parametro 'housingId' non presente nella query");
 }
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico, di annullamento iscrizione.
+ * Manda la richiesta all'API per l'eliminazione dell'iscrizione all'evento
+ */
+function deleteSubscriptionEvent(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di prenotazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione della prenotazione di un alloggio
+ */
+function deleteHousingSubscription(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteHousingSubscription', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+function setAnswerEventButton(){
+  // Prende l'id della recensione dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('reviewId')){
+
+      var reviewId = urlParams.get('reviewId');
+  }
+
+  var button = document.getElementById("answerButton");
+  button.setAttribute("onclick", "createAnswerEventReview('"+reviewId+"')");
+  button.innerHTML = "Inserisci risposta";
+
+};
+
+function setAnswerHousingButton(){
+  // Prende l'id della recensione dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('reviewId')){
+
+      var reviewId = urlParams.get('reviewId');
+  }
+
+  var button = document.getElementById("answerButton");
+  button.setAttribute("onclick", "createAnswerHousingReview('"+reviewId+"')");
+  button.innerHTML = "Inserisci risposta";
+
+};
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
+* Crea una risposta alla recensione per un evento e la salva nel database
+*/
+function createAnswerEventReview(id) {
+
+  var answer = document.getElementById("answerReview").value;
+
+  // Prende l'id dell'evento dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('eventId')){
+
+      var eventId = urlParams.get('eventId');
+  }
+
+  if(getCookie("user")) {
+       token = JSON.parse(getCookie("user")).token;
+       userId = JSON.parse(getCookie("user")).id;
+       fetch('../api/v2/answerReview/createAnswerEventReview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify( { reviewId: id, token: token, answer: answer, eventId: eventId} )
+       })
+       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+       .then( function(data) {
+         alert(data.message);
+         window.location.href = "/index.html";
+      })
+      .catch( error => console.error(error) );
+   }
+};
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
+* Crea una risposta alla recensione per un evento e la salva nel database
+*/
+function createAnswerHousingReview(id) {
+
+  var answer = document.getElementById("answerReview").value;
+
+  // Prende l'id dell'evento dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('housingId')){
+
+      var housingId = urlParams.get('housingId');
+  }
+
+  if(getCookie("user")) {
+       token = JSON.parse(getCookie("user")).token;
+       userId = JSON.parse(getCookie("user")).id;
+       fetch('../api/v2/answerReview/createAnswerHousingReview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify( { reviewId: id, token: token, answer: answer, housingId: housingId} )
+       })
+       .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+       .then( function(data) {
+         alert(data.message);
+         window.location.href = "/index.html";
+      })
+      .catch( error => console.error(error) );
+   }
 };

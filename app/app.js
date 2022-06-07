@@ -17,6 +17,7 @@ const visualizzazioneFiltrata = require("./v2/visualizzazioneFiltrata.js");
 const review = require("./v2/review.js");
 const visualizzazioneReview = require("./v2/visualizzazioneReview.js");
 const deletereview = require('./v2/deletereview.js');
+const answerReview = require('./v2/answerReview.js');
 
 
 var fs = require('fs');
@@ -71,6 +72,7 @@ app.use('/api/v2/elimination', elimination);
 app.use('/api/v2/review', review);
 app.use('/api/v2/visualizzazioneReview', visualizzazioneReview);
 app.use('/api/v2/deletereview', deletereview);
+app.use('/api/v2/answerReview', answerReview);
 
 
 app.use('/', express.static('static'));
