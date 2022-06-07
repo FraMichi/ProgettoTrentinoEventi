@@ -110,7 +110,7 @@ router.post('/getCreatedEvents', async (req, res) => {
     });
 
     // Ricerca nel DB tutti gli eventi relativi al gestore
-    let events = await Event.find({idGestore: req.loggedUser.id}).exec();
+    let events = await Event.find({idGestore: req.loggedUser.id});//.exec();
     let eventsList = events.map((eventItem) => {
         return{id: eventItem._id, title: eventItem.titolo, descr: eventItem.descrizione, init: eventItem.dataInizio, finl: eventItem.dataFine, addrs: eventItem.indirizzo, seats: eventItem.postiDisponibili, allSt: eventItem.postiTotali, categ: catList[eventItem.idCategoria]}
     });
@@ -205,7 +205,7 @@ router.post('/getCreatedHousings', async (req, res) => {
     }
 
     // Ricerca nel DB tutti gli eventi relativi al gestore
-    let events = await Housing.find({idGestore: req.loggedUser.id}).exec();
+    let events = await Housing.find({idGestore: req.loggedUser.id});//.exec();
     let eventsList = events.map((eventItem) => {
         return{id: eventItem._id, title: eventItem.titolo, descr: eventItem.descrizione, init: eventItem.dataInizio, finl: eventItem.dataFine, addrs: eventItem.indirizzo, city: eventItem.citta}
     });
