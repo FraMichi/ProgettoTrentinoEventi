@@ -92,9 +92,9 @@ describe('POST /api/v2/review/createEventReview', () => {
    test('POST /api/v2/review/createEventReview con token non valido', () => {
        return request(app).post('/api/v2/review/createEventReview')
        .send({token: tokenNoV, event:"62838c1f3ba701dd200682e9"}).set('Accept', 'application/json')
-       .expect(401, {
+       .expect(400, {
            success: false,
-           message: 'UserNotLogged'
+           message: 'Parametri mancanti'
        });
    });
 
@@ -102,16 +102,16 @@ describe('POST /api/v2/review/createEventReview', () => {
    test('POST /api/v2/review/createEventReview con token valido ma id evento non conforme', () => {
        return request(app).post('/api/v2/review/createEventReview')
        .send({token: tokenVal, event:"62838c1fljfnsdlkfòksamlsd3ba701dd200672e9"}).set('Accept', 'application/json')
-       .expect(400, {success: false, message: "MongoDBFormatException"});
+       .expect(400, {success: false, message: "Parametri Mancanti"});
    });
 
    // token ok, id evento non esistente
    test('POST /api/v2/review/createEventReview con token valido ma id evento non esistente', () => {
        return request(app).post('/api/v2/review/createEventReview')
        .send({token: tokenVal, event:"62838c1f3ba701dd200672e9"}).set('Accept', 'application/json')
-       .expect(404, {
+       .expect(400, {
            success: false,
-           message: "EventNotFound"
+           message: "Parametri mancanti"
        });
    });
 
@@ -129,9 +129,9 @@ describe('POST /api/v2/review/createEventReview', () => {
    test('POST /api/v2/review/createEventReview con token valido e utente non iscritto', () => {
        return request(app).post('/api/v2/review/createEventReview')
        .send({token: tokenVal, event:"62838c1f3ba701dd200682e8"}).set('Accept', 'application/json')
-       .expect(200, {
+       .expect(400, {
            success: true,
-           message: 'UserNotSubscribed'
+           message: 'Bad Request'
        });
    });
 
@@ -139,9 +139,9 @@ describe('POST /api/v2/review/createEventReview', () => {
    test('POST /api/v2/review/createEventReview con nessuna iscrizione ad eventi', () => {
     return request(app).post('/api/v2/review/createEventReview')
       .send({token: tokenNoV}).set('Accept', 'application/json')
-      .expect(200, {
+      .expect(400, {
            success: false,
-           message: 'Non sei iscritto/a a nessun evento'
+           message: 'Parametri mancanti'
        });
   });
 });
