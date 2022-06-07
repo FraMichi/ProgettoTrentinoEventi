@@ -27,7 +27,7 @@ var payloadT = {
     _id: '627fdb1d95b0619bf9e97711',
     nome: 'Mario',
     cognome: 'Rossi',
-    dataDiNascita: '1998-03-24T00:00:00.000+00:00',
+    dataDiNascita: '1990-05-18T00:00:00.000+00:00',
     email: 'mario.rossi@gmail.com',
     password: '123',
     tipoDiUtente: 'turista'

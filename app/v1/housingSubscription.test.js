@@ -14,7 +14,7 @@ var payload = {
     id: "627fdb1d95b0619bf9e97711"
 };
 
-var tokenVal = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: 86400} ); // create a valid token;
+var tokenVal = jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: 1800} ); // create a valid token;
 
 var tokenNoV = tokenVal + "helloThere"; // token non valido;
 
