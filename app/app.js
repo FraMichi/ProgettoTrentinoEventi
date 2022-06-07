@@ -15,6 +15,12 @@ const visualizzazioneV2 = require('./v2/visualizzazione.js');
 const accommodationV2 = require('./v2/accommodation.js');
 const eventoV2 = require('./v2/event.js');
 const elimination = require("./v2/elimination.js");
+const visualizzazioneFiltrata = require("./v2/visualizzazioneFiltrata.js");
+const review = require("./v2/review.js");
+const visualizzazioneReview = require("./v2/visualizzazioneReview.js");
+const deletereview = require('./v2/deletereview.js');
+const answerReview = require('./v2/answerReview.js');
+
 
 var fs = require('fs');
 const app = express();
@@ -35,10 +41,12 @@ const swaggerOptions = {
       }
     }
   },
+
   apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js',
   './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js',
-  './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/event.js',
-  './app/v2/accommodation.js'] // files containing annotations as above
+  './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/elimination.js',
+  './app/v2/visualizzazioneFiltrata.js', './app/v2/visualizzazioneReview.js', './app/v2/review.js',
+  './app/v2/deletereview.js', './app/v2/event.js', './app/v2/accommodation.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione
@@ -63,9 +71,14 @@ app.use('/api/v1/event', evento);
 app.use('/api/v1/eventSubscription', eventSubscription);
 app.use('/api/v1/housingSubscription', housingSubscription);
 
+app.use('/api/v2/visualizzazioneFiltrata', visualizzazioneFiltrata);
 app.use('/api/v2/getCreatedEntries', getCreatedEntries);
 app.use('/api/v2/visualizzazione', visualizzazioneV2);
 app.use('/api/v2/elimination', elimination);
+app.use('/api/v2/review', review);
+app.use('/api/v2/visualizzazioneReview', visualizzazioneReview);
+app.use('/api/v2/deletereview', deletereview);
+app.use('/api/v2/answerReview', answerReview);
 app.use('/api/v2/accommodation', accommodationV2);
 app.use('/api/v2/event', eventoV2);
 

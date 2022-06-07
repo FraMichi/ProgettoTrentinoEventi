@@ -7,7 +7,7 @@ const Event = require('./../models/event');
 
 // Crea token di utente iscritto ad eventi
 var payloadSome = {
-    _id: '62897b4e22fb362b808d3910',
+    id: '62897b4e22fb362b808d3910',
     nome: 'Alice',
     cognome: 'Debbia',
     dataDiNascita: '1998-03-24T00:00:00.000+00:00',
@@ -23,7 +23,7 @@ var tokenSome = jwt.sign(
 
 // Crea token di utente non iscritto ad eventi
 var payloadNone = {
-    _id: '627fdb1d95b0619bf9e97711',
+    id: '627fdb1d95b0619bf9e97711',
     nome: 'Mario',
     cognome: 'Rossi',
     dataDiNascita: '1998-03-24T00:00:00.000+00:00',

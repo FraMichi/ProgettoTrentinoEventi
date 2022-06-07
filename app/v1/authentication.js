@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
   	}
 
   	// Cerca utente nel DB
-  	let user = await User.findOne({"email": req.body.email.toString().toLowerCase()}).exec();
+  	let user = await User.findOne({"email": req.body.email.toString().toLowerCase()});
 
   	// Se l'utente non è stato trovato invia risposta con messaggio d'errore
   	if (!user) {
@@ -116,7 +116,6 @@ router.post('/login', async (req, res) => {
       	birthdate: user.dataDiNascita,
         email: req.body.email.toString().toLowerCase(),
       	userType: user.tipoDiUtente,
-        email: user.email,
       	id: user._id
   	}
 
@@ -172,7 +171,7 @@ router.post('/login', async (req, res) => {
  *         type: string
  *         description: Password di utente
  *   responses:
- *    200:
+ *    201:
  *     description: Registrazione avvenuta correttamente
  *     content:
  *      application/json:
@@ -259,7 +258,7 @@ router.post('/subscribe', async (req, res) => {
   	}
 
     // Controlla se l'utente è già esistente nel DB
-  	let userDB = await User.findOne({"email": req.body.email.toString().toLowerCase()}).exec();
+  	let userDB = await User.findOne({"email": req.body.email.toString().toLowerCase()});
 
   	// Se l'utente è stato trovato invia risposta con messaggio d'errore
   	if (userDB) {
@@ -272,7 +271,7 @@ router.post('/subscribe', async (req, res) => {
 
   	// Se l'utente non è stato trovato, lo crea
     let user = new User({
-    nome: req.body.name,
+        nome: req.body.name,
         cognome: req.body.surname,
         dataDiNascita: req.body.birthdate,
         email: req.body.email.toString().toLowerCase(),
@@ -281,7 +280,7 @@ router.post('/subscribe', async (req, res) => {
     });
 
   	// Aggiunge l'utente creato nel DB
-  	user = await user.save();
+  	user = await User.create(user);
 
   	// Creazione token
   	var payload = {
@@ -290,7 +289,6 @@ router.post('/subscribe', async (req, res) => {
     		birthdate: user.dataDiNascita,
     		email: req.body.email.toString().toLowerCase(),
     		userType: user.tipoDiUtente,
-    		email: user.email,
     		id: user._id
   	}
     expire = 1800; // Scadenza dopo 30 minuti
@@ -302,7 +300,7 @@ router.post('/subscribe', async (req, res) => {
   	var token = jwt.sign(payload, process.env.TOKEN_SECRET, options);
 
     // Restituisce messaggio di successo contente token, nome ed id dell'utente e scadenza del token
-    res.status(200).json({
+    res.status(201).json({
       	success: true,
         token: token,
         name: user.nome,
