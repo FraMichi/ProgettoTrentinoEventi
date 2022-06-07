@@ -10,7 +10,7 @@
             }
         </style>
     </head>
-    <body onload="getSpecificHousing(); checkIfLogged()">
+    <body onload="getSpecificHousing(); setDeleteHousingButton(); checkIfLogged(); housingReview()">
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
@@ -56,5 +56,26 @@
             </tr>
             <script>checkHousingPrenotation();</script>
         </table>
+
+        <div>
+            <a id="deleteHousing"></a>
+        </div>
+
+        <h2>Lascia una recensione</h2>
+        <form action="api/v2/review" method="post">
+          <label for="housingReview">Inserisci il messaggio:</label><br>
+          <textarea id ="housingReview" name="housingReview" rows="10" cols="30"></textarea><br/>
+
+          <button type="button" onclick="createHousingReview()">Inserisci recensione</button>
+
+        </form>
+
+        <h2>Lista Recensioni</h2>
+        <table id="tabellaHousingReview">
+
+        </table>
+
+
+
     </body>
 </html>

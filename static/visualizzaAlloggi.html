@@ -8,6 +8,21 @@
         <a style="position: fixed; top: 5px; right: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/login.html" id="topRightButton01"><div align="center" style="width: 100%; height:100%;">Login</div></a>
         <a style="position: fixed; top: 5px; right: 95px; width: 120px; height: 20px; border: solid 1px black;" href="/subscribe.html" id="topRightButton02"><div align="center" style="width: 100%; height:100%;">Iscriviti</div></a>
         <a style="position: fixed; top: 5px; left: 5px; width: 80px; height: 20px; border: solid 1px black;" href="/index.html" id="topLeftButton01"><div align="center" style="width: 100%; height:100%;">Menù</div></a></br>
+
+        <h1>Filtra gli alloggi</h1>
+        <form action="api/v2/visualizzazione" method="get" id="filterFormAlloggi">
+            <label for="filterCitta">Città</label>
+            <input type="text" name="city" id="filterCitta"/>
+            <label for="filterStartDate">Data di inizio</label>
+            <input type="date" name="startDate" id="filterStartDate"/>
+            <label for="filterEndDate">Data di fine</label>
+            <input type="date" name="endDate" id="filterEndDate"/>
+
+            <button type="button" onclick="getHousingsFiltered()">Filtra</button>
+        </form>
+
+        <p id='errorMessage'></p>
+
         <h1>Lista degli alloggi</h1>
 
         <ul id="list" name="list">

@@ -138,7 +138,7 @@ function checkEventSubscription(){
         .then(function(data){
 
             if(data.message == "UserSubscribed") {
-                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento!";
+                document.getElementById("prenotationText").innerHTML = "Sei gia iscritto a questo evento! Vuoi disiscriverti? Premi <a href=\"javascript:deleteSubscriptionEvent('"+id+"')\">qui</a>!";
             }
             else if(data.message == "UserNotSubscribed") {
                 document.getElementById("prenotationText").innerHTML = "Vuoi iscriverti a questo evento? Premi <a href=\"javascript:subscribeToEvent('"+id+"')\">qui</a>!";
@@ -587,9 +587,9 @@ function checkHousingPrenotation() {
 
                 } else {
                     if(item.ofUser) {
-                        cell3.innerHTML = "Hai gia prenotato questo slot";
+                        cell3.innerHTML = "Hai gia prenotato questo slot. Annulla <a href=\"javascript:deleteHousingSubscription('"+urlParams.get('housingId')+"')\">qui</a>!";
                     } else {
-                        cell3.innerHTML = "Questo slot è già prenotato";
+                        cell3.innerHTML = "Questo slot è già prenotato!";
                     }
                 }
 
@@ -899,4 +899,280 @@ function getCreatedHousings() {
 
     })
     .catch( error => console.error(error) ); //Cattura gli errori, se presenti, e li mostra nella console.
+}
+
+// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione dell'evento
+function setDeleteEventButton() {
+
+    // Prende l'id dell'evento dall'URL
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('eventId')){
+
+        var id = urlParams.get('eventId');
+    }
+
+    // Modifica il contenuto dell'elemento
+    document.getElementById('deleteEvent').innerHTML = 'Elimina evento';
+
+    // Imposta l'attributo 'href' dell'elemento
+    document.getElementById('deleteEvent').setAttribute('href', 'javascript:deleteEvent("' + id +'")');
+};
+
+// Funzione che imposta l'attributo 'href' del bottone per l'eliminazione dell'alloggio
+function setDeleteHousingButton() {
+
+    // Prende l'id dell'alloggio dall'URL
+    var urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.has('housingId')){
+
+        var id = urlParams.get('housingId');
+    }
+
+    // Modifica il contenuto dell'elemento
+    document.getElementById('deleteHousing').innerHTML = 'Elimina alloggio';
+
+    // Imposta l'attributo 'href' dell'elemento
+    document.getElementById('deleteHousing').setAttribute('href', 'javascript:deleteHousing("' + id +'")');
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
+ * Manda la richiesta all'API per l'eliminazione dell'evento
+ */
+function deleteEvent(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "/index.html";
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione dell'alloggio
+ */
+function deleteHousing(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteHousing', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function(data) {
+            alert(data.message);
+            window.location.href = "/index.html";
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico, di annullamento iscrizione.
+ * Manda la richiesta all'API per l'eliminazione dell'iscrizione all'evento
+ */
+function deleteSubscriptionEvent(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteSubscriptionEvent', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, eventId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di prenotazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione della prenotazione di un alloggio
+ */
+function deleteHousingSubscription(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/elimination/deleteHousingSubscription', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { token: token, housingId: id} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    } else {
+        alert("Effettua il login");
+    }
+
+};
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata dell'evento.
+* Crea una recensione per un evento e la salva nel database
+*/
+function createEventReview(id) {
+  // Prende l'id dell'evento dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('eventId')){
+
+      var eventId = urlParams.get('eventId');
+  }
+
+  // Prendo la Recensione
+  var review = document.getElementById("eventReview").value;
+
+  if(getCookie("user")) {
+      token = JSON.parse(getCookie("user")).token;
+      userId = JSON.parse(getCookie("user")).id;
+
+  // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'evento
+                      fetch('../api/v2/review/createEventReview', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json' },
+                         body: JSON.stringify( { idEvento: eventId, review: review,token: token } )
+                      })
+                      .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                      .then( function(data) {
+
+                          // Controlla se sono stati resituiti messaggi di errore
+                          if(data.success == false) {
+                              // In caso affermativo mostra il messaggio
+                              alert(data.message);
+                              window.location.href = "/index.html";
+                          } else {
+                            //In caso negativo torna alla pagina di visualizzazione
+                            window.location.href = "/index.html";
+                            alert("Recensione evento inviata");
+                        }
+                    })
+                 .catch( error => console.error(error) );
+    }
+  };
+
+
+/*
+* Funzione che viene chiamata premendo il bottone dalla schermata ?.
+* Crea una recensione per un alloggio e la salva nel database
+*/
+function createHousingReview(id) {
+
+  // Prende l'id dell'alloggio dall'URL
+  var urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('housingId')){
+
+      var housingId = urlParams.get('housingId');
+  }
+
+  // Prendo la Recensione
+  var review = document.getElementById("housingReview").value;
+
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+        userId = JSON.parse(getCookie("user")).id;
+
+        // Se l'utente loggato è un gestore allora procede con la creazione della recensione all'alloggio
+                        fetch('../api/v2/review/createHousingReview', {
+                           method: 'POST',
+                           headers: { 'Content-Type': 'application/json' },
+                           body: JSON.stringify( { idAlloggio: housingId, review: review,token: token } )
+                        })
+                        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+                        .then( function(data) {
+
+                            // Controlla se sono stati resituiti messaggi di errore
+                            if(data.success == false) {
+                                // In caso affermativo mostra il messaggio
+                                alert(data.message);
+                                window.location.href = "/index.html";
+                            } else {
+                              //In caso negativo torna alla pagina di visualizzazione
+                              window.location.href = "/index.html";
+                              alert("Recensione alloggio inviata");
+                          }
+                      })
+                   .catch( error => console.error(error) );
+      }
+  };
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un evento specifico.
+ * Manda la richiesta all'API per l'eliminazione della recensione di un evento
+ */
+function deleteEventReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/deletereview/deleteEventReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { eventId: id , token: token} )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+            window.location.href = "/visualizzaEvento.html?eventId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
+};
+
+/*
+ * Funzione che viene chiamata premendo sul link nella pagina di visualizzazione di un alloggio specifico.
+ * Manda la richiesta all'API per l'eliminazione di una recensione di un alloggio
+ */
+function deleteHousingReview(id) {
+
+    // Se c'è il cookie dell'utente prende i suoi elementi
+    if(getCookie("user")) {
+        token = JSON.parse(getCookie("user")).token;
+
+        fetch('../api/v2/deletereview/deleteHousingReview', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( { housingId: id, token: token } )
+        })
+        .then((resp) => resp.json()) // Trasforma i dati in formato JSON
+        .then( function() {
+
+            window.location.href = "/visualizzaAlloggio.html?housingId="+id;
+        })
+        .catch( error => console.error(error) ); // Cattura gli errori, se presenti, e li mostra nella console.
+    }
+
 };

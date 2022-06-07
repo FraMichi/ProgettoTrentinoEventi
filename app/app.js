@@ -12,6 +12,12 @@ const housingSubscription = require("./v1/housingSubscription.js");
 const getCreatedEntries = require("./v2/getCreatedEntries.js");
 const visualizzazioneV2 = require('./v2/visualizzazione.js');
 
+const elimination = require("./v2/elimination.js");
+const visualizzazioneFiltrata = require("./v2/visualizzazioneFiltrata.js");
+const review = require("./v2/review.js");
+const deletereview = require('./v2/deletereview.js');
+
+
 var fs = require('fs');
 const app = express();
 
@@ -31,7 +37,8 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js', './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js'] // files containing annotations as above
+
+  apis: ['./app/v1/authentication.js', './app/v1/visualizzazione.js', './app/v1/eventSubscription.js', './app/v1/housingSubscription.js', './app/v1/accommodation.js', './app/v1/event.js', './app/v2/getCreatedEntries.js', './app/v2/visualizzazione.js', './app/v2/elimination.js', './app/v2/visualizzazioneFiltrata.js', './app/v2/visualizzazioneReview.js', './app/v2/review.js', './app/v2/deletereview.js'] // files containing annotations as above
 };
 
 // Si crea il documento della documentazione
@@ -56,8 +63,14 @@ app.use('/api/v1/event', evento);
 app.use('/api/v1/eventSubscription', eventSubscription);
 app.use('/api/v1/housingSubscription', housingSubscription);
 
+app.use('/api/v2/visualizzazioneFiltrata', visualizzazioneFiltrata);
 app.use('/api/v2/getCreatedEntries', getCreatedEntries);
 app.use('/api/v2/visualizzazione', visualizzazioneV2);
+app.use('/api/v2/elimination', elimination);
+app.use('/api/v2/review', review);
+app.use('/api/v2/visualizzazioneReview', visualizzazioneReview);
+app.use('/api/v2/deletereview', deletereview);
+
 
 app.use('/', express.static('static'));
 
