@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/FraMichi/ProgettoTrentinoEventi#readme",
   "dependencies": {
+    "@heroku-cli/plugin-buildpacks": "^7.60.0",
     "@heroku/buildpack-registry": "^1.0.1",
     "async-file": "^2.0.2",
     "cli-ux": "^6.0.9",
